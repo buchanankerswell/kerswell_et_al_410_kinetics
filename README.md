@@ -1,1 +1,1 @@
-# kerswell_et_al_dynamic_p_mantle
+# kerswell_et_al_dynp
