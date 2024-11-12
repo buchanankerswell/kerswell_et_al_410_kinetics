@@ -1,0 +1,21 @@
+subsection Boundary temperature model
+  set List of model names                   = initial temperature
+  set Fixed temperature boundary indicators = bottom
+end
+
+subsection Initial temperature model
+  set List of model names = adiabatic, function
+
+  subsection Function
+    set Variable names      = x, y
+    set Function constants  = x_start=450e3, y_start=-30e3, x_tip=450e3, y_tip=450e3, w_plume=15e3, dT=500, alpha=5e3
+    set Function expression = dT*exp(-(((x-x_start)*(-(y_tip-y_start))+(y-y_start)*(x_tip-x_start))^2)/(2*w_plume^2*((x_tip-x_start)^2+(y_tip-y_start)^2)))*0.25*(1+tanh(((x-x_start)*(x_tip-x_start)+(y-y_start)*(y_tip-y_start))/sqrt((x_tip-x_start)^2+(y_tip-y_start)^2)/alpha))*(1+tanh((sqrt((x_tip-x_start)^2+(y_tip-y_start)^2)-((x-x_start)*(x_tip-x_start)+(y-y_start)*(y_tip-y_start))/sqrt((x_tip-x_start)^2+(y_tip-y_start)^2))/alpha))
+  end
+
+  subsection Adiabatic
+    subsection Function
+      set Function expression = 0; 3500
+    end
+  end
+end
+

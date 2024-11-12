@@ -1,0 +1,27 @@
+---
+title: "Beyond Equilibrium"
+subtitle: "Kinetic Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in Slab Regions"
+author: ["Kerswell B.", "Wheeler J.", "Gassmöller R.", "Davies, J.H.", "Papanagnou, I.", "Cottaar, S."]
+date: "24 November 2025"
+subject: "Mantle Convection"
+keywords: [mantle convection, phase transition, reaction kinetics, geodynamics, numerical modeling]
+lang: "en-US"
+titlepage: true
+titlepage-color: "2E7A40"
+titlepage-text-color: "FFFFFF"
+titlepage-rule-color: "FFFFFF"
+titlepage-rule-height: 2
+tables: true
+graphics: true
+caption-justification: "justified"
+numbersections: true
+toc: true
+toc-own-page: true
+colorlinks: true
+link-citations: true
+header-includes:
+  - \makeatletter
+  - \newcounter{none}
+  - \renewcommand{\thenone}{}
+  - \makeatother
+---

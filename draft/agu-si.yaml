@@ -1,0 +1,30 @@
+---
+journal: "JGR: Machine Learning and Computation"
+classoption: "draft,linenumbers"
+title: "Supplementary Information for Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in Slab Regions"
+authors:
+  - name: "Buchanan Kerswell"
+    affil: 1
+  - name: "John Wheeler"
+    affil: 1
+  - name: "Rene Gassmöller"
+    affil: 2
+  - name: "J. Huw Davies"
+    affil: 3
+  - name: "Isabel Papanagnou"
+    affil: 4
+  - name: "Sanne Cottaar"
+    affil: 4
+affiliations:
+  - number: 1
+    name: "Department of Earth, Oceans and Ecological Sciences, University of Liverpool, Liverpool L69 3BX, UK"
+  - number: 2
+    name: "GEOMAR Helmholtz Centre for Ocean Research Kiel, Kiel, Germany"
+  - number: 3
+    name: "School of Earth and Environmental Sciences, Cardiff University, Park Place, Cardiff, CF10 3AT, UK"
+  - number: 4
+    name: "Bullard Laboratories, Department of Earth Sciences, University of Cambridge, CB3 0EZ, UK"
+corresponding_author:
+  - name: "Buchanan Kerswell"
+    email: "b.kerswell@liverpool.ac.uk"
+---
