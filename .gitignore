@@ -20,6 +20,5 @@ simulation/*/plugins/.cache
 simulation/*/plugins/compile_commands.json
 python/*/__pycache__
 markdown/manuscript/figs
-markdown/manuscript/notes.pdf
 markdown/manuscript/manuscript.pdf
 markdown/manuscript/rheological-parameters.md
