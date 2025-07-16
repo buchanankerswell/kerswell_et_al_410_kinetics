@@ -80,8 +80,7 @@ source "$DEALII_DIR/configuration/enable.sh"
 # ===========================
 echo "  ==========================================="
 echo "  Creating build directory and running CMake ..."
-mkdir -p "$ASPECT_BUILD_DIR"
-cd "$ASPECT_BUILD_DIR"
+mkdir -p "$ASPECT_BUILD_DIR" && cd "$ASPECT_BUILD_DIR"
 cmake "$ASPECT_DIR"
 make -j "$NPROC"
 

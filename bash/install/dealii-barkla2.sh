@@ -18,28 +18,6 @@ OPENBLAS=$5
 CMAKE=$6
 
 # ===========================
-# Cleanup handler
-# ===========================
-cleanup() {
-    local exit_code=$?
-    if [ -n "${TMP_CANDI_DIR:-}" ] && [ -d "$TMP_CANDI_DIR" ]; then
-        echo "  Cleaning up temporary candi directory:"
-        echo "  $TMP_CANDI_DIR"
-        rm -rf "$TMP_CANDI_DIR"
-    fi
-
-    if [ $exit_code -ne 0 ]; then
-        echo "  Installation failed with exit code: $exit_code"
-    fi
-
-    echo "  Cleanup completed."
-    echo "============================================="
-    exit $exit_code
-}
-
-trap cleanup EXIT INT TERM
-
-# ===========================
 # Environment setup
 # ===========================
 echo "============================================="
@@ -85,15 +63,12 @@ export FF=mpif77
 # Clone candi
 # ===========================
 echo "  ==========================================="
-TMP_CANDI_DIR=$(mktemp -d)
-echo "  Cloning candi into tmp dir: $TMP_CANDI_DIR"
-git clone https://github.com/dealii/candi.git "$TMP_CANDI_DIR" > /dev/null 2>&1
-cd "$TMP_CANDI_DIR"
+git clone https://github.com/dealii/candi.git && cd candi
 curl -O https://raw.githubusercontent.com/geodynamics/aspect/main/contrib/install/local.cfg
 cat << EOF >> local.cfg
 GIVEN_PLATFORM=deal.II-toolchain/platforms/supported/linux_cluster.platform
 DEAL_II_VERSION=$DEALII_VERSION
-TRILINOS_MAJOR_VERSION=AUTO
+TRILINOS_MAJOR_VERSION=$TRILINOS_VERSION
 BLAS_DIR=$OPENBLASDIR
 TRILINOS_CONFOPTS="-D TPL_BLAS_LIBRARIES=$OPENBLASLIB/libopenblas.so -D TPL_LAPACK_LIBRARIES=$OPENBLASLIB/libopenblas.so"
 EOF

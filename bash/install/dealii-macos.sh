@@ -13,28 +13,6 @@ fi
 DEALII_VERSION=$1
 
 # ===========================
-# Cleanup handler
-# ===========================
-cleanup() {
-    local exit_code=$?
-    if [ -n "${TMP_CANDI_DIR:-}" ] && [ -d "$TMP_CANDI_DIR" ]; then
-        echo "  Cleaning up temporary candi directory:"
-        echo "  $TMP_CANDI_DIR"
-        rm -rf "$TMP_CANDI_DIR"
-    fi
-
-    if [ $exit_code -ne 0 ]; then
-        echo "  Installation failed with exit code: $exit_code"
-    fi
-
-    echo "  Cleanup completed."
-    echo "============================================="
-    exit $exit_code
-}
-
-trap cleanup EXIT INT TERM
-
-# ===========================
 # Environment setup
 # ===========================
 echo "============================================="
@@ -62,10 +40,7 @@ fi
 # Clone candi
 # ===========================
 echo "  ==========================================="
-TMP_CANDI_DIR=$(mktemp -d)
-echo "  Cloning candi into tmp dir: $TMP_CANDI_DIR"
-git clone https://github.com/buchanankerswell/candi.git "$TMP_CANDI_DIR" > /dev/null 2>&1
-cd "$TMP_CANDI_DIR"
+git clone https://github.com/buchanankerswell/candi.git && cd candi
 git checkout update-macos-platform
 curl -O https://raw.githubusercontent.com/geodynamics/aspect/main/contrib/install/local.cfg
 cat << EOF >> local.cfg
