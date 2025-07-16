@@ -17,8 +17,8 @@ else ifeq ($(OS_ID), rocky)
   OPENMPI := openmpi/5.0.8-gcc14.2.0
   OPENBLAS := openblas/0.3.29/gcc-14.2.0
   CMAKE := cmake/3.30.5-gcc14.2.0
-  NNODES := 2
-  NTASKS := 80
+  NNODES := 1
+  NTASKS := 128
   TIME := 2-12:00:00
   MAIL_ADDRESS := b.kerswell@liverpool.ac.uk
   MAIL_TYPE := ALL
@@ -97,11 +97,11 @@ $(2D_BOX_PLUGINS):
 	@if [ "$(OS_ID)" = "rocky" ]; then \
 		module load $(GCC) $(OPENMPI) $(OPENBLAS) $(CMAKE); \
 		cd $(SIMULATION)/2d_box/plugins; \
-		cmake . -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D Aspect_DIR=$(dir $(ASPECT_EXEC)) -D CMAKE_CXX_COMPILER=mpicxx; \
+		cmake . -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D Aspect_DIR=$(dir $(ASPECT_EXEC)) -D CMAKE_CXX_COMPILER=mpicxx -W no-dev; \
 		make; \
 	else \
 		cd $(SIMULATION)/2d_box/plugins; \
-		cmake . -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D Aspect_DIR=$(dir $(ASPECT_EXEC)); \
+		cmake . -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D Aspect_DIR=$(dir $(ASPECT_EXEC)) -W no-dev; \
 		make; \
 	fi
 

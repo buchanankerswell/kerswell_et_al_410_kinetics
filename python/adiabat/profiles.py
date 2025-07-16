@@ -378,6 +378,10 @@ class DrivingForceProfile:
     _thermal_expansivity: np.ndarray | None = field(default=None, init=False)
     _specific_heat: np.ndarray | None = field(default=None, init=False)
     _compressibility: np.ndarray | None = field(default=None, init=False)
+    _pressure_wave_velocity: np.ndarray | None = field(default=None, init=False)
+    _pressure_wave_velocity_T_derivative: np.ndarray | None = field(default=None, init=False)
+    _shear_wave_velocity: np.ndarray | None = field(default=None, init=False)
+    _shear_wave_velocity_T_derivative: np.ndarray | None = field(default=None, init=False)
     _internal_energy: np.ndarray | None = field(default=None, init=False)
     _gibbs: np.ndarray | None = field(default=None, init=False)
     _entropy: np.ndarray | None = field(default=None, init=False)
@@ -386,6 +390,10 @@ class DrivingForceProfile:
     _delta_thermal_expansivity: np.ndarray | None = field(default=None, init=False)
     _delta_specific_heat: np.ndarray | None = field(default=None, init=False)
     _delta_compressibility: np.ndarray | None = field(default=None, init=False)
+    _delta_pressure_wave_velocity: np.ndarray | None = field(default=None, init=False)
+    _delta_pressure_wave_velocity_T_derivative: np.ndarray | None = field(default=None, init=False)
+    _delta_shear_wave_velocity: np.ndarray | None = field(default=None, init=False)
+    _delta_shear_wave_velocity_T_derivative: np.ndarray | None = field(default=None, init=False)
     _delta_internal_energy: np.ndarray | None = field(default=None, init=False)
     _delta_gibbs: np.ndarray | None = field(default=None, init=False)
     _delta_entropy: np.ndarray | None = field(default=None, init=False)
@@ -408,6 +416,8 @@ class DrivingForceProfile:
         _ = self.delta_thermal_expansivity
         _ = self.delta_specific_heat
         _ = self.delta_compressibility
+        _ = self.delta_pressure_wave_velocity
+        _ = self.delta_shear_wave_velocity
         _ = self.delta_internal_energy
         _ = self.delta_gibbs
         _ = self.delta_entropy
@@ -484,6 +494,42 @@ class DrivingForceProfile:
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @property
+    def pressure_wave_velocity(self) -> np.ndarray:
+        """"""
+        if self._pressure_wave_velocity is None:
+            self._pressure_wave_velocity = self._evaluate_pressure_wave_velocity()
+
+        return self._pressure_wave_velocity
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def pressure_wave_velocity_T_derivative(self) -> np.ndarray:
+        """"""
+        if self._pressure_wave_velocity_T_derivative is None:
+            self._pressure_wave_velocity_T_derivative = self._evaluate_pressure_wave_velocity_T_derivative()
+
+        return self._pressure_wave_velocity_T_derivative
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def shear_wave_velocity(self) -> np.ndarray:
+        """"""
+        if self._shear_wave_velocity is None:
+            self._shear_wave_velocity = self._evaluate_shear_wave_velocity()
+
+        return self._shear_wave_velocity
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def shear_wave_velocity_T_derivative(self) -> np.ndarray:
+        """"""
+        if self._shear_wave_velocity_T_derivative is None:
+            self._shear_wave_velocity_T_derivative = self._evaluate_shear_wave_velocity_T_derivative()
+
+        return self._shear_wave_velocity_T_derivative
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
     def internal_energy(self) -> np.ndarray:
         """"""
         if self._internal_energy is None:
@@ -553,6 +599,42 @@ class DrivingForceProfile:
             self._delta_compressibility = self._evaluate_delta_compressibility()
 
         return self._delta_compressibility
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def delta_pressure_wave_velocity(self) -> np.ndarray:
+        """"""
+        if self._delta_pressure_wave_velocity is None:
+            self._delta_pressure_wave_velocity = self._evaluate_delta_pressure_wave_velocity()
+
+        return self._delta_pressure_wave_velocity
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def delta_pressure_wave_velocity_T_derivative(self) -> np.ndarray:
+        """"""
+        if self._delta_pressure_wave_velocity_T_derivative is None:
+            self._delta_pressure_wave_velocity_T_derivative = self._evaluate_delta_pressure_wave_velocity_T_derivative()
+
+        return self._delta_pressure_wave_velocity_T_derivative
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def delta_shear_wave_velocity(self) -> np.ndarray:
+        """"""
+        if self._delta_shear_wave_velocity is None:
+            self._delta_shear_wave_velocity = self._evaluate_delta_shear_wave_velocity()
+
+        return self._delta_shear_wave_velocity
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def delta_shear_wave_velocity_T_derivative(self) -> np.ndarray:
+        """"""
+        if self._delta_shear_wave_velocity_T_derivative is None:
+            self._delta_shear_wave_velocity_T_derivative = self._evaluate_delta_shear_wave_velocity_T_derivative()
+
+        return self._delta_shear_wave_velocity_T_derivative
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @property
@@ -647,6 +729,76 @@ class DrivingForceProfile:
         return np.stack([compressibility_a, compressibility_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_pressure_wave_velocity(self) -> np.ndarray:
+        """"""
+        pressure_wave_velocity_a = self.material_a.evaluate(
+            ["p_wave_velocity"], self.pressures, self.temperatures
+        )
+        pressure_wave_velocity_b = self.material_b.evaluate(
+            ["p_wave_velocity"], self.pressures, self.temperatures
+        )
+
+        return np.stack([pressure_wave_velocity_a, pressure_wave_velocity_b])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_pressure_wave_velocity_T_derivative(self) -> np.ndarray:
+        """Evaluate seismic pressure wave velocity derivatives with respect to temperature."""
+        dT = 0.1
+
+        Vp_low_a = self.material_a.evaluate(
+            ["p_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+        )
+        Vp_low_b = self.material_b.evaluate(
+            ["p_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+        )
+        Vp_high_a = self.material_a.evaluate(
+            ["p_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+        )
+        Vp_high_b = self.material_b.evaluate(
+            ["p_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+        )
+
+        dVp_dT_a = (Vp_high_a - Vp_low_a) / dT
+        dVp_dT_b = (Vp_high_b - Vp_low_b) / dT
+
+        return np.stack([dVp_dT_a, dVp_dT_b])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_shear_wave_velocity(self) -> np.ndarray:
+        """"""
+        shear_wave_velocity_a = self.material_a.evaluate(
+            ["shear_wave_velocity"], self.pressures, self.temperatures
+        )
+        shear_wave_velocity_b = self.material_b.evaluate(
+            ["shear_wave_velocity"], self.pressures, self.temperatures
+        )
+
+        return np.stack([shear_wave_velocity_a, shear_wave_velocity_b])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_shear_wave_velocity_T_derivative(self) -> np.ndarray:
+        """Evaluate seismic shear wave velocity derivatives with respect to temperature."""
+        dT = 0.1
+
+        Vs_low_a = self.material_a.evaluate(
+            ["shear_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+        )
+        Vs_low_b = self.material_b.evaluate(
+            ["shear_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+        )
+        Vs_high_a = self.material_a.evaluate(
+            ["shear_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+        )
+        Vs_high_b = self.material_b.evaluate(
+            ["shear_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+        )
+
+        dVs_dT_a = (Vs_high_a - Vs_low_a) / dT
+        dVs_dT_b = (Vs_high_b - Vs_low_b) / dT
+
+        return np.stack([dVs_dT_a, dVs_dT_b])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_internal_energy(self) -> np.ndarray:
         """"""
         internal_energy_a = self.material_a.evaluate(
@@ -715,6 +867,26 @@ class DrivingForceProfile:
         return np.ravel(self.compressibility[1] - self.compressibility[0])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_delta_pressure_wave_velocity(self) -> np.ndarray:
+        """"""
+        return np.ravel(self.pressure_wave_velocity[1] - self.pressure_wave_velocity[0])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_delta_pressure_wave_velocity_T_derivative(self) -> np.ndarray:
+        """"""
+        return np.ravel(self.pressure_wave_velocity_T_derivative[1] - self.pressure_wave_velocity_T_derivative[0])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_delta_shear_wave_velocity(self) -> np.ndarray:
+        """"""
+        return np.ravel(self.shear_wave_velocity[1] - self.shear_wave_velocity[0])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_delta_shear_wave_velocity_T_derivative(self) -> np.ndarray:
+        """"""
+        return np.ravel(self.shear_wave_velocity_T_derivative[1] - self.shear_wave_velocity_T_derivative[0])
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_delta_internal_energy(self) -> np.ndarray:
         """"""
         return np.ravel(self.internal_energy[1] - self.internal_energy[0])
@@ -742,8 +914,8 @@ class DrivingForceProfile:
             f"# This ASPECT-compatible file contains data to calculate the thermodynamic driving force in the PhaseTransitionKinetics material model. This table is for {self.material_a.name} <==> {self.material_b.name} evaluated along an isentrope produced by the BurnMan software.\n"
             f"# POINTS: {len(self.depths)}\n"
             "#\n"
-            "# pressure (Pa), temperature (K), density a (kg/m3), density b (kg/m3), thermal expansivity a (1/K), thermal expansivity b (1/K), specific heat a (J/K/kg), specific heat b (J/K/kg), compressibility a (1/Pa), compressibility b (1/Pa), molar internal energy a (J/mol), molar internal energy b (J/mol), molar Gibbs a (J/mol), molar Gibbs b (J/mol), molar entropy a (J/mol), molar entropy b (J/mol), molar volume a (m^3/mol), molar volume b (m^3/mol), delta density (kg/m3), delta thermal expansivity (1/K), delta specific heat (J/K/kg), delta compressibility (1/Pa), delta internal energy (J/mol), delta molar Gibbs (J/mol), delta molar entropy (J/K/mol), delta molar volume (m^3/mol)\n"
-            "pressure\ttemperature\tdensity_a\tdensity_b\tthermal_expansivity_a\tthermal_expansivity_b\tspecific_heat_a\tspecific_heat_b\tcompressibility_a\tcompressibility_b\tmolar_internal_energy_a\tmolar_internal_energy_b\tmolar_gibbs_a\tmolar_gibbs_b\tmolar_entropy_a\tmolar_entropy_b\tmolar_volume_a\tmolar_volume_b\tdelta_density\tdelta_thermal_expansivity\tdelta_specific_heat\tdelta_compressibility\tdelta_molar_internal_energy\tdelta_molar_gibbs\tdelta_molar_entropy\tdelta_molar_volume"
+            "# pressure (Pa), temperature (K), density a (kg/m3), density b (kg/m3), thermal expansivity a (1/K), thermal expansivity b (1/K), specific heat a (J/K/kg), specific heat b (J/K/kg), compressibility a (1/Pa), compressibility b (1/Pa), seismic Vp a (m/s), seismic Vp b (m/s), seismic dVp/dT a (m/s/K), seismic dVp/dT b (m/s/K), seismic Vs a (m/s), seismic Vs b (m/s), seismic dVs/dT a (m/s/K), seismic dVs/dT b (m/s/K), molar internal energy a (J/mol), molar internal energy b (J/mol), molar Gibbs a (J/mol), molar Gibbs b (J/mol), molar entropy a (J/mol), molar entropy b (J/mol), molar volume a (m^3/mol), molar volume b (m^3/mol), delta density (kg/m3), delta thermal expansivity (1/K), delta specific heat (J/K/kg), delta compressibility (1/Pa), delta internal energy (J/mol), delta molar Gibbs (J/mol), delta molar entropy (J/K/mol), delta molar volume (m^3/mol)\n"
+            "pressure\ttemperature\tdensity_a\tdensity_b\tthermal_expansivity_a\tthermal_expansivity_b\tspecific_heat_a\tspecific_heat_b\tcompressibility_a\tcompressibility_b\tpressure_wave_velocity_a\tpressure_wave_velocity_b\tpressure_wave_velocity_T_derivative_a\tpressure_wave_velocity_T_derivative_b\tshear_wave_velocity_a\tshear_wave_velocity_b\tshear_wave_velocity_T_derivative_a\tshear_wave_velocity_T_derivative_b\tmolar_internal_energy_a\tmolar_internal_energy_b\tmolar_gibbs_a\tmolar_gibbs_b\tmolar_entropy_a\tmolar_entropy_b\tmolar_volume_a\tmolar_volume_b\tdelta_density\tdelta_thermal_expansivity\tdelta_specific_heat\tdelta_compressibility\tdelta_molar_internal_energy\tdelta_molar_gibbs\tdelta_molar_entropy\tdelta_molar_volume"
         )
 
         table = np.column_stack(
@@ -758,6 +930,14 @@ class DrivingForceProfile:
                 self.specific_heat[1].ravel(),
                 self.compressibility[0].ravel(),
                 self.compressibility[1].ravel(),
+                self.pressure_wave_velocity[0].ravel(),
+                self.pressure_wave_velocity[1].ravel(),
+                self.pressure_wave_velocity_T_derivative[0].ravel(),
+                self.pressure_wave_velocity_T_derivative[1].ravel(),
+                self.shear_wave_velocity[0].ravel(),
+                self.shear_wave_velocity[1].ravel(),
+                self.shear_wave_velocity_T_derivative[0].ravel(),
+                self.shear_wave_velocity_T_derivative[1].ravel(),
                 self.internal_energy[0].ravel(),
                 self.internal_energy[1].ravel(),
                 self.gibbs[0].ravel(),

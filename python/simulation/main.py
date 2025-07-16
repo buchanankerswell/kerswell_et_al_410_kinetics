@@ -31,8 +31,8 @@ def main():
             "shear_stress_yy",
             "stress_second_invariant",
             "strain_rate",
-            "Vp_anomaly",
-            "Vs_anomaly",
+            "seismic_Vp",
+            "seismic_Vs",
         ]
         binned_depth_plot_field_sets = {
             "set1": [
@@ -67,6 +67,10 @@ def main():
             "stress_second_invariant",
             # "strain_rate",
             # "viscosity",
+            "seismic_Vp",
+            "seismic_Vs",
+            "Vp_anomaly",
+            "Vs_anomaly",
             "driving_force",
             "reaction_rate_C0",
         ]
@@ -128,6 +132,10 @@ def main():
             "stress_second_invariant": "auto",
             "strain_rate": "auto",
             "viscosity": "auto",
+            "seismic_Vp": "auto",
+            "seismic_Vs": "auto",
+            "Vp_anomaly": "auto",
+            "Vs_anomaly": "auto",
             "driving_force": "auto",
             "reaction_rate_C0": "auto",
         }
@@ -153,6 +161,10 @@ def main():
             "stress_second_invariant": "%.0f",
             "strain_rate": "%.1f",
             "viscosity": "%.0f",
+            "seismic_Vp": "%.1f",
+            "seismic_Vs": "%.1f",
+            "Vp_anomaly": "%.0f",
+            "Vs_anomaly": "%.0f",
             "driving_force": "%.0f",
             "reaction_rate_C0": "%.0e",
         }
@@ -178,6 +190,10 @@ def main():
             "stress_second_invariant": 1e-6,
             "strain_rate": 1,
             "viscosity": 1,
+            "seismic_Vp": 1e-3,
+            "seismic_Vs": 1e-3,
+            "Vp_anomaly": 1,
+            "Vs_anomaly": 1,
             "driving_force": 1e-3,
             "reaction_rate_C0": 1,
         }
@@ -204,6 +220,10 @@ def main():
             "stress_second_invariant": "$\\sigma_{II}$ (MPa)",
             "strain_rate": "Log $\\dot{\\epsilon}_{II}$ (1/s)",
             "viscosity": "Log $\\eta$ (Pa s)",
+            "seismic_Vp": "$V_p$ (km/s)",
+            "seismic_Vs": "$V_s$ (km/s)",
+            "Vp_anomaly": "$\\hat{V}_p$ (%)",
+            "Vs_anomaly": "$\\hat{V}_s$ (%)",
             "driving_force": "$\\Delta G$ (kJ/mol)",
             "reaction_rate_C0": "$dX/dt$ (1/s)",
         }
@@ -281,6 +301,14 @@ def main():
                 "T",
                 "X_field",
                 "nonadiabatic_density",
+            ],
+        },
+        "set8": {
+            "tags": None,
+            "fields": [
+                "nonadiabatic_temperature",
+                "driving_force",
+                "X_field",
             ],
         },
     }

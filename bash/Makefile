@@ -29,7 +29,7 @@ else ifeq ($(OS_ID), rocky)
   DEALII_LIB := $(DEALII)/deal.II-$(DEALII_VERSION)/lib/libdeal_II.so
   INSTALL_DEALII := $(DEALII_BARKLA2)
   INSTALL_ASPECT := $(ASPECT_BARKLA2)
-  TRILINOS_VERSION := AUTO
+  TRILINOS_VERSION := 14
   GCC := gcc/14.2.0
   OPENMPI := openmpi/5.0.8-gcc14.2.0
   OPENBLAS := openblas/0.3.29/gcc-14.2.0

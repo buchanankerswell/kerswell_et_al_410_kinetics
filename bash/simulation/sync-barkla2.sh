@@ -27,35 +27,37 @@ for prm_path in "${CONFIG_LIST[@]}"; do
     LOCAL_RESULTS_DIR="$HOME/Working/kerswell_et_al_dynp/simulation/2d_box/results/$model_name"
 
     echo "---------------------------------------------------------"
-    echo "Syncing for model: $model_name"
+    echo "Syncing model: $model_name"
     echo "---------------------------------------------------------"
 
     mkdir -p "$LOCAL_CONFIGS_DIR" "$LOCAL_RESULTS_DIR/solution"
 
-    echo "Trying to rsync .out files from: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/*.out"
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/*.out" \
       "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No .out files found"
 
-    echo "Trying to rsync .run files from: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_CONFIGS_DIR}/*.run"
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_CONFIGS_DIR}/*.run" \
       "$LOCAL_CONFIGS_DIR/" 2>/dev/null || echo "Warning: No .run files found"
 
-    echo "Trying to rsync 'statistics' from: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/statistics"
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/statistics" \
       "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No 'statistics' file found"
 
-    echo "Trying to rsync 'depth_average.txt' from: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/depth_average.txt"
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/depth_average.txt" \
       "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: 'No depth_average.txt' file found"
 
-    echo "Trying to rsync 'stokes_residuals.txt' from: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/stokes_residuals.txt"
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/stokes_residuals.txt" \
       "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No 'stokes_residuals.txt' file found"
 
+    rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-00000.*.vtu" \
+      "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .vtu solution files for timestep $tstep"
+
+    rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-00000.pvtu" \
+      "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .pvtu solution files for timestep $tstep"
+
     for tstep in "${TIMESTEP_LIST[@]}"; do
-        echo "Trying to rsync solution files for timestep $tstep from: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-*${tstep}*"
-        rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-*${tstep}*" \
-          "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No solution files for timestep $tstep"
+        rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-0*${tstep}.*.vtu" \
+          "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .vtu solution files for timestep $tstep"
+        rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-0*${tstep}.pvtu" \
+          "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .pvtu solution files for timestep $tstep"
     done
 done
 
