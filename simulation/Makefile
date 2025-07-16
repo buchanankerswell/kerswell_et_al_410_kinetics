@@ -97,7 +97,7 @@ $(2D_BOX_PLUGINS):
 	@if [ "$(OS_ID)" = "rocky" ]; then \
 		module load $(GCC) $(OPENMPI) $(OPENBLAS) $(CMAKE); \
 		cd $(SIMULATION)/2d_box/plugins; \
-		cmake . -D Aspect_DIR=$(dir $(ASPECT_EXEC)) -D CMAKE_CXX_COMPILER=mpicxx; \
+		cmake . -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D Aspect_DIR=$(dir $(ASPECT_EXEC)) -D CMAKE_CXX_COMPILER=mpicxx; \
 		make; \
 	else \
 		cd $(SIMULATION)/2d_box/plugins; \
