@@ -286,19 +286,11 @@ namespace aspect
               // Calculate reaction rate: dX/dt = Q * ΔG * (1 - X)
               const double rate = (driving_force < 0) ? Q_kinetic_prefactor * std::abs(driving_force) * (1.0 - X_clamped) / time_scale : 0.0;
 
-              // Limit reaction rate
-              const double epsilon = 1e-15;
-              double rate_clamped = rate;
-              if (X_clamped <= 0.0 + epsilon)
-                rate_clamped = 0.0;
-              if (X_clamped >= 1.0 - epsilon && rate > 0)
-                rate_clamped = 0.0;
-
               // Update additional named outputs
               phase_transition_kinetics_out->driving_force[q] = driving_force;
 
               // Update reaction rates
-              reaction_rate_out->reaction_rates[q][X_idx] = rate_clamped;
+              reaction_rate_out->reaction_rates[q][X_idx] = rate;
 
               // Set other compositional fields to zero reaction rate
               for (unsigned int c = 0; c < this->introspection().n_compositional_fields; ++c)
