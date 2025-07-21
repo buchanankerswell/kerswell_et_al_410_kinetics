@@ -7,7 +7,7 @@
 set Dimension                              = 2
 set Use years in output instead of seconds = true
 set End time                               = 75e6
-set Output directory                       = 2d_box/results/simple_subduction_Q10
+set Output directory                       = 2d_box/results/simple_subduction_Q9_narrow
 set Adiabatic surface temperature          = 1706
 set Surface pressure                       = 1e10
 set Nonlinear solver scheme                = iterated Advection and Stokes
@@ -86,7 +86,7 @@ subsection Initial temperature model
   set List of model names = adiabatic, function
 
   subsection Function
-    set Function expression = -500 * exp(-((y-200e3)*(y-200e3)+(x-150e3)*(x-150e3))/(2*35e3*35e3))
+    set Function expression = -500 * exp(-((y-200e3)*(y-200e3)+(x-150e3)*(x-150e3))/(2*17.5e3*17.5e3))
     set Variable names      = x, y
   end
 
@@ -142,7 +142,7 @@ subsection Material model
   set Model name = phase transition kinetics
 
   subsection Phase transition kinetics
-    set Kinetic prefactor Q  = 1e-10
+    set Kinetic prefactor Q  = 1e-9
 
     set Viscosity                  = 1e21
     set Minimum viscosity          = 1e19

@@ -66,11 +66,11 @@ def main():
             # "shear_stress_yy",
             "stress_second_invariant",
             # "strain_rate",
-            # "viscosity",
+            "viscosity",
             "seismic_Vp",
             "seismic_Vs",
-            "Vp_anomaly",
-            "Vs_anomaly",
+            # "Vp_anomaly",
+            # "Vs_anomaly",
             "driving_force",
             "reaction_rate_C0",
         ]
@@ -311,7 +311,19 @@ def main():
                 "X_field",
             ],
         },
+        "set9": {
+            "tags": None,
+            "fields": [
+                "nonadiabatic_temperature",
+                "driving_force",
+                "reaction_rate_C0",
+            ],
+        },
     }
+
+    print("    --------------------------------------------------")
+    print("    Tiling images")
+    print("    --------------------------------------------------")
 
     for config in tile_sets.values():
         fields = config.get("fields", None)

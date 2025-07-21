@@ -7,7 +7,7 @@
 set Dimension                              = 2
 set Use years in output instead of seconds = true
 set End time                               = 75e6
-set Output directory                       = 2d_box/results/simple_subduction_Q10
+set Output directory                       = 2d_box/results/simple_subduction_Q9_layered_thermal_dependent_rheology
 set Adiabatic surface temperature          = 1706
 set Surface pressure                       = 1e10
 set Nonlinear solver scheme                = iterated Advection and Stokes
@@ -142,14 +142,14 @@ subsection Material model
   set Model name = phase transition kinetics
 
   subsection Phase transition kinetics
-    set Kinetic prefactor Q  = 1e-10
+    set Kinetic prefactor Q        = 1e-9
 
     set Viscosity                  = 1e21
     set Minimum viscosity          = 1e19
     set Maximum viscosity          = 1e24
-    set Thermal viscosity exponent = 0
+    set Thermal viscosity exponent = 1
     set Transition depths          = 110e3
-    set Viscosity prefactors       = 1, 1
+    set Viscosity prefactors       = 1, 10
 
     set Data directory = data/
     set Data file name = thermodynamic-driving-force-profile-olivine-wadsleyite.txt
