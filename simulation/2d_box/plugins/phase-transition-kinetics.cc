@@ -189,13 +189,13 @@ namespace aspect
           const double dS = profile.get_data_component(profile_pos, dS_idx);
           const double dV = profile.get_data_component(profile_pos, dV_idx);
 
-          // Calculate viscosity temperature factor
-          double visc_temperature_dependence = std::max(std::min(std::exp(-thermal_viscosity_exponent * (T - T_adiabatic) / T_adiabatic), 1e3), 1e-3);
-          if (std::isnan(visc_temperature_dependence))
-            visc_temperature_dependence = 1.0;
-
           if (in.requests_property(MaterialProperties::viscosity))
             {
+              // Calculate viscosity temperature factor
+              double visc_temperature_dependence = std::max(std::min(std::exp(-thermal_viscosity_exponent * (T - T_adiabatic) / T_adiabatic), 1e3), 1e-3);
+              if (std::isnan(visc_temperature_dependence))
+                visc_temperature_dependence = 1.0;
+
               // Calculate viscosity depth factor
               double visc_depth_dependence = viscosity_prefactors[0];
               for (unsigned int z = 0; z < transition_depths.size(); ++z)
