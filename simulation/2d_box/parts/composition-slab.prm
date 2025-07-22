@@ -1,0 +1,24 @@
+subsection Boundary composition model
+  set Fixed composition boundary indicators = top, right, bottom, left
+  set List of model names = function
+
+  subsection Function
+    set Function expression = if(y<132e3, 1, 0); 3300
+    set Variable names      = x, y
+  end
+end
+
+subsection Initial composition model
+  set List of model names = function
+
+  subsection Function
+    set Function expression = if(y<132e3, 1, 0); 3300
+    set Variable names      = x, y
+  end
+end
+
+subsection Compositional fields
+  set Number of fields            = 2
+  set Names of fields             = X_field, density_field
+  set Compositional field methods = field, prescribed field
+end

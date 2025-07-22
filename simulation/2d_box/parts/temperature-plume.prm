@@ -1,0 +1,19 @@
+subsection Boundary temperature model
+  set List of model names                   = initial temperature
+  set Fixed temperature boundary indicators = bottom, left
+end
+
+subsection Initial temperature model
+  set List of model names = adiabatic, function
+
+  subsection Function
+    set Function expression = 500 * exp(-((y-0e3)*(y-0e3)+(x-198e3)*(x-198e3))/(2*15e3*15e3))
+    set Variable names      = x, y
+  end
+
+  subsection Adiabatic
+    subsection Function
+      set Function expression = 0; 3500
+    end
+  end
+end

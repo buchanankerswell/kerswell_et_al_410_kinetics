@@ -48,15 +48,15 @@ def main():
         }
     elif visualization_type == "2d_box":
         active_plot_fields = [
-            "T",
-            "adiabatic_temperature",
+            # "T",
+            # "adiabatic_temperature",
             "nonadiabatic_temperature",
-            "p",
-            "adiabatic_pressure",
+            # "p",
+            # "adiabatic_pressure",
             "nonadiabatic_pressure",
             "X_field",
             "density",
-            "adiabatic_density",
+            # "adiabatic_density",
             "nonadiabatic_density",
             "velocity",
             # "stress_xx",
@@ -66,7 +66,7 @@ def main():
             # "shear_stress_yy",
             "stress_second_invariant",
             # "strain_rate",
-            "viscosity",
+            # "viscosity",
             "seismic_Vp",
             "seismic_Vs",
             # "Vp_anomaly",
@@ -111,6 +111,7 @@ def main():
         plot_config.depth_contour_depths_km = []
         plot_config.depth_contour_tolerance_km = 1
         plot_config.depth_contour_line_widths = [3]
+        plot_config.scale_bar_length_fraction = 0.253
 
         plot_config.clim_mapping = {
             "T": "auto",
@@ -166,7 +167,7 @@ def main():
             "Vp_anomaly": "%.0f",
             "Vs_anomaly": "%.0f",
             "driving_force": "%.0f",
-            "reaction_rate_C0": "%.0e",
+            "reaction_rate_C0": "%.1f",
         }
         plot_config.scale_mapping = {
             "T": 1,
@@ -195,7 +196,7 @@ def main():
             "Vp_anomaly": 1,
             "Vs_anomaly": 1,
             "driving_force": 1e-3,
-            "reaction_rate_C0": 1,
+            "reaction_rate_C0": 3.154e13,
         }
 
         plot_config.bar_mapping = {
@@ -225,7 +226,37 @@ def main():
             "Vp_anomaly": "$\\hat{V}_p$ (%)",
             "Vs_anomaly": "$\\hat{V}_s$ (%)",
             "driving_force": "$\\Delta G$ (kJ/mol)",
-            "reaction_rate_C0": "$dX/dt$ (1/s)",
+            "reaction_rate_C0": "$dX/dt$ (1/Ma)",
+        }
+
+        plot_config.velocity_mapping = {
+            "T": False,
+            "adiabatic_temperature": False,
+            "nonadiabatic_temperature": True,
+            "p": False,
+            "adiabatic_pressure": False,
+            "nonadiabatic_pressure": False,
+            "X_field": False,
+            "density": False,
+            "adiabatic_density": False,
+            "nonadiabatic_density": False,
+            "velocity": True,
+            "stress_xx": False,
+            "stress_yy": False,
+            "shear_stress_xx": False,
+            "shear_stress_xy": False,
+            "shear_stress_yy": False,
+            "principal_stress_1": False,
+            "principal_stress_2": False,
+            "stress_second_invariant": False,
+            "strain_rate": False,
+            "viscosity": False,
+            "seismic_Vp": False,
+            "seismic_Vs": False,
+            "Vp_anomaly": False,
+            "Vs_anomaly": False,
+            "driving_force": False,
+            "reaction_rate_C0": False,
         }
     else:
         raise ValueError(f"Unrecognized visualiztion type {visualization_type}!")
@@ -244,79 +275,43 @@ def main():
 
     tile_sets = {
         "set0": {
-            "tags": "abc",
+            "tags": None,
             "fields": [
                 "nonadiabatic_temperature",
-                "nonadiabatic_density",
-                "density",
+                "reaction_rate_C0",
+                "X_field",
             ],
         },
         "set1": {
-            "tags": "def",
-            "fields": [
-                "strain_rate",
-                "nonadiabatic_pressure",
-                "stress_second_invariant",
-            ],
-        },
-        "set2": {
-            "tags": "ghi",
-            "fields": [
-                "shear_stress_xx",
-                "shear_stress_yy",
-                "shear_stress_xy",
-            ],
-        },
-        "set3": {
-            "tags": None,
-            "fields": ["T", "p", "density"],
-        },
-        "set4": {
-            "tags": None,
-            "fields": [
-                "nonadiabatic_temperature",
-                "nonadiabatic_density",
-                "density",
-            ],
-        },
-        "set5": {
-            "tags": None,
-            "fields": [
-                "nonadiabatic_density",
-                "nonadiabatic_pressure",
-                "stress_second_invariant",
-            ],
-        },
-        "set6": {
-            "tags": None,
-            "fields": [
-                "shear_stress_xx",
-                "shear_stress_yy",
-                "shear_stress_xy",
-            ],
-        },
-        "set7": {
-            "tags": None,
-            "fields": [
-                "T",
-                "X_field",
-                "nonadiabatic_density",
-            ],
-        },
-        "set8": {
-            "tags": None,
-            "fields": [
-                "nonadiabatic_temperature",
-                "driving_force",
-                "X_field",
-            ],
-        },
-        "set9": {
             "tags": None,
             "fields": [
                 "nonadiabatic_temperature",
                 "driving_force",
                 "reaction_rate_C0",
+            ],
+        },
+        "set2": {
+            "tags": None,
+            "fields": [
+                "nonadiabatic_temperature",
+                "X_field",
+                "nonadiabatic_density",
+            ],
+        },
+        "set3": {
+            "tags": None,
+            "fields": [
+                "velocity",
+                "nonadiabatic_pressure",
+                "stress_second_invariant",
+            ],
+        },
+        "set4": {
+            "tags": None,
+            "fields": [
+                "density",
+                "seismic_vp",
+                "seismic_vs",
             ],
         },
     }

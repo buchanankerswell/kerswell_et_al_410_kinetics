@@ -31,11 +31,13 @@ ASPECT_EXEC := $(PROJECT_ROOT)/aspect/build/aspect-release
 
 # Simulation data
 2D_BOX_DATA := \
-	$(SIMULATION)/data/thermodynamic-driving-force-profile-olivine-wadsleyite.txt
+	$(SIMULATION)/data/forward-reaction-410-profile.txt \
+	$(SIMULATION)/data/reverse-reaction-410-profile.txt
 2D_SHELL_DATA := \
 	$(SIMULATION)/data/PYR-adiabatic-profile.txt \
 	$(SIMULATION)/data/PYR-material-table.txt \
-	$(SIMULATION)/data/thermodynamic-driving-force-profile-olivine-wadsleyite.txt
+	$(SIMULATION)/data/forward-reaction-410-profile.txt \
+	$(SIMULATION)/data/reverse-reaction-410-profile.txt
 
 # Simulation configs
 2D_BOX_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm'))

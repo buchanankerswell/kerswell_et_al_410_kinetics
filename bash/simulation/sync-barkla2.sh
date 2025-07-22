@@ -47,16 +47,10 @@ for prm_path in "${CONFIG_LIST[@]}"; do
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/stokes_residuals.txt" \
       "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No 'stokes_residuals.txt' file found"
 
-    rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-00000.*.vtu" \
-      "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .vtu solution files for timestep $tstep"
-
-    rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-00000.pvtu" \
-      "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .pvtu solution files for timestep $tstep"
-
     for tstep in "${TIMESTEP_LIST[@]}"; do
-        rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-0*${tstep}.*.vtu" \
+        rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-000*${tstep}.*.vtu" \
           "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .vtu solution files for timestep $tstep"
-        rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-0*${tstep}.pvtu" \
+        rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-000*${tstep}.pvtu" \
           "$LOCAL_RESULTS_DIR/solution/" 2>/dev/null || echo "Warning: No .pvtu solution files for timestep $tstep"
     done
 done

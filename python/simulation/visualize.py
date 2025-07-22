@@ -34,6 +34,7 @@ class PlottingConfig:
     bar_mapping: dict[str, str] = field(default_factory=dict)
     fmt_mapping: dict[str, str] = field(default_factory=dict)
     scale_mapping: dict[str, float] = field(default_factory=dict)
+    velocity_mapping: dict[str, bool] = field(default_factory=dict)
 
     stress_components: dict[str, int] = field(
         default_factory=lambda: {
@@ -98,6 +99,9 @@ class PlottingConfig:
         default_factory=lambda: [6, 3, 3, 3, 6]
     )
     depth_contour_tolerance_km: float = 15
+    velocity_glyph_factor: float = 7e5
+    stress_glyph_factor: float = 1e-3
+    glyph_line_width: float = 1
     scale_bar_enabled: bool = True
     scale_bar_color: str = "black"
     scale_bar_thickness: float = 25
@@ -276,7 +280,7 @@ class PlottingConfig:
                 "Vs_anomaly": "$\\hat{V}_s$ (%)",
                 "Vp_Vs_ratio": "$V_p$/$V_s$",
                 "driving_force": "$\\Delta G (kJ/mol)$",
-                "reaction_rate_C0": "$dX/dt (1/s)$",
+                "reaction_rate_C0": "$dX/dt (1/Ma)$",
             }
         if not self.fmt_mapping:
             self.fmt_mapping = {
@@ -315,7 +319,7 @@ class PlottingConfig:
                 "Vs_anomaly": "%.0f",
                 "Vp_Vs_ratio": "%.0f",
                 "driving_force": "%.0f",
-                "reaction_rate_C0": "%.0e",
+                "reaction_rate_C0": "%.1f",
             }
         if not self.scale_mapping:
             self.scale_mapping = {
@@ -353,7 +357,45 @@ class PlottingConfig:
                 "Vs_anomaly": 1,
                 "Vp_Vs_ratio": 1,
                 "driving_force": 1e-3,
-                "reaction_rate_C0": 1,
+                "reaction_rate_C0": 3.154e13,
+            }
+        if not self.velocity_mapping:
+            self.velocity_mapping = {
+                "T": False,
+                "adiabatic_temperature": False,
+                "nonadiabatic_temperature": False,
+                "p": False,
+                "nonadiabatic_pressure": False,
+                "X_field": False,
+                "density": False,
+                "nonadiabatic_density": False,
+                "velocity": False,
+                "stress_xx": False,
+                "stress_yy": False,
+                "shear_stress_xx": False,
+                "shear_stress_xy": False,
+                "shear_stress_yy": False,
+                "stress_second_invariant": False,
+                "strain_rate": False,
+                "adiabatic_pressure": False,
+                "adiabatic_density": False,
+                "adiabatic_density_derivative": False,
+                "specific_heat": False,
+                "thermal_expansivity": False,
+                "compressibility": False,
+                "viscosity": False,
+                "v_r": False,
+                "v_phi": False,
+                "principal_stress_1": False,
+                "principal_stress_2": False,
+                "differential_stress": False,
+                "seismic_Vp": False,
+                "seismic_Vs": False,
+                "Vp_anomaly": False,
+                "Vs_anomaly": False,
+                "Vp_Vs_ratio": False,
+                "driving_force": False,
+                "reaction_rate_C0": False,
             }
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -768,8 +810,16 @@ class PyVistaModelVisualizer:
                     if is_diverging_cmap(cmap_choice):
                         clim_max_abs = max(abs(clim_min), abs(clim_max))
                         clim_actual = (
-                            -clim_max_abs - 0.1 * abs(clim_max_abs) if clim_max_abs != 0 else -0.1,
-                            clim_max_abs + 0.1 * abs(clim_max_abs) if clim_max_abs != 0 else 0.1,
+                            (
+                                -clim_max_abs - 0.1 * abs(clim_max_abs)
+                                if clim_max_abs != 0
+                                else -0.1
+                            ),
+                            (
+                                clim_max_abs + 0.1 * abs(clim_max_abs)
+                                if clim_max_abs != 0
+                                else 0.1
+                            ),
                         )
                     else:
                         clim_actual = (clim_min, clim_max)
@@ -781,7 +831,8 @@ class PyVistaModelVisualizer:
         modified_seq_target = ["stress_second_invariant", "X_field"]
 
         if is_diverging_cmap(cmap_choice):
-            final_cmap = modify_diverging_cmap(cmap_choice, "#E5E5E5", config.n_colors)
+            central_color = "#FFFFFF" if cmap_choice in ["RdGy"] else "#E5E5E5"
+            final_cmap = modify_diverging_cmap(cmap_choice, central_color, config.n_colors)
         elif is_sequential_cmap(cmap_choice) and field_name in modified_seq_target:
             final_cmap = modify_sequential_cmap(cmap_choice, "#E5E5E5", config.n_colors)
         else:
@@ -793,6 +844,43 @@ class PyVistaModelVisualizer:
             lighting=config.plotter_lighting,
         )
         plotter.set_background(config.plotter_background)  # type: ignore
+
+        glyph_arrows = None
+        if (
+            field_name == "velocity" or config.velocity_mapping[field_name]
+        ) and "velocity" in mesh.point_data:
+            if "velocity_mag" not in mesh.point_data:
+                mesh["velocity_mag"] = np.linalg.norm(mesh["velocity"], axis=1)
+            glyph_arrows = mesh.glyph(
+                orient="velocity",  # type: ignore[arg-type]
+                scale="velocity_mag",  # type: ignore[arg-type]
+                factor=config.velocity_glyph_factor,
+                geom=pv.Arrow(),
+                tolerance=0.05,
+            )
+        elif (
+            field_name == "principal_stress_1"
+            and "principal_stress_direction_1" in mesh.point_data
+        ):
+            glyph_arrows = mesh.glyph(
+                orient="principal_stress_direction_1",  # type: ignore[arg-type]
+                scale="principal_stress_1",  # type: ignore[arg-type]
+                factor=config.stress_glyph_factor,
+                geom=pv.Line(),
+            )
+        elif (
+            field_name == "principal_stress_2"
+            and "principal_stress_direction_2" in mesh.point_data
+        ):
+            glyph_arrows = mesh.glyph(
+                orient="principal_stress_direction_2",  # type: ignore[arg-type]
+                scale="principal_stress_2",  # type: ignore[arg-type]
+                factor=config.stress_glyph_factor,
+                geom=pv.Line(),
+            )
+
+        if glyph_arrows:
+            plotter.add_mesh(glyph_arrows, color="black", line_width=config.glyph_line_width, render_lines_as_tubes=False)
 
         sargs = dict(
             title=config.bar_mapping.get(field_name, field_name),
@@ -829,41 +917,6 @@ class PyVistaModelVisualizer:
             position=config.title_position,  # type: ignore[arg-type]
             viewport=True,
         )
-
-        glyph_arrows = None
-        if field_name == "velocity" and "velocity" in mesh.point_data:
-            if "velocity_mag" not in mesh.point_data:
-                mesh["velocity_mag"] = np.linalg.norm(mesh["velocity"], axis=1)
-            glyph_arrows = mesh.glyph(
-                orient="velocity",  # type: ignore[arg-type]
-                scale="velocity_mag",  # type: ignore[arg-type]
-                factor=5e5,
-                geom=pv.Arrow(),
-                tolerance=0.05,
-            )
-        elif (
-            field_name == "principal_stress_1"
-            and "principal_stress_direction_1" in mesh.point_data
-        ):
-            glyph_arrows = mesh.glyph(
-                orient="principal_stress_direction_1",  # type: ignore[arg-type]
-                scale="principal_stress_1",  # type: ignore[arg-type]
-                factor=0.001,
-                geom=pv.Line(),
-            )
-        elif (
-            field_name == "principal_stress_2"
-            and "principal_stress_direction_2" in mesh.point_data
-        ):
-            glyph_arrows = mesh.glyph(
-                orient="principal_stress_direction_2",  # type: ignore[arg-type]
-                scale="principal_stress_2",  # type: ignore[arg-type]
-                factor=0.001,
-                geom=pv.Line(),
-            )
-
-        if glyph_arrows:
-            plotter.add_mesh(glyph_arrows, color="black", line_width=1)
 
         if "depth" in mesh.point_data:
             for depth, width in zip(
@@ -958,8 +1011,8 @@ def is_diverging_cmap(cmap_name: str) -> bool:
         "PRGn",
         "BrBG",
         "PuOr",
-        "RdGy",
         "RdBu",
+        "RdGy",
         "RdYlBu",
         "RdYlGn",
         "Spectral",

@@ -1,0 +1,17 @@
+subsection Material model
+  set Model name = phase transition kinetics
+
+  subsection Phase transition kinetics
+    set Kinetic prefactor Q        = 1e-8
+
+    set Viscosity                  = 1e21
+    set Minimum viscosity          = 1e19
+    set Maximum viscosity          = 1e24
+    set Thermal viscosity exponent = 1
+    set Transition depths          = 132e3
+    set Viscosity prefactors       = 1, 1
+
+    set Data directory             = data/
+    set Data file name             = forward-reaction-410-profile.txt
+  end
+end

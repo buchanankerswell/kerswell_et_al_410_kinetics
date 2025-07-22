@@ -398,6 +398,7 @@ class DrivingForceProfile:
     _delta_gibbs: np.ndarray | None = field(default=None, init=False)
     _delta_entropy: np.ndarray | None = field(default=None, init=False)
     _delta_volume: np.ndarray | None = field(default=None, init=False)
+    _equilibrium_depth: np.ndarray | None = field(default=None, init=False)
     _driving_force: np.ndarray | None = field(default=None, init=False)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -673,6 +674,15 @@ class DrivingForceProfile:
         return self._delta_volume
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @property
+    def equilibrium_depth(self) -> np.ndarray:
+        """"""
+        if self._equilibrium_depth is None:
+            self._equilibrium_depth = self._evaluate_equilibrium_depth()
+
+        return self._equilibrium_depth
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_density(self) -> np.ndarray:
         """"""
         density_a = self.material_a.evaluate(
@@ -907,6 +917,26 @@ class DrivingForceProfile:
         return np.ravel(self.volume[1] - self.volume[0])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _evaluate_equilibrium_depth(self):
+        """"""
+        # Find index where delta_gibbs crosses zero (sign change)
+        signs = np.sign(self.delta_gibbs)
+        sign_changes = np.where(np.diff(signs) != 0)[0]
+
+        if len(sign_changes) == 0:
+            raise ValueError("No sign change found in delta_gibbs array!")
+
+        i = sign_changes[0]
+
+        # Linear interpolation
+        dg0, dg1 = self.delta_gibbs[i], self.delta_gibbs[i + 1]
+        z0, z1 = self.depths[i], self.depths[i + 1]
+
+        depth_at_zero = z0 + (0 - dg0) * (z1 - z0) / (dg1 - dg0)
+
+        return depth_at_zero
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _write_profile(self) -> None:
         """Write profile."""
 
@@ -975,8 +1005,6 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def visualize(
         self,
-        target_depth: float = 410e3,
-        depth_lims: tuple[float, float] = (300e3, 600e3),
         contour_lims_P: tuple[float, float] = (-1e9, 1e9),
         contour_lims_T: tuple[float, float] = (-500, 500),
         n_contours: int = 100,
@@ -985,6 +1013,9 @@ class DrivingForceProfile:
         if not self.out_fig_dir.exists():
             print("--> Created out directory:", self.out_fig_dir.name)
             self.out_fig_dir.mkdir(parents=True, exist_ok=True)
+
+        target_depth = self.equilibrium_depth
+        depth_lims = (target_depth - 100e3, target_depth + 100e3)
 
         self._visualize_delta_PT_at_target_depth(
             target_depth=target_depth,
@@ -1445,7 +1476,6 @@ class DrivingForceProfile:
 
         plt.tight_layout()
         fig.savefig(out_path)
-
 
 #######################################################
 ## .3. Parse Arguments                           !!! ##

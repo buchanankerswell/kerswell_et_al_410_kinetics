@@ -17,6 +17,10 @@ module purge
 module load $GCC $OPENMPI $OPENBLAS $CMAKE
 module list
 
+# Ensure GCC 14.2.0 runtime libraries are found before GCC 11
+GCC_DIR="$(dirname "$(dirname "$(which gcc)")")"
+export LD_LIBRARY_PATH=$GCC_DIR/lib64:$GCC_DIR/lib:$LD_LIBRARY_PATH
+
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 

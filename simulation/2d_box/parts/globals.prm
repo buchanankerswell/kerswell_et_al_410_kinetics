@@ -1,0 +1,12 @@
+set Dimension                              = 2
+set Use years in output instead of seconds = true
+set End time                               = 75e6
+set Adiabatic surface temperature          = 1706
+set Surface pressure                       = 1e10
+set Nonlinear solver scheme                = iterated Advection and Stokes
+set Nonlinear solver tolerance             = 1e-4
+set Use operator splitting                 = true
+set Max nonlinear iterations               = 100
+set CFL number                             = 0.7
+set Resume computation                     = auto
+set Additional shared libraries            = 2d_box/plugins/libphase-transition-kinetics.so

@@ -17,9 +17,10 @@ PERPLEX_MODELS := $(shell find $(PERPLEX) -type f -name '*.dat' -exec basename {
 
 # Simulations
 2D_BOX_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm'))
-2D_BOX_TIMESTEPS := 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75
+# 2D_BOX_CONFIGS := 2d_box/configs/simple-slab-Q9.prm 2d_box/configs/simple-plume-Q9.prm
+2D_BOX_TIMESTEPS := 00 01 02 03 04 05 06 07 08 09 10 15 20 25 30 40 50 60 70
 2D_SHELL_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_shell/configs -type f -name '*.prm'))
-2D_SHELL_TIMESTEPS := 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75
+2D_SHELL_TIMESTEPS := 00 01 02 03 04 05 06 07 08 09 10 15 20 25 30 35 40 50 60 70
 
 # Script paths
 MAIN_ADIABAT := $(PYTHON)/adiabat/main.py
