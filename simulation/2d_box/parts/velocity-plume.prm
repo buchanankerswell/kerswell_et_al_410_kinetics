@@ -1,5 +1,5 @@
 subsection Boundary velocity model
-  set Prescribed velocity boundary indicators = top:function, right x:function, left x:function, bottom x:function
+  set Prescribed velocity boundary indicators = top x:function, right x:function, left x:function, bottom:function
 
   subsection Function
     set Function expression = 0.0; 1.5e-2

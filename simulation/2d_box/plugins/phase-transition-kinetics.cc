@@ -22,6 +22,7 @@
 
 #include <deal.II/base/numbers.h>
 #include <deal.II/base/parameter_handler.h>
+#include <deal.II/base/patterns.h>
 #include <deal.II/base/point.h>
 
 #include <aspect/global.h>
@@ -283,8 +284,19 @@ namespace aspect
               // Get time scale
               const double time_scale = this->convert_output_to_years() ? year_in_seconds : 1.0;
 
-              // Calculate reaction rate: dX/dt = Q * ΔG * (1 - X)
-              const double rate = (driving_force < 0) ? Q_kinetic_prefactor * std::abs(driving_force) * (1.0 - X_clamped) / time_scale : 0.0;
+              // Calculate arrhenius component
+              const double R = 8.314; // J/mol K
+              double arrhenius = 1.0;
+              if (use_arrhenius)
+                {
+                  arrhenius = std::exp(-E_activation / (R * T));
+                }
+
+              // Calculate saturation component
+              const double saturation = (1.0 - X_clamped);
+
+              // Calculate reaction rate: dX/dt = Q * exp(-Ea/RT) * ΔG * (1 - X)
+              const double rate = (driving_force < 0) ? Q_kinetic_prefactor * arrhenius * std::abs(driving_force) * saturation / time_scale : 0.0;
 
               // Update additional named outputs
               phase_transition_kinetics_out->driving_force[q] = driving_force;
@@ -370,8 +382,18 @@ namespace aspect
           prm.declare_entry("Kinetic prefactor Q",
                             "1e-5",
                             Patterns::Double(0.0),
-                            "The scalar kinetic prefactor Q in the reaction rate equation dX/dt = Q * driving_force * (1-X). "
+                            "The scalar kinetic prefactor Q in the reaction rate equation dX/dt = Q * arrhenius * driving_force * (1-X). "
                             "Units: mol/J/s");
+          prm.declare_entry("Use arrhenius",
+                            "false",
+                            Patterns::Bool(),
+                            "Use Arrhenius term in the reaction rate equation dX/dt = Q * arrhenius * driving_force * (1-X)? "
+                            "Units: none");
+          prm.declare_entry("Activation energy",
+                            "300e3",
+                            Patterns::Double(0.0),
+                            "The activation energy used in the Arrhenius term exp(-Ea/RT). "
+                            "Units: J/mol");
         }
         prm.leave_subsection();
       }
@@ -405,6 +427,8 @@ namespace aspect
           viscosity_prefactors = Utilities::string_to_double(Utilities::split_string_list(prm.get("Viscosity prefactors")));
           k = prm.get_double("Thermal conductivity");
           Q_kinetic_prefactor = prm.get_double("Kinetic prefactor Q");
+          use_arrhenius = prm.get_bool("Use arrhenius");
+          E_activation = prm.get_double("Activation energy");
         }
         prm.leave_subsection();
       }
@@ -510,10 +534,10 @@ namespace aspect
     ASPECT_REGISTER_MATERIAL_MODEL(
       PhaseTransitionKinetics,
       "phase transition kinetics",
-      "Models a phase transition using reaction kinetics that follow the equation: dX/dt = Q * ΔG * (1 - X), where Q is a "
-      "user-defined kinetic prefactor and ΔG is the thermodynamic driving force calculated from internally-consistent "
-      "thermodynamic data. The thermodynamic driving force is computed as ΔG = ΔG₀ + (P - P_adiabatic)ΔV - (T - T_adiabatic)ΔS, "
-      "where all thermodynamic parameters are read from a user-specified ASCII data file. Requires at least one compositional "
-      "field representing the reacting phase.")
+      "Models a phase transition using reaction kinetics that follow the equation: dX/dt = Q * exp(-Ea/RT) * ΔG * (1 - X), where Q is a "
+      "user-defined kinetic prefactor, exp(-Ea/RT) is an Arrhenius temperature dependence, and ΔG is the thermodynamic driving force "
+      "calculated from internally-consistent thermodynamic data. The thermodynamic driving force is computed as "
+      "ΔG = ΔG₀ + (P - P_adiabatic)ΔV - (T - T_adiabatic)ΔS, where all thermodynamic parameters are read from a user-specified ASCII data "
+      "file. Requires at least one compositional field representing the reacting phase.")
   } // namespace MaterialModel
 } // namespace aspect

@@ -13,7 +13,7 @@ include 2d_box/parts/velocity-plume.prm
 include 2d_box/parts/composition-plume.prm
 include 2d_box/parts/temperature-plume.prm
 include 2d_box/parts/heating.prm
-include 2d_box/parts/traction.prm
+include 2d_box/parts/traction-plume.prm
 include 2d_box/parts/gravity.prm
 include 2d_box/parts/adiabat.prm
 include 2d_box/parts/material-Q9-plume.prm

@@ -13,7 +13,7 @@ include 2d_box/parts/velocity-slab.prm
 include 2d_box/parts/composition-slab.prm
 include 2d_box/parts/temperature-slab.prm
 include 2d_box/parts/heating.prm
-include 2d_box/parts/traction.prm
+include 2d_box/parts/traction-slab.prm
 include 2d_box/parts/gravity.prm
 include 2d_box/parts/adiabat.prm
 include 2d_box/parts/material-Q9-slab-strong.prm

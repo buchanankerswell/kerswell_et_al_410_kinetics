@@ -240,11 +240,26 @@ namespace aspect
 
         /**
          * The kinetic prefactor Q used to calculate the reaction rate
-         * $\frac{dX}{dt} = Q \Delta G (1 - X)$
+         * $\frac{dX}{dt} = Q \exp(-E_a/RT) \Delta G (1 - X)$
          *
          * Units: J/mol/s
          */
         double Q_kinetic_prefactor;
+
+        /**
+         * Use Arrhenius term in the reaction rate equation
+         * $\frac{dX}{dt} = Q \exp(-E_a/RT) \Delta G (1 - X)$?
+         *
+         * Units: none
+         */
+        bool use_arrhenius;
+
+        /**
+         * The activation energy used in the Arrhenius term $\exp(-E_a/RT)$.
+         *
+         * Units: J/mol
+         */
+        double E_activation;
     };
 
 
