@@ -1,6 +1,6 @@
 set Dimension                              = 2
 set Use years in output instead of seconds = true
-set End time                               = 90e6
+set End time                               = 200e6
 set Adiabatic surface temperature          = 1706
 set Surface pressure                       = 1e10
 set Nonlinear solver scheme                = iterated Advection and Stokes

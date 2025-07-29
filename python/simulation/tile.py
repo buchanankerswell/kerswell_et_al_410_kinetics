@@ -16,8 +16,8 @@ from visualize import PlottingConfig
 #######################################################
 @dataclass
 class ImageTiler:
-    config: PlottingConfig
-    img_dir: Path | str
+    plot_config: PlottingConfig
+    out_fig_dir: Path | str
     field1: str
     field2: str
     field3: str | None = None
@@ -39,12 +39,12 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __post_init__(self):
         """"""
-        if isinstance(self.img_dir, str):
-            self.img_dir = Path(self.img_dir)
-        self.tiles_dir = self.img_dir / "tiles"
-        self.movies_dir = self.img_dir / "movies"
+        if isinstance(self.out_fig_dir, str):
+            self.out_fig_dir = Path(self.out_fig_dir)
+        self.tiles_dir = self.out_fig_dir / "tiles"
+        self.movies_dir = self.out_fig_dir / "movies"
 
-        self.prefix = str(self.img_dir.name).replace("_", "-")
+        self.prefix = str(self.out_fig_dir.name).replace("_", "-")
         self.images_field1 = self._get_images(self.field1)
         self.images_field2 = self._get_images(self.field2)
         self.images_field3 = self._get_images(self.field3) if self.field3 else []
@@ -54,16 +54,16 @@ class ImageTiler:
             fields_list.append(self.field3)
 
         self.field_file_mappings = [
-            self.config.file_mapping.get(field, None) for field in fields_list
+            self.plot_config.file_mapping.get(field, None) for field in fields_list
         ]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _detect_prefix(self) -> str:
         """"""
-        if isinstance(self.img_dir, str):
-            self.img_dir = Path(self.img_dir)
+        if isinstance(self.out_fig_dir, str):
+            self.out_fig_dir = Path(self.out_fig_dir)
 
-        sample = next(self.img_dir.glob(f"*{self.field1}*.png"), None)
+        sample = next(self.out_fig_dir.glob(f"*{self.field1}*.png"), None)
         if sample:
             return re.sub(rf"{self.field1}-.*\.png", "", sample.name).rstrip("-")
         raise ValueError(
@@ -73,17 +73,17 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _get_images(self, field: str | None) -> list[Path]:
         """"""
-        if isinstance(self.img_dir, str):
-            self.img_dir = Path(self.img_dir)
+        if isinstance(self.out_fig_dir, str):
+            self.out_fig_dir = Path(self.out_fig_dir)
 
         if not field:
             return []
 
-        field_file_mapping = self.config.file_mapping.get(field, None)
+        field_file_mapping = self.plot_config.file_mapping.get(field, None)
 
         if field_file_mapping:
             return sorted(
-                self.img_dir.glob(f"{self.prefix}-{field_file_mapping}-*.png")
+                self.out_fig_dir.glob(f"{self.prefix}-{field_file_mapping}-*.png")
             )
         else:
             return []
@@ -91,10 +91,10 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _get_binned_depth_images(self) -> list[Path]:
         """"""
-        if isinstance(self.img_dir, str):
-            self.img_dir = Path(self.img_dir)
+        if isinstance(self.out_fig_dir, str):
+            self.out_fig_dir = Path(self.out_fig_dir)
 
-        if not self.img_dir.exists():
+        if not self.out_fig_dir.exists():
             return []
 
         all_file_mappings_none = all(
@@ -110,7 +110,7 @@ class ImageTiler:
 
             pattern += "-*.png"
 
-            return sorted(self.img_dir.glob(pattern))
+            return sorted(self.out_fig_dir.glob(pattern))
         else:
             return []
 
@@ -247,8 +247,8 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _compose_with_binned_depth(self) -> None:
         """"""
-        if isinstance(self.img_dir, str):
-            self.img_dir = Path(self.img_dir)
+        if isinstance(self.out_fig_dir, str):
+            self.out_fig_dir = Path(self.out_fig_dir)
 
         binned_images = self._get_binned_depth_images()
         if not binned_images:
@@ -256,7 +256,7 @@ class ImageTiler:
                 print(" !! Warning: no binned depth images found!")
             return
 
-        composition_dir = self.img_dir / "composition"
+        composition_dir = self.out_fig_dir / "composition"
         composition_dir.mkdir(parents=True, exist_ok=True)
 
         composed_tiles = []
@@ -298,7 +298,7 @@ class ImageTiler:
 
         if self.movie and composed_tiles:
             movie_path = (
-                self.img_dir
+                self.out_fig_dir
                 / "movies_comps"
                 / f"{self.prefix}-{self.field_file_mappings[0]}-{self.field_file_mappings[1]}{'-' + self.field_file_mappings[2] if self.field_file_mappings[2] else ''}.mp4"
             )

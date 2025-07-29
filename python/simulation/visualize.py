@@ -109,12 +109,10 @@ class PlottingConfig:
     scale_bar_position: tuple = (0.05, 0.08)
     scale_bar_font_size_factor: float = 1.0
 
-    binned_depth_plots: bool = False
-    binned_plot_num_bins: int = 65
-    binned_plot_fig_width: float = 4.5
-    binned_plot_fig_height: float = 6.5
-    binned_plot_cold_threshold_K: int = 300
-    binned_plot_rcParams: dict[str, Any] = field(
+    centerline_depth_plots: bool = False
+    centerline_plot_fig_width: float = 4.5
+    centerline_plot_fig_height: float = 6.5
+    centerline_plot_rcParams: dict[str, Any] = field(
         default_factory=lambda: {
             "figure.dpi": 300,
             "savefig.bbox": "tight",
@@ -413,25 +411,20 @@ class PlottingConfig:
 #######################################################
 @dataclass
 class PyVistaModelVisualizer:
-    config: "PlottingConfig"
-    out_dirs: dict[str, Path]
-    vis_tsteps: list[int] | None
-    bd_field_sets: dict[str, list[str]]
-    pvtu_files_cache: dict[str, list[str]] = field(default_factory=dict)
+    plot_config: "PlottingConfig"
+    pvtu_in_dir: dict[str, Path]
+    tsteps: list[int] | None
     verbosity: int = 0
 
     def __post_init__(self):
-        if self.vis_tsteps is None:
-            self.vis_tsteps = []
+        if self.tsteps is None:
+            self.tsteps = []
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _get_pvtu_files(self) -> dict[str, list[str]]:
         """"""
-        if self.pvtu_files_cache:
-            return self.pvtu_files_cache
-
         pvtu_files: dict[str, list[str]] = {}
-        for model_id, directory in self.out_dirs.items():
+        for model_id, directory in self.pvtu_in_dir.items():
             solution_dir = directory / "solution"
             if not solution_dir.is_dir():
                 if self.verbosity >= 1:
@@ -469,8 +462,6 @@ class PyVistaModelVisualizer:
                     )
                 pvtu_files[model_id] = []
 
-        self.pvtu_files_cache = pvtu_files
-
         return pvtu_files
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -478,7 +469,7 @@ class PyVistaModelVisualizer:
         """Ensures necessary fields are on the mesh, calculating them if possible."""
         if re.fullmatch(r"stress_[xyz]{2}", field_name) and "stress" in mesh.point_data:
             if field_name not in mesh.point_data:
-                idx = self.config.stress_components.get(field_name)
+                idx = self.plot_config.stress_components.get(field_name)
                 if idx is not None:
                     mesh[field_name] = mesh["stress"][:, idx]
 
@@ -487,7 +478,7 @@ class PyVistaModelVisualizer:
             and "shear_stress" in mesh.point_data
         ):
             if field_name not in mesh.point_data:
-                idx = self.config.shear_stress_components.get(field_name)
+                idx = self.plot_config.shear_stress_components.get(field_name)
                 if idx is not None:
                     mesh[field_name] = mesh["shear_stress"][:, idx]
 
@@ -533,6 +524,293 @@ class PyVistaModelVisualizer:
         return mesh
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _rotate_mesh(self, mesh: pv.DataSet, tstep: int) -> pv.DataSet:
+        """"""
+        plot_config = self.plot_config
+
+        if plot_config.rotation_coeff != 0 and plot_config.rotation_init != 0:
+            rotation_angle = (
+                int(tstep) * plot_config.rotation_coeff
+            ) + plot_config.rotation_init
+            mesh.rotate_z(rotation_angle, inplace=True)
+
+        return mesh
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _check_mesh_field(
+        self, mesh: pv.DataSet, field_name: str, model_id: str, tstep: int
+    ) -> bool:
+        """"""
+        plot_config = self.plot_config
+
+        if (
+            field_name not in mesh.point_data
+            and field_name not in plot_config.get_extra_fields()
+        ):
+            print(
+                f" -- Skipping plot: field '{field_name}' not available on mesh for timestep {tstep}, model {model_id}!"
+            )
+            return False
+
+        if field_name not in mesh.point_data:
+            print(
+                f" -- Skipping plot: field '{field_name}' could not be prepared/calculated for mesh!"
+            )
+            return False
+
+        return True
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _get_mesh_time_myr(self, mesh: pv.DataSet, model_id: str, tstep: int) -> float:
+        """"""
+        if mesh.field_data is not None and "TIME" in mesh.field_data:
+            time_myr = mesh.field_data["TIME"][0] / 1e6
+        else:
+            time_myr = 0.0
+            print(
+                f"'TIME' field not found in mesh.field_data for timestep {tstep}, model {model_id}."
+            )
+
+        return time_myr
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _is_diverging_cmap(self, cmap_name: str) -> bool:
+        diverging_base_names = [
+            "PiYG",
+            "PRGn",
+            "BrBG",
+            "PuOr",
+            "RdBu",
+            "RdGy",
+            "RdYlBu",
+            "RdYlGn",
+            "Spectral",
+            "coolwarm",
+            "bwr",
+            "seismic",
+        ]
+        diverging_names = diverging_base_names + [
+            name + "_r" for name in diverging_base_names
+        ]
+
+        return cmap_name in diverging_names
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _is_sequential_cmap(self, cmap_name: str) -> bool:
+        sequential_base_names = [
+            "viridis",
+            "plasma",
+            "inferno",
+            "magma",
+            "cividis",
+            "gist_heat",
+            "pink",
+            "bone",
+            "Greys",
+            "Purples",
+            "Blues",
+            "Greens",
+            "Oranges",
+            "Reds",
+            "YlOrBr",
+            "YlOrRd",
+            "OrRd",
+            "PuRd",
+            "RdPu",
+            "BuPu",
+            "GnBu",
+            "PuBu",
+            "YlGnBu",
+            "PuBuGn",
+            "BuGn",
+            "YlGn",
+        ]
+
+        sequential_names = sequential_base_names + [
+            name + "_r" for name in sequential_base_names
+        ]
+
+        return cmap_name in sequential_names
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _modify_diverging_cmap(
+        self, cmap_name: str, central_color_hex: str, n_colors: int = 11
+    ) -> mcolors.Colormap | mcolors.ListedColormap:
+        if not self._is_diverging_cmap(cmap_name):
+            print(
+                f"'{cmap_name}' is not a recognized diverging colormap. Returning original."
+            )
+            return plt.get_cmap(cmap_name, n_colors)
+
+        original_cmap = plt.get_cmap(cmap_name)
+        cmap_colors = original_cmap(np.linspace(0, 1, n_colors))
+        center_idx = n_colors // 2
+        cmap_colors[center_idx] = mcolors.to_rgba(central_color_hex)
+
+        return mcolors.ListedColormap(cmap_colors)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _modify_sequential_cmap(
+        self, cmap_name: str, end_color_hex: str, n_colors: int = 11
+    ) -> mcolors.Colormap | mcolors.ListedColormap:
+        if not self._is_sequential_cmap(cmap_name):
+            print(
+                f"'{cmap_name}' is not a recognized sequential colormap. Returning original."
+            )
+            return plt.get_cmap(cmap_name, n_colors)
+
+        original_cmap = plt.get_cmap(cmap_name)
+
+        cmap_colors = original_cmap(np.linspace(0, 1, n_colors))
+
+        change_first_color_cmaps = [
+            "gist_heat_r",
+            "pink_r",
+            "bone_r",
+            "Purples",
+            "BuPu",
+            "Reds",
+            "Oranges",
+            "YlOrBr",
+            "GnBu",
+        ]
+
+        if cmap_name in change_first_color_cmaps:
+            cmap_colors[0] = mcolors.to_rgba(end_color_hex)
+        else:
+            cmap_colors[-1] = mcolors.to_rgba(end_color_hex)
+
+        return mcolors.ListedColormap(cmap_colors)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _add_depth_contour(
+        self,
+        plotter: pv.Plotter,
+        mesh: pv.DataSet,
+        depth_km: float,
+        color: str = "black",
+        alpha: float = 1.0,
+        line_width: int = 3,
+        tolerance_km: float = 15,
+        verbosity: int = 0,
+    ) -> None:
+        """Adds a depth contour line to the PyVista plotter."""
+        if "depth" not in mesh.point_data:
+            print("'depth' field not found in mesh.\n -- Skipping depth contour")
+            return
+
+        depth_values_m = mesh.point_data["depth"]
+        mask = np.isclose(depth_values_m, depth_km * 1e3, atol=tolerance_km * 1e3)
+        contour_points = mesh.points[mask]
+
+        if contour_points.shape[0] > 2:
+            xy = contour_points[:, :2]
+
+            # Check if points are nearly colinear or have no spread in 2D
+            x_range = np.ptp(xy[:, 0])
+            y_range = np.ptp(xy[:, 1])
+
+            if x_range < 1e-3 or y_range < 1e-3:
+                if verbosity >= 1:
+                    print(
+                        f" !! Warning: points at {depth_km} km are effectively 1D!\n"
+                        " -- Skipping depth contour"
+                    )
+                return
+
+            try:
+                hull = ConvexHull(xy)
+                ordered_contour_points = contour_points[hull.vertices]
+                polyline = pv.lines_from_points(ordered_contour_points, close=True)
+                plotter.add_mesh(
+                    polyline, color=color, line_width=line_width, opacity=alpha
+                )
+            except Exception as e:
+                print(
+                    f" !! Error: could not generate convex hull for depth contour at {depth_km}km:\n    {e}"
+                )
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _configure_cmap(
+        self, mesh: pv.DataSet, field_name: str, expansion: float = 0.0
+    ) -> tuple:
+        """"""
+        plot_config = self.plot_config
+
+        cmap_choice = plot_config.cmap_mapping.get(field_name, "viridis")
+
+        current_scalars = mesh.point_data[field_name] * plot_config.scale_mapping.get(
+            field_name, 1.0
+        )
+
+        if field_name in ["viscosity", "strain_rate"]:
+            current_scalars = np.log10(np.abs(np.maximum(current_scalars, 1e-30)))
+
+        mesh[f"{field_name}_viz"] = current_scalars
+
+        clim_actual = plot_config.clim_mapping.get(field_name, None)
+        if clim_actual is None or clim_actual == "auto":
+            finite_data = current_scalars[np.isfinite(current_scalars)]
+            if finite_data.size > 0:
+                clim_min = np.min(finite_data)
+                clim_max = np.max(finite_data)
+                if clim_min == clim_max:
+                    clim_actual = (
+                        clim_min - 0.1 * abs(clim_min) if clim_min != 0 else -0.1,
+                        clim_max + 0.1 * abs(clim_max) if clim_max != 0 else 0.1,
+                    )
+                else:
+                    if self._is_diverging_cmap(cmap_choice):
+                        clim_max_abs = max(abs(clim_min), abs(clim_max))
+                        clim_actual = (
+                            (
+                                -clim_max_abs - 0.1 * abs(clim_max_abs)
+                                if clim_max_abs != 0
+                                else -0.1
+                            ),
+                            (
+                                clim_max_abs + 0.1 * abs(clim_max_abs)
+                                if clim_max_abs != 0
+                                else 0.1
+                            ),
+                        )
+                    else:
+                        clim_actual = (clim_min, clim_max)
+            else:
+                clim_actual = (0, 1)
+            if self.verbosity >= 1:
+                print(f" !! Warning: Using auto CLIM for '{field_name}': {clim_actual}")
+
+        if expansion != 0.0:
+            try:
+                cmin, cmax = float(clim_actual[0]), float(clim_actual[1])
+                crange = cmax - cmin
+                clim_actual = (cmin - expansion * crange, cmax + expansion * crange)
+            except (TypeError, ValueError) as e:
+                if self.verbosity >= 1:
+                    print(
+                        f" !! Expansion skipped: CLIM values not numeric: {clim_actual} ({e})"
+                    )
+
+        modified_seq_target = ["stress_second_invariant", "X_field"]
+
+        if self._is_diverging_cmap(cmap_choice):
+            central_color = "#FFFFFF" if cmap_choice in ["RdGy"] else "#E5E5E5"
+            final_cmap = self._modify_diverging_cmap(
+                cmap_choice, central_color, plot_config.n_colors
+            )
+        elif (
+            self._is_sequential_cmap(cmap_choice) and field_name in modified_seq_target
+        ):
+            final_cmap = self._modify_sequential_cmap(
+                cmap_choice, "#E5E5E5", plot_config.n_colors
+            )
+        else:
+            final_cmap = plt.get_cmap(cmap_choice, plot_config.n_colors)
+
+        return final_cmap, clim_actual
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _compute_camera_settings(
         self, mesh, full_view: bool
     ) -> list[tuple[float, ...]]:
@@ -546,7 +824,7 @@ class PyVistaModelVisualizer:
         ]
         max_bound_size = max(bounds[1] - bounds[0], bounds[3] - bounds[2], 1e-6)
 
-        if not self.config.camera_center_zoom:
+        if not self.plot_config.camera_center_zoom:
             if full_view:
                 camera_position = [
                     (0, 0, bounds[1] * 3.8),
@@ -560,8 +838,8 @@ class PyVistaModelVisualizer:
                     (0, 1, 0),
                 ]
         else:
-            cam_y_shift = max_bound_size * self.config.camera_y_shift_factor
-            cam_dist = max_bound_size * self.config.camera_zoom_factor
+            cam_y_shift = max_bound_size * self.plot_config.camera_y_shift_factor
+            cam_dist = max_bound_size * self.plot_config.camera_zoom_factor
 
             camera_position = [
                 (
@@ -581,12 +859,13 @@ class PyVistaModelVisualizer:
         # Add scale bar
         bounds = mesh.bounds
         x_range = bounds[1] - bounds[0]
-        scale_length = x_range * self.config.scale_bar_length_fraction
+        scale_length = x_range * self.plot_config.scale_bar_length_fraction
         scale_km = scale_length / 1000
 
         start_point = [
-            bounds[0] + x_range * self.config.scale_bar_position[0],
-            bounds[2] + (bounds[3] - bounds[2]) * self.config.scale_bar_position[1],
+            bounds[0] + x_range * self.plot_config.scale_bar_position[0],
+            bounds[2]
+            + (bounds[3] - bounds[2]) * self.plot_config.scale_bar_position[1],
             0,
         ]
         end_point = [start_point[0] + scale_length, start_point[1], 0]
@@ -595,8 +874,8 @@ class PyVistaModelVisualizer:
 
         plotter.add_mesh(
             line,
-            color=self.config.scale_bar_color,
-            line_width=self.config.scale_bar_thickness,
+            color=self.plot_config.scale_bar_color,
+            line_width=self.plot_config.scale_bar_thickness,
         )
 
         text_pos = [
@@ -607,15 +886,15 @@ class PyVistaModelVisualizer:
         plotter.add_point_labels(
             [text_pos],
             [f"{scale_km:.0f} km"],
-            font_size=self.config.cbar_label_font_size,
-            point_color=self.config.scale_bar_color,
-            text_color=self.config.scale_bar_color,
+            font_size=self.plot_config.cbar_label_font_size,
+            point_color=self.plot_config.scale_bar_color,
+            text_color=self.plot_config.scale_bar_color,
             point_size=0,
             shape=None,
         )
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def run_all_visualizations(self):
+    def draw(self):
         """Main loop to process all models and generate visualizations."""
         warnings.filterwarnings("ignore", category=RuntimeWarning, module="pyvista")
 
@@ -632,10 +911,10 @@ class PyVistaModelVisualizer:
                     )
                 continue
 
-            if isinstance(self.config.default_fig_dir, str):
-                model_fig_dir = Path(self.config.default_fig_dir)
+            if isinstance(self.plot_config.default_fig_dir, str):
+                model_fig_dir = Path(self.plot_config.default_fig_dir)
             else:
-                model_fig_dir = self.config.default_fig_dir
+                model_fig_dir = self.plot_config.default_fig_dir
 
             if not model_fig_dir.exists():
                 model_fig_dir.mkdir(parents=True, exist_ok=True)
@@ -657,7 +936,7 @@ class PyVistaModelVisualizer:
                     timesteps_in_files.append(-1)
 
             for pvtu_path, tstep in zip(result_files, timesteps_in_files):
-                if tstep == -1 or (self.vis_tsteps and tstep not in self.vis_tsteps):
+                if tstep == -1 or (self.tsteps and tstep not in self.tsteps):
                     continue
 
                 if isinstance(pvtu_path, str):
@@ -685,46 +964,31 @@ class PyVistaModelVisualizer:
                     f"    Drawing mesh plots @ timestep: {tstep} (File: {pvtu_path.name})"
                 )
                 print("    --------------------------------------------------")
-                for field_key in self.config.file_mapping.keys():
-                    self.visualize_single_mesh_plot(
+                for field_key in self.plot_config.file_mapping.keys():
+                    self.visualize_mesh(
                         mesh.copy(), field_key, tstep, model_id, model_fig_dir
                     )
 
-                if self.config.binned_depth_plots:
+                if self.plot_config.centerline_depth_plots:
                     print("    --------------------------------------------------")
                     print(
-                        f"    Drawing binned depth plots: @ timestep: {tstep} (File: {pvtu_path.name})"
+                        f"    Drawing centerline depth plots: @ timestep: {tstep} (File: {pvtu_path.name})"
                     )
                     print("    --------------------------------------------------")
-                    for bd_set_id, bd_field_list in self.bd_field_sets.items():
-                        if len(bd_field_list) == 3:
-                            field_file_mappings = [
-                                self.config.file_mapping.get(field, None)
-                                for field in bd_field_list
-                            ]
-                            set_id = "-".join(
-                                field
-                                for field in field_file_mappings
-                                if field is not None
-                            )
-                            self.visualize_single_binned_depth_plot(
-                                mesh.copy(),
-                                bd_field_list,
-                                tstep,
-                                model_id,
-                                model_fig_dir,
-                                set_id,
-                            )
-                        else:
-                            print(
-                                f" -- Skipping plot: binned depth field set '{bd_set_id}' "
-                                f"for model '{model_id}' does not contain 3 fields."
-                            )
+                    for field_key in self.plot_config.file_mapping.keys():
+                        self.visualize_centerline_depth(
+                            mesh.copy(),
+                            field_key,
+                            tstep,
+                            model_id,
+                            model_fig_dir,
+                            reaction_depth=132,
+                        )
 
         pv.close_all()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def visualize_single_mesh_plot(
+    def visualize_mesh(
         self,
         mesh: pv.DataSet,
         field_name: str,
@@ -736,30 +1000,15 @@ class PyVistaModelVisualizer:
         if isinstance(base_fig_dir, str):
             base_fig_dir = Path(base_fig_dir)
 
-        config = self.config
+        plot_config = self.plot_config
 
         mesh = self._prepare_mesh_fields(mesh, field_name)
+        mesh = self._rotate_mesh(mesh, tstep)
 
-        if config.rotation_coeff != 0 and config.rotation_init != 0:
-            rotation_angle = (int(tstep) * config.rotation_coeff) + config.rotation_init
-            mesh.rotate_z(rotation_angle, inplace=True)
-
-        if (
-            field_name not in mesh.point_data
-            and field_name not in config.get_extra_fields()
-        ):
-            print(
-                f" -- Skipping plot: field '{field_name}' not available on mesh for timestep {tstep}, model {model_id}!"
-            )
+        if not self._check_mesh_field(mesh, field_name, model_id, tstep):
             return
 
-        if field_name not in mesh.point_data:
-            print(
-                f" -- Skipping plot: field '{field_name}' could not be prepared/calculated for mesh!"
-            )
-            return
-
-        mapped_file_str = config.file_mapping.get(
+        mapped_file_str = plot_config.file_mapping.get(
             field_name, field_name.replace("_", "-")
         )
         out_path = (
@@ -773,88 +1022,29 @@ class PyVistaModelVisualizer:
 
         print(f"--> {out_path.name}")
 
-        if mesh.field_data is not None and "TIME" in mesh.field_data:
-            time_myr = mesh.field_data["TIME"][0] / 1e6
-        else:
-            time_myr = 0.0
-            print(
-                f"'TIME' field not found in mesh.field_data for timestep {tstep}, model {model_id}."
-            )
+        time_myr = self._get_mesh_time_myr(mesh, model_id, tstep)
 
         plot_title = f"{int(time_myr):03} Ma"
 
-        cmap_choice = config.cmap_mapping.get(field_name, "viridis")
-
-        current_scalars = mesh.point_data[field_name] * config.scale_mapping.get(
-            field_name, 1.0
-        )
-
-        if field_name in ["viscosity", "strain_rate"]:
-            current_scalars = np.log10(np.abs(np.maximum(current_scalars, 1e-30)))
-
-        mesh[f"{field_name}_viz"] = current_scalars
-        active_scalar_key = f"{field_name}_viz"
-
-        clim_actual = config.clim_mapping.get(field_name, None)
-        if clim_actual is None or clim_actual == "auto":
-            finite_data = current_scalars[np.isfinite(current_scalars)]
-            if finite_data.size > 0:
-                clim_min = np.min(finite_data)
-                clim_max = np.max(finite_data)
-                if clim_min == clim_max:
-                    clim_actual = (
-                        clim_min - 0.1 * abs(clim_min) if clim_min != 0 else -0.1,
-                        clim_max + 0.1 * abs(clim_max) if clim_max != 0 else 0.1,
-                    )
-                else:
-                    if is_diverging_cmap(cmap_choice):
-                        clim_max_abs = max(abs(clim_min), abs(clim_max))
-                        clim_actual = (
-                            (
-                                -clim_max_abs - 0.1 * abs(clim_max_abs)
-                                if clim_max_abs != 0
-                                else -0.1
-                            ),
-                            (
-                                clim_max_abs + 0.1 * abs(clim_max_abs)
-                                if clim_max_abs != 0
-                                else 0.1
-                            ),
-                        )
-                    else:
-                        clim_actual = (clim_min, clim_max)
-            else:
-                clim_actual = (0, 1)
-            if self.verbosity >= 1:
-                print(f" !! Warning: Using auto CLIM for '{field_name}': {clim_actual}")
-
-        modified_seq_target = ["stress_second_invariant", "X_field"]
-
-        if is_diverging_cmap(cmap_choice):
-            central_color = "#FFFFFF" if cmap_choice in ["RdGy"] else "#E5E5E5"
-            final_cmap = modify_diverging_cmap(cmap_choice, central_color, config.n_colors)
-        elif is_sequential_cmap(cmap_choice) and field_name in modified_seq_target:
-            final_cmap = modify_sequential_cmap(cmap_choice, "#E5E5E5", config.n_colors)
-        else:
-            final_cmap = plt.get_cmap(cmap_choice, config.n_colors)
+        cmap, clim = self._configure_cmap(mesh, field_name)
 
         plotter: pv.Plotter = pv.Plotter(
             off_screen=True,
-            window_size=config.plotter_window_size,
-            lighting=config.plotter_lighting,
+            window_size=plot_config.plotter_window_size,
+            lighting=plot_config.plotter_lighting,
         )
-        plotter.set_background(config.plotter_background)  # type: ignore
+        plotter.set_background(plot_config.plotter_background)  # type: ignore
 
         glyph_arrows = None
         if (
-            field_name == "velocity" or config.velocity_mapping[field_name]
+            field_name == "velocity" or plot_config.velocity_mapping[field_name]
         ) and "velocity" in mesh.point_data:
             if "velocity_mag" not in mesh.point_data:
                 mesh["velocity_mag"] = np.linalg.norm(mesh["velocity"], axis=1)
             glyph_arrows = mesh.glyph(
                 orient="velocity",  # type: ignore[arg-type]
                 scale="velocity_mag",  # type: ignore[arg-type]
-                factor=config.velocity_glyph_factor,
+                factor=plot_config.velocity_glyph_factor,
                 geom=pv.Arrow(),
                 tolerance=0.05,
             )
@@ -865,7 +1055,7 @@ class PyVistaModelVisualizer:
             glyph_arrows = mesh.glyph(
                 orient="principal_stress_direction_1",  # type: ignore[arg-type]
                 scale="principal_stress_1",  # type: ignore[arg-type]
-                factor=config.stress_glyph_factor,
+                factor=plot_config.stress_glyph_factor,
                 geom=pv.Line(),
             )
         elif (
@@ -875,59 +1065,67 @@ class PyVistaModelVisualizer:
             glyph_arrows = mesh.glyph(
                 orient="principal_stress_direction_2",  # type: ignore[arg-type]
                 scale="principal_stress_2",  # type: ignore[arg-type]
-                factor=config.stress_glyph_factor,
+                factor=plot_config.stress_glyph_factor,
                 geom=pv.Line(),
             )
 
         if glyph_arrows:
-            plotter.add_mesh(glyph_arrows, color="black", line_width=config.glyph_line_width, render_lines_as_tubes=False)
+            plotter.add_mesh(
+                glyph_arrows,
+                color="black",
+                line_width=plot_config.glyph_line_width,
+                render_lines_as_tubes=False,
+            )
 
         sargs = dict(
-            title=config.bar_mapping.get(field_name, field_name),
-            vertical=config.cbar_vertical,
-            title_font_size=config.cbar_title_font_size,
-            label_font_size=config.cbar_label_font_size,
-            fmt=config.fmt_mapping.get(field_name, "%.1f"),
-            width=config.cbar_width,
-            n_labels=config.cbar_n_labels,
-            position_x=config.cbar_position[0],
-            position_y=config.cbar_position[1],
+            title=plot_config.bar_mapping.get(field_name, field_name),
+            vertical=plot_config.cbar_vertical,
+            title_font_size=plot_config.cbar_title_font_size,
+            label_font_size=plot_config.cbar_label_font_size,
+            fmt=plot_config.fmt_mapping.get(field_name, "%.1f"),
+            width=plot_config.cbar_width,
+            n_labels=plot_config.cbar_n_labels,
+            position_x=plot_config.cbar_position[0],
+            position_y=plot_config.cbar_position[1],
         )
 
         plotter.add_mesh(
             mesh,
-            scalars=active_scalar_key,
-            cmap=final_cmap,
-            clim=clim_actual,
-            show_edges=config.show_edges,
-            edge_opacity=config.edge_opacity,
+            scalars=f"{field_name}_viz",
+            cmap=cmap,
+            clim=clim,
+            show_edges=plot_config.show_edges,
+            edge_opacity=plot_config.edge_opacity,
             scalar_bar_args=sargs,
             nan_color="#FEFEFE",
         )
 
-        camera_settings = self._compute_camera_settings(mesh, config.camera_full_view)
+        camera_settings = self._compute_camera_settings(
+            mesh, plot_config.camera_full_view
+        )
         plotter.camera_position = camera_settings
 
-        if config.scale_bar_enabled:
+        if plot_config.scale_bar_enabled:
             self._add_scale_bar(mesh, plotter)
 
         plotter.add_text(
             plot_title,
-            font_size=config.title_font_size,
-            position=config.title_position,  # type: ignore[arg-type]
+            font_size=plot_config.title_font_size,
+            position=plot_config.title_position,  # type: ignore[arg-type]
             viewport=True,
         )
 
         if "depth" in mesh.point_data:
             for depth, width in zip(
-                config.depth_contour_depths_km, config.depth_contour_line_widths
+                plot_config.depth_contour_depths_km,
+                plot_config.depth_contour_line_widths,
             ):
-                add_depth_contour(
+                self._add_depth_contour(
                     plotter,
                     mesh,
                     depth,
                     line_width=width,
-                    tolerance_km=config.depth_contour_tolerance_km,
+                    tolerance_km=plot_config.depth_contour_tolerance_km,
                 )
 
         plotter.screenshot(out_path)
@@ -935,564 +1133,109 @@ class PyVistaModelVisualizer:
 
         try:
             img = Image.open(out_path)
-            img.save(out_path, dpi=config.screenshot_dpi)
+            img.save(out_path, dpi=plot_config.screenshot_dpi)
         except Exception as e:
             print(f"PIL failed to resave {out_path} with new DPI: {e}")
 
-        del mesh, plotter, current_scalars, glyph_arrows
+        del mesh, plotter, glyph_arrows
         gc.collect()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def visualize_single_binned_depth_plot(
+    def visualize_centerline_depth(
         self,
         mesh: pv.DataSet,
-        field_names: list[str],
+        field_name: str,
         tstep: int,
         model_id: str,
         base_fig_dir: Path | str,
-        set_id: str,
+        reaction_depth: float,
     ):
-        """Generates and saves a binned depth plot for a set of three fields."""
+        """Plots a 1D vertical profile of a field through the center of the mesh in the x-direction."""
         if isinstance(base_fig_dir, str):
             base_fig_dir = Path(base_fig_dir)
 
-        config = self.config
+        plot_config = self.plot_config
 
-        if not base_fig_dir.exists():
-            base_fig_dir.mkdir(parents=True, exist_ok=True)
+        mesh = self._prepare_mesh_fields(mesh, field_name)
+        mesh = self._rotate_mesh(mesh, tstep)
 
-        fields_required_for_binning = field_names + [
-            "depth",
-            "nonadiabatic_temperature",
-        ]
-        for field_name in fields_required_for_binning:
-            mesh = self._prepare_mesh_fields(mesh, field_name)
-            if (
-                field_name not in mesh.point_data
-                and field_name not in config.get_extra_fields()
-            ):
-                if self.verbosity >= 1:
-                    print(
-                        f" !! Warning: required field '{field_name}' not on mesh for timestep {tstep}, model {model_id}.\n"
-                        f" -- Skipping set '{set_id}'"
-                    )
-                return
-            if field_name not in mesh.point_data:
-                if self.verbosity >= 1:
-                    print(
-                        f" !! Warning: Field '{field_name}' could not be prepared.\n"
-                        f" -- Skipping set '{set_id}'"
-                    )
-                return
-
-        for condition_type in ["cold", "warm"]:
-            out_path = (
-                base_fig_dir
-                / f"{model_id.replace('_', '-')}-binned-{condition_type}-{set_id.replace('_', '-')}-{str(tstep).zfill(4)}.png"
-            )
-
-            if out_path.exists():
-                print(f" -- Found plot: {out_path.name}!")
-                return
-
-            print(f"--> {out_path.name}")
-
-            plot_binned_depth_profiles(
-                condition_type, mesh, field_names, config, out_path
-            )
-
-
-#######################################################
-## .3. Helper Functions                          !!! ##
-#######################################################
-def is_diverging_cmap(cmap_name: str) -> bool:
-    diverging_base_names = [
-        "PiYG",
-        "PRGn",
-        "BrBG",
-        "PuOr",
-        "RdBu",
-        "RdGy",
-        "RdYlBu",
-        "RdYlGn",
-        "Spectral",
-        "coolwarm",
-        "bwr",
-        "seismic",
-    ]
-    diverging_names = diverging_base_names + [
-        name + "_r" for name in diverging_base_names
-    ]
-
-    return cmap_name in diverging_names
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def is_sequential_cmap(cmap_name: str) -> bool:
-    sequential_base_names = [
-        "viridis",
-        "plasma",
-        "inferno",
-        "magma",
-        "cividis",
-        "gist_heat",
-        "pink",
-        "bone",
-        "Greys",
-        "Purples",
-        "Blues",
-        "Greens",
-        "Oranges",
-        "Reds",
-        "YlOrBr",
-        "YlOrRd",
-        "OrRd",
-        "PuRd",
-        "RdPu",
-        "BuPu",
-        "GnBu",
-        "PuBu",
-        "YlGnBu",
-        "PuBuGn",
-        "BuGn",
-        "YlGn",
-    ]
-    sequential_names = sequential_base_names + [
-        name + "_r" for name in sequential_base_names
-    ]
-
-    return cmap_name in sequential_names
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def modify_diverging_cmap(
-    cmap_name: str, central_color_hex: str, n_colors: int = 11
-) -> mcolors.Colormap | mcolors.ListedColormap:
-    if not is_diverging_cmap(cmap_name):
-        print(
-            f"'{cmap_name}' is not a recognized diverging colormap. Returning original."
-        )
-        return plt.get_cmap(cmap_name, n_colors)
-
-    original_cmap = plt.get_cmap(cmap_name)
-    cmap_colors = original_cmap(np.linspace(0, 1, n_colors))
-    center_idx = n_colors // 2
-    cmap_colors[center_idx] = mcolors.to_rgba(central_color_hex)
-
-    return mcolors.ListedColormap(cmap_colors)
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def modify_sequential_cmap(
-    cmap_name: str, end_color_hex: str, n_colors: int = 11
-) -> mcolors.Colormap | mcolors.ListedColormap:
-    if not is_sequential_cmap(cmap_name):
-        print(
-            f"'{cmap_name}' is not a recognized sequential colormap. Returning original."
-        )
-        return plt.get_cmap(cmap_name, n_colors)
-
-    original_cmap = plt.get_cmap(cmap_name)
-    cmap_colors = original_cmap(np.linspace(0, 1, n_colors))
-
-    change_first_color_cmaps = [
-        "gist_heat_r",
-        "pink_r",
-        "bone_r",
-        "Purples",
-        "BuPu",
-        "Reds",
-        "Oranges",
-        "YlOrBr",
-        "GnBu",
-    ]
-
-    if cmap_name in change_first_color_cmaps:
-        cmap_colors[0] = mcolors.to_rgba(end_color_hex)
-    else:
-        cmap_colors[-1] = mcolors.to_rgba(end_color_hex)
-
-    return mcolors.ListedColormap(cmap_colors)
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def add_depth_contour(
-    plotter: pv.Plotter,
-    mesh: pv.DataSet,
-    depth_km: float,
-    color: str = "black",
-    alpha: float = 1.0,
-    line_width: int = 3,
-    tolerance_km: float = 15,
-    verbosity: int = 0,
-) -> None:
-    """Adds a depth contour line to the PyVista plotter."""
-    if "depth" not in mesh.point_data:
-        print("'depth' field not found in mesh.\n -- Skipping depth contour")
-        return
-
-    depth_values_m = mesh.point_data["depth"]
-    mask = np.isclose(depth_values_m, depth_km * 1e3, atol=tolerance_km * 1e3)
-    contour_points = mesh.points[mask]
-
-    if contour_points.shape[0] > 2:
-        xy = contour_points[:, :2]
-
-        # Check if points are nearly colinear or have no spread in 2D
-        x_range = np.ptp(xy[:, 0])
-        y_range = np.ptp(xy[:, 1])
-
-        if x_range < 1e-3 or y_range < 1e-3:
-            if verbosity >= 1:
-                print(
-                    f" !! Warning: points at {depth_km} km are effectively 1D!\n"
-                    " -- Skipping depth contour"
-                )
+        if not self._check_mesh_field(mesh, field_name, model_id, tstep):
             return
 
-        try:
-            hull = ConvexHull(xy)
-            ordered_contour_points = contour_points[hull.vertices]
-            polyline = pv.lines_from_points(ordered_contour_points, close=True)
-            plotter.add_mesh(
-                polyline, color=color, line_width=line_width, opacity=alpha
-            )
-        except Exception as e:
-            print(
-                f" !! Error: could not generate convex hull for depth contour at {depth_km}km:\n    {e}"
-            )
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def condition_mesh_by_nonadiabatic_temp(
-    mesh: pv.DataSet, config: PlottingConfig, condition_type: str = "cold"
-) -> pv.DataSet:
-    """Filters mesh data based on nonadiabatic temperature."""
-    if "nonadiabatic_temperature" not in mesh.point_data:
-        print(
-            "'nonadiabatic_temperature' not found. Cannot condition mesh. Returning original."
+        mapped_file_str = plot_config.file_mapping.get(
+            field_name, field_name.replace("_", "-")
         )
-        return mesh.copy()
-
-    mesh_copy = mesh.copy()
-    T_nonadia = mesh_copy.point_data["nonadiabatic_temperature"]
-    threshold = config.binned_plot_cold_threshold_K
-
-    condition_map = {"warm": (T_nonadia > threshold), "cold": (T_nonadia < -threshold)}
-    if condition_type not in condition_map:
-        raise ValueError(
-            f"Invalid condition_type: {condition_type}. Must be 'warm' or 'cold'."
+        out_path = (
+            base_fig_dir
+            / f"{model_id.replace('_', '-')}-centerline-{mapped_file_str}-{str(tstep).zfill(4)}.png"
         )
 
-    active_condition = condition_map[condition_type]
+        if out_path.exists():
+            print(f" -- Found plot: {out_path.name}!")
+            return
 
-    for key in list(mesh_copy.point_data.keys()):
-        data_array = mesh_copy.point_data[key]
+        print(f"--> {out_path.name}")
+
+        time_myr = self._get_mesh_time_myr(mesh, model_id, tstep)
+
+        plot_title = f"{int(time_myr):03} Ma"
+
+        cmap, clim = self._configure_cmap(mesh, field_name, 0.05)
+
+        x_coords = mesh.points[:, 0]
+        x_center = 0.5 * (x_coords.min() + x_coords.max())
+        epsilon = (x_coords.max() - x_coords.min()) * 0.005
+        center_mask = np.abs(x_coords - x_center) < epsilon
+
+        if not np.any(center_mask):
+            print(" !! No centerline points found!")
+            return
+
         if (
-            isinstance(data_array, np.ndarray)
-            and data_array.shape[0] == T_nonadia.shape[0]
-            and np.issubdtype(data_array.dtype, np.number)
-        ):
+            field_name == "velocity" or plot_config.velocity_mapping.get(field_name, False)
+        ) and "velocity" in mesh.point_data:
+            mesh["velocity"] = mesh["velocity"][:, 1]
 
-            if data_array.ndim > 1 and data_array.shape[0] == active_condition.shape[0]:
-                condition_expanded = np.tile(
-                    active_condition[:, np.newaxis], (1, data_array.shape[1])
-                )
-                masked_array = np.where(condition_expanded, data_array, np.nan)
-            elif data_array.ndim == 1:
-                masked_array = np.where(active_condition, data_array, np.nan)
-            else:
-                print(
-                    f" -- Skipping conditioning for array '{key}' due to complex shape"
-                )
-                continue
-            mesh_copy.point_data[key] = masked_array
+        depths = mesh.point_data["depth"][center_mask] / 1e3
+        values = mesh.point_data[field_name][
+            center_mask
+        ] * plot_config.scale_mapping.get(field_name, 1.0)
 
-    return mesh_copy
+        sort_idx = np.argsort(depths)
+        depths = depths[sort_idx]
+        values = values[sort_idx]
 
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def calc_binned_depth_profiles(
-    mesh: pv.DataSet,
-    field_name: str,
-    config: PlottingConfig,
-    condition_type: str = "cold",
-    verbosity: int = 0,
-):
-    """Calculates binned depth profiles for a given field, conditioned by nonadiabatic temperature."""
-    if "depth" not in mesh.point_data:
-        raise ValueError("'depth' field not found in mesh for binned profiles.")
-    if (
-        field_name not in mesh.point_data
-        and field_name not in config.get_extra_fields()
-    ):
-        raise ValueError(
-            f" !! Error: field '{field_name}' not found in mesh or derivable extra fields!"
-        )
-
-    mesh_processed = mesh.copy()
-
-    scale_val = config.scale_mapping.get(field_name, 1.0)
-    current_data = mesh_processed.point_data[field_name] * scale_val
-
-    if field_name in ["viscosity", "strain_rate"]:
-        current_data = np.log10(np.abs(np.maximum(current_data, 1e-30)))
-
-    mesh_processed.point_data[field_name] = current_data
-
-    mesh_conditioned = condition_mesh_by_nonadiabatic_temp(
-        mesh_processed, config, condition_type
-    )
-
-    depth_km = mesh_conditioned.point_data["depth"] / 1e3
-    values_to_bin = mesh_conditioned.point_data[field_name]
-
-    valid_mask = ~np.isnan(depth_km) & ~np.isnan(values_to_bin)
-    if not np.any(valid_mask):
-        if verbosity >= 1:
-            print(
-                f" !! Warning: no valid data points for field '{field_name}' after conditioning and NaN removal!"
-                "\n -- Returning empty profiles"
+        plt.rcParams.update(plot_config.centerline_plot_rcParams)
+        fig, ax = plt.subplots(
+            figsize=(
+                plot_config.centerline_plot_fig_width,
+                plot_config.centerline_plot_fig_height,
             )
-        empty_bins = np.linspace(0, 1, config.binned_plot_num_bins)
-        nan_array = np.full_like(empty_bins, np.nan)
-        return empty_bins, np.array([]), nan_array, nan_array
-
-    depth_km_valid = depth_km[valid_mask]
-    values_to_bin_valid = values_to_bin[valid_mask]
-
-    min_depth, max_depth = np.min(depth_km_valid), np.max(depth_km_valid)
-    if min_depth == max_depth:
-        max_depth += 1
-
-    bin_edges = np.linspace(min_depth, max_depth, config.binned_plot_num_bins + 1)
-    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-
-    pos_sum = np.zeros(config.binned_plot_num_bins)
-    neg_sum = np.zeros(config.binned_plot_num_bins)
-    pos_counts = np.zeros(config.binned_plot_num_bins, dtype=int)
-    neg_counts = np.zeros(config.binned_plot_num_bins, dtype=int)
-
-    digitized_indices = np.digitize(depth_km_valid, bin_edges) - 1
-    digitized_indices = np.clip(digitized_indices, 0, config.binned_plot_num_bins - 1)
-
-    for i, val_idx in enumerate(digitized_indices):
-        value = values_to_bin_valid[i]
-        if value > 0:
-            pos_sum[val_idx] += value
-            pos_counts[val_idx] += 1
-        elif value < 0:
-            neg_sum[val_idx] += value
-            neg_counts[val_idx] += 1
-
-    avg_pos = np.divide(
-        pos_sum, pos_counts, out=np.full_like(pos_sum, np.nan), where=pos_counts != 0
-    )
-    avg_neg = np.divide(
-        neg_sum, neg_counts, out=np.full_like(neg_sum, np.nan), where=neg_counts != 0
-    )
-
-    return bin_centers, bin_edges, avg_pos, avg_neg
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def plot_binned_depth_profiles(
-    condition_type: str,
-    mesh: pv.DataSet,
-    field_names: list[str],
-    config: PlottingConfig,
-    out_filename: Path | str,
-    verbosity: int = 0,
-):
-    """Creates a multi-panel matplotlib plot for binned depth profiles of given fields."""
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
-    warnings.filterwarnings("ignore", category=UserWarning)
-
-    if isinstance(out_filename, str):
-        out_filename = Path(out_filename)
-
-    if len(field_names) != 3:
-        raise ValueError(
-            " !! Error: plot_binned_depth_profiles expects exactly 3 field names!"
         )
 
-    if mesh.field_data is not None and "TIME" in mesh.field_data:
-        time_myr = mesh.field_data["TIME"][0] / 1e6
-    else:
-        time_myr = 0.0
-        if verbosity >= 1:
-            print(" !! Warning: 'TIME' field not found in mesh.field_data!")
+        ax.plot(values, depths, color=cmap(0.8))
 
-    calculated_profiles = {}
-    bin_centers = None
-
-    for field_name in field_names:
-        try:
-            (
-                current_bin_centers,
-                current_bin_edges,
-                positive_profile,
-                negative_profile,
-            ) = calc_binned_depth_profiles(mesh, field_name, config, condition_type)
-            if (
-                bin_centers is None
-                and current_bin_centers is not None
-                and len(current_bin_centers) > 0
-            ):
-                bin_centers = current_bin_centers
-            calculated_profiles[field_name] = (
-                current_bin_edges,
-                positive_profile,
-                negative_profile,
-            )
-        except ValueError as e:
-            if verbosity >= 1:
-                print(
-                    f" !! Warning: could not calculate profile for '{field_name}':\n !! Error message: {e}"
-                )
-            calculated_profiles[field_name] = (
-                np.array([np.nan]),
-                np.array([np.nan]),
-                np.array([np.nan]),
-            )
-            if bin_centers is None:
-                bin_centers = np.linspace(
-                    np.nanmin(
-                        mesh.point_data["depth"] / 1e3
-                        if "depth" in mesh.point_data
-                        else 0
-                    ),
-                    np.nanmax(
-                        mesh.point_data["depth"] / 1e3
-                        if "depth" in mesh.point_data
-                        else 1
-                    ),
-                    config.binned_plot_num_bins,
-                )
-
-    if bin_centers is None or len(bin_centers) == 0:
-        print(
-            " -- Skipping plot: no valid bin centers could be determined for binned depth plot:\n"
-            f"    {out_filename.name}."
-        )
-        return
-
-    plt.rcParams.update(config.binned_plot_rcParams)
-
-    fig, axs = plt.subplots(
-        1,
-        3,
-        figsize=(config.binned_plot_fig_width * 3, config.binned_plot_fig_height),
-        sharey=True,
-    )
-
-    if condition_type == "cold":
-        fig_title = f"Depth averages within slabs @ {int(time_myr):03} Ma"
-    else:
-        fig_title = f"Depth averages within plumes @ {int(time_myr):03} Ma"
-
-    fig.suptitle(
-        fig_title, fontsize=config.binned_plot_rcParams.get("font.size", 12) + 4
-    )
-
-    for i, field_name in enumerate(field_names):
-        ax = axs[i]
-        current_bin_edges, positive_profile, negative_profile = calculated_profiles.get(
-            field_name, (np.array([np.nan]), np.array([np.nan]), np.array([np.nan]))
-        )
-
-        if len(positive_profile) != len(bin_centers):
-            positive_profile = np.full_like(bin_centers, np.nan)
-        if len(negative_profile) != len(bin_centers):
-            negative_profile = np.full_like(bin_centers, np.nan)
-
-        positive_profile = np.nan_to_num(positive_profile)
-        negative_profile = np.nan_to_num(negative_profile)
-
-        cmap_choice = config.cmap_mapping.get(field_name, "viridis")
-
-        current_scalars = mesh.point_data[field_name] * config.scale_mapping.get(
-            field_name, 1.0
-        )
-
-        if field_name in ["viscosity", "strain_rate"]:
-            current_scalars = np.log10(np.abs(np.maximum(current_scalars, 1e-30)))
-
-        clim_actual = config.clim_mapping.get(field_name, None)
-        if clim_actual is None or clim_actual == "auto":
-            finite_data = current_scalars[np.isfinite(current_scalars)]
-            if finite_data.size > 0:
-                clim_min = np.min(finite_data)
-                clim_max = np.max(finite_data)
-                if clim_min == clim_max:
-                    clim_actual = (
-                        clim_min - 0.1 * abs(clim_min) if clim_min != 0 else -0.1,
-                        clim_max + 0.1 * abs(clim_max) if clim_max != 0 else 0.1,
-                    )
-                else:
-                    if is_diverging_cmap(cmap_choice):
-                        clim_actual = (
-                            -clim_max - 0.1 * abs(clim_max) if clim_max != 0 else -0.1,
-                            clim_max + 0.1 * abs(clim_max) if clim_max != 0 else 0.1,
-                        )
-                    else:
-                        clim_actual = (clim_min, clim_max)
-            else:
-                clim_actual = (0, 1)
-            if verbosity >= 1:
-                print(f" !! Warning: Using auto CLIM for '{field_name}': {clim_actual}")
-
-        modified_seq_target = ["stress_second_invariant", "X_field"]
-
-        if is_diverging_cmap(cmap_choice):
-            final_cmap = modify_diverging_cmap(cmap_choice, "#E5E5E5", config.n_colors)
-        elif is_sequential_cmap(cmap_choice) and field_name in modified_seq_target:
-            final_cmap = modify_sequential_cmap(cmap_choice, "#E5E5E5", config.n_colors)
-        else:
-            final_cmap = plt.get_cmap(cmap_choice, config.n_colors)
-
-        # ax.barh(
-        #     bin_centers,
-        #     positive_profile,
-        #     height=np.diff(current_bin_edges),
-        #     color=final_cmap(0.9),
-        # )
-        # ax.barh(
-        #     bin_centers,
-        #     negative_profile,
-        #     height=np.diff(current_bin_edges),
-        #     color=final_cmap(0.1),
-        # )
-        ax.plot(positive_profile, bin_centers, color=final_cmap(0.9))
-        ax.plot(negative_profile, bin_centers, color=final_cmap(0.1))
-        ax.fill_betweenx(
-            bin_centers, 0, positive_profile, color=final_cmap(0.9), alpha=0.3
-        )
-        ax.fill_betweenx(
-            bin_centers, 0, negative_profile, color=final_cmap(0.1), alpha=0.3
-        )
-        ax.axhline(y=125, color="black", linestyle="-", linewidth=1)
-        ax.axhline(y=410, color="black", linestyle="-", linewidth=1)
-        ax.axhline(y=660, color="black", linestyle="-", linewidth=1)
-        ax.axvline(x=0, color="black", linestyle="--", linewidth=1)
-
-        ax.set_xlim(clim_actual)
-        ax.set_xlabel(config.bar_mapping.get(field_name, field_name))
-        if i == 0:
-            ax.set_ylabel("Depth (km)")
-            ax.legend()
-
+        ax.set_xlabel(plot_config.bar_mapping.get(field_name, field_name))
+        ax.set_ylabel("Depth (km)")
+        ax.set_title(plot_title)
+        ax.set_xlim(clim)
         ax.invert_yaxis()
-        ax.grid(True, "both", linewidth=0.5, color="#999999")
+        ax.grid(True, which="both", linewidth=0.5, color="#999999")
         ax.tick_params(axis="both", which="both", length=0)
 
-    plt.tight_layout()
-    plt.savefig(out_filename, dpi=config.binned_plot_rcParams.get("figure.dpi", 300))
-    plt.close(fig)
+        depth_max = depths.max()
+        ax.axhspan(reaction_depth, depth_max, color="lightgrey", alpha=0.5, zorder=0)
+        ax.axhline(reaction_depth, color="black", linestyle="--", linewidth=1, zorder=1)
+
+        plt.tight_layout()
+        plt.savefig(
+            out_path, dpi=plot_config.centerline_plot_rcParams.get("figure.dpi", 300)
+        )
+        plt.close(fig)
 
 
 #######################################################
-## .4. Parse Arguments                           !!! ##
+## .3. Parse Arguments                           !!! ##
 #######################################################
 def parse_arguments() -> Namespace:
     """Parse command line arguments."""

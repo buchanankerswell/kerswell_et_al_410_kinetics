@@ -5,7 +5,7 @@ subsection Postprocess
     set Output format                 = vtu
     set Time between graphical output = 1e6
     set Number of grouped files       = 0
-    set List of output variables      = material properties, adiabat, nonadiabatic temperature, nonadiabatic pressure, stress, shear stress, strain rate, stress second invariant, named additional outputs
+    set List of output variables      = depth, material properties, adiabat, nonadiabatic temperature, nonadiabatic pressure, stress, shear stress, strain rate, stress second invariant, named additional outputs
 
     subsection Material properties
       set List of material properties = density, thermal expansivity, compressibility, specific heat, viscosity
@@ -23,5 +23,5 @@ subsection Postprocess
 end
 
 subsection Checkpointing
-  set Time between checkpoint = 1800
+  set Time between checkpoint = 600
 end

@@ -15,7 +15,7 @@ def main():
     args = parse_arguments()
 
     model_id = args.model_id
-    timesteps = list(map(int, args.timesteps.split(" ")))
+    tsteps = list(map(int, args.timesteps.split(" ")))
     in_dir = Path(args.in_dir)
     out_fig_dir = Path(args.out_fig_dir)
     visualization_type = args.visualization_type
@@ -34,18 +34,6 @@ def main():
             "seismic_Vp",
             "seismic_Vs",
         ]
-        binned_depth_plot_field_sets = {
-            "set1": [
-                "nonadiabatic_density",
-                "nonadiabatic_pressure",
-                "stress_second_invariant",
-            ],
-            "set2": [
-                "shear_stress_xx",
-                "shear_stress_yy",
-                "shear_stress_xy",
-            ],
-        }
     elif visualization_type == "2d_box":
         active_plot_fields = [
             # "T",
@@ -74,18 +62,6 @@ def main():
             "driving_force",
             "reaction_rate_C0",
         ]
-        binned_depth_plot_field_sets = {
-            "set1": [
-                "nonadiabatic_density",
-                "nonadiabatic_pressure",
-                "stress_second_invariant",
-            ],
-            "set2": [
-                "shear_stress_xx",
-                "shear_stress_yy",
-                "shear_stress_xy",
-            ],
-        }
     else:
         raise ValueError(f"Unrecognized visualization type {visualization_type}!")
 
@@ -100,11 +76,11 @@ def main():
     plot_config.default_fig_dir = out_fig_dir
 
     if visualization_type == "2d_shell":
-        plot_config.binned_depth_plots = False
+        plot_config.centerline_depth_plots = False
         plot_config.camera_center_zoom = False
 
     elif visualization_type == "2d_box":
-        plot_config.binned_depth_plots = False
+        plot_config.centerline_depth_plots = True
         plot_config.camera_center_zoom = True
         plot_config.title_position = (0.39, 0.90)
         plot_config.cbar_position = [0.30, 0.05]
@@ -261,17 +237,15 @@ def main():
     else:
         raise ValueError(f"Unrecognized visualiztion type {visualization_type}!")
 
-    model_out_directories = {model_id: in_dir}
+    pvtu_in_dir = {model_id: in_dir}
 
     visualizer = PyVistaModelVisualizer(
-        config=plot_config,
-        out_dirs=model_out_directories,
-        vis_tsteps=timesteps,
-        bd_field_sets=binned_depth_plot_field_sets,
-        verbosity=0,
+        plot_config=plot_config,
+        pvtu_in_dir=pvtu_in_dir,
+        tsteps=tsteps,
     )
 
-    visualizer.run_all_visualizations()
+    visualizer.draw()
 
     tile_sets = {
         "set0": {
@@ -310,8 +284,8 @@ def main():
             "tags": None,
             "fields": [
                 "density",
-                "seismic_vp",
-                "seismic_vs",
+                "seismic_Vp",
+                "seismic_Vs",
             ],
         },
     }
@@ -326,8 +300,8 @@ def main():
 
         if fields and len(fields) == 3:
             tiler = ImageTiler(
-                config=plot_config,
-                img_dir=out_fig_dir,
+                plot_config=plot_config,
+                out_fig_dir=out_fig_dir,
                 field1=fields[0],
                 field2=fields[1],
                 field3=fields[2],
