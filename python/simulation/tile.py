@@ -8,7 +8,7 @@ from pathlib import Path
 
 from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
 from PIL import Image, ImageDraw, ImageFont
-from visualize import PlottingConfig
+from visualize import PyVistaModelConfig
 
 
 #######################################################
@@ -16,8 +16,8 @@ from visualize import PlottingConfig
 #######################################################
 @dataclass
 class ImageTiler:
-    plot_config: PlottingConfig
-    out_fig_dir: Path | str
+    plot_config: PyVistaModelConfig
+    out_fig_dir: Path
     field1: str
     field2: str
     field3: str | None = None
@@ -39,8 +39,6 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __post_init__(self):
         """"""
-        if isinstance(self.out_fig_dir, str):
-            self.out_fig_dir = Path(self.out_fig_dir)
         self.tiles_dir = self.out_fig_dir / "tiles"
         self.movies_dir = self.out_fig_dir / "movies"
 
@@ -60,9 +58,6 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _detect_prefix(self) -> str:
         """"""
-        if isinstance(self.out_fig_dir, str):
-            self.out_fig_dir = Path(self.out_fig_dir)
-
         sample = next(self.out_fig_dir.glob(f"*{self.field1}*.png"), None)
         if sample:
             return re.sub(rf"{self.field1}-.*\.png", "", sample.name).rstrip("-")
@@ -73,9 +68,6 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _get_images(self, field: str | None) -> list[Path]:
         """"""
-        if isinstance(self.out_fig_dir, str):
-            self.out_fig_dir = Path(self.out_fig_dir)
-
         if not field:
             return []
 
@@ -91,9 +83,6 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _get_binned_depth_images(self) -> list[Path]:
         """"""
-        if isinstance(self.out_fig_dir, str):
-            self.out_fig_dir = Path(self.out_fig_dir)
-
         if not self.out_fig_dir.exists():
             return []
 
@@ -247,9 +236,6 @@ class ImageTiler:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _compose_with_binned_depth(self) -> None:
         """"""
-        if isinstance(self.out_fig_dir, str):
-            self.out_fig_dir = Path(self.out_fig_dir)
-
         binned_images = self._get_binned_depth_images()
         if not binned_images:
             if self.verbosity >= 1:

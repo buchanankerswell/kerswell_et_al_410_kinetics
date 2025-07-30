@@ -17,10 +17,16 @@ PERPLEX_MODELS := $(shell find $(PERPLEX) -type f -name '*.dat' -exec basename {
 
 # Simulations
 2D_BOX_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm'))
-# 2D_BOX_CONFIGS := 2d_box/configs/simple-slab-Q1-arrhenius.prm
-2D_BOX_TIMESTEPS := 000 001 002 003 004 005 006 007 008 009 010 020 030 040 050 100 150 200
+# 2D_BOX_CONFIGS := 2d_box/configs/simple-slab-Q08.prm 2d_box/configs/simple-slab-Q09.prm
+2D_BOX_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 1 150)
+2D_BOX_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 50)
+2D_BOX_TIMESTEPS_PROFILE := $(shell seq -f "%03g" 0 10 50)
+2D_BOX_TIMESTEPS_TOPOGRAPHY := $(shell seq -f "%03g" 0 1 150)
 2D_SHELL_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_shell/configs -type f -name '*.prm'))
-2D_SHELL_TIMESTEPS := 000 001 002 003 004 005 006 007 008 009 010 020 030 040 050 100 150 200
+2D_SHELL_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 1 150)
+2D_SHELL_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 50)
+2D_SHELL_TIMESTEPS_PROFILE := $(shell seq -f "%03g" 0 10 50)
+2D_SHELL_TIMESTEPS_TOPOGRAPHY := $(shell seq -f "%03g" 0 1 150)
 
 # Script paths
 MAIN_ADIABAT := $(PYTHON)/adiabat/main.py
@@ -38,38 +44,54 @@ all: adiabat
 visualize: adiabat 2d-box-models 2d-shell-models
 
 sync-barkla:
-	@source $(BASH)/simulation/sync-barkla2.sh "$(2D_BOX_CONFIGS)" "$(2D_BOX_TIMESTEPS)"
+	@source $(BASH)/simulation/sync-barkla2.sh "$(2D_BOX_CONFIGS)" "$(2D_BOX_TIMESTEPS_SYNC)"
 
 
 2d-box-models: $(MAIN_SIMULATION)
-	@for prm in $(2D_BOX_CONFIGS); do \
+	@MODEL_IDS=""; \
+	IN_DIRS=""; \
+	for prm in $(2D_BOX_CONFIGS); do \
 		MODEL_DIR=$$(basename $$prm .prm | tr '-' '_'); \
 		IN_DIR=$(SIMULATION)/2d_box/results/$$MODEL_DIR; \
-		TSTEPS="$(2D_BOX_TIMESTEPS)"; \
-		OUT_FIG_DIR=$(FIGS)/simulation/$$MODEL_DIR; \
-		VIS_TYPE=2d_box; \
-		$(CONDA_PYTHON_PYVISTA) -u $(MAIN_SIMULATION) \
-		    --model-id "$$MODEL_DIR" \
-		    --timesteps "$$TSTEPS" \
-		    --in-dir "$$IN_DIR" \
-		    --out-fig-dir "$$OUT_FIG_DIR" \
-		    --visualization-type "$$VIS_TYPE"; \
-	done
+		MODEL_IDS="$$MODEL_IDS $$MODEL_DIR"; \
+		IN_DIRS="$$IN_DIRS $$IN_DIR"; \
+	done; \
+	TSTEPS_MESH="$(2D_BOX_TIMESTEPS_MESH)"; \
+	TSTEPS_PROFILE="$(2D_BOX_TIMESTEPS_PROFILE)"; \
+	TSTEPS_TOPOGRAPHY="$(2D_BOX_TIMESTEPS_TOPOGRAPHY)"; \
+	OUT_FIG_DIR=$(FIGS)/simulation/2d_box; \
+	VIS_TYPE=2d_box; \
+	$(CONDA_PYTHON_PYVISTA) -u $(MAIN_SIMULATION) \
+	    --model-ids $$MODEL_IDS \
+	    --timesteps-mesh $$TSTEPS_MESH \
+	    --timesteps-profile $$TSTEPS_PROFILE \
+	    --timesteps-topography $$TSTEPS_TOPOGRAPHY \
+	    --in-dirs $$IN_DIRS \
+	    --out-fig-dir $$OUT_FIG_DIR \
+	    --visualization-type $$VIS_TYPE
 
 2d-shell-models: $(MAIN_SIMULATION)
-	@for prm in $(2D_SHELL_CONFIGS); do \
+	@MODEL_IDS=""; \
+	IN_DIRS=""; \
+	for prm in $(2D_SHELL_CONFIGS); do \
 		MODEL_DIR=$$(basename $$prm .prm | tr '-' '_'); \
 		IN_DIR=$(SIMULATION)/2d_shell/results/$$MODEL_DIR; \
-		TSTEPS="$(2D_SHELL_TIMESTEPS)"; \
-		OUT_FIG_DIR="$(FIGS)/simulation/$$MODEL_DIR"; \
-		VIS_TYPE="2d_shell"; \
-		$(CONDA_PYTHON_PYVISTA) -u $(MAIN_SIMULATION) \
-		    --model-id "$$MODEL_DIR" \
-		    --timesteps "$$TSTEPS" \
-		    --in-dir "$$IN_DIR" \
-		    --out-fig-dir "$$OUT_FIG_DIR" \
-		    --visualization-type "$$VIS_TYPE"; \
-	done
+		MODEL_IDS="$$MODEL_IDS $$MODEL_DIR"; \
+		IN_DIRS="$$IN_DIRS $$IN_DIR"; \
+	done; \
+	TSTEPS_MESH="$(2D_SHELL_TIMESTEPS_MESH)"; \
+	TSTEPS_PROFILE="$(2D_SHELL_TIMESTEPS_PROFILE)"; \
+	TSTEPS_TOPOGRAPHY="$(2D_SHELL_TIMESTEPS_TOPOGRAPHY)"; \
+	OUT_FIG_DIR=$(FIGS)/simulation/2d_shell; \
+	VIS_TYPE=2d_shell; \
+	$(CONDA_PYTHON_PYVISTA) -u $(MAIN_SIMULATION) \
+	    --model-ids $$MODEL_IDS \
+	    --timesteps-mesh $$TSTEPS_MESH \
+	    --timesteps-profile $$TSTEPS_PROFILE \
+	    --timesteps-topography $$TSTEPS_TOPOGRAPHY \
+	    --in-dirs $$IN_DIRS \
+	    --out-fig-dir $$OUT_FIG_DIR \
+	    --visualization-type $$VIS_TYPE
 
 adiabat: $(MAIN_ADIABAT)
 	@for model in $(PERPLEX_MODELS); do \

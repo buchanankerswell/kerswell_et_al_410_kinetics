@@ -1,8 +1,12 @@
 ---
-title: "Deflection and Sharpness of the 410km Seismic Discontinuity Largely Determined by Olivine -> Wadsleyite Reaction Kinetics"
+#title: "Evaluating Mantle Weather"
+#title: "Evaluating the Magnitudes of Nonadiabatic pressures, Temperatures, and Stresses in Earth's Mantle"
+#title: "The Effects of Dynamic Stress on Phase Changes in Earth's Mantle"
+#title: "Evaluating the Effects of Nonadiabatic Temperature on Phase Changes in Earth's Mantle"
+title: "Evaluating the Effects of Dynamic Pressure, Temperature, and Stress on Phase Changes Earth's Mantle"
 subtitle: "How Plumes and Slabs Displace Seismic Discontinuities"
-author: ["Kerswell B.", "Wheeler J.", "Gassmöller R."]
-date: "31 July 2025"
+author: ["Kerswell B.", "Wheeler J."]
+date: "07 June 2025"
 subject: "Mantle Convection"
 keywords: [mantle convection, phase changes, geodynamics, numerical modeling]
 lang: "en"
@@ -22,24 +26,23 @@ colorlinks: true
 link-citations: true
 ---
 
-## Introduction
+# Introduction
 
-### Research Questions
+## Research Questions
 
-  1. Can displacements in the 410 km discontinuity be entirely explained by thermal effects? [e.g., @cottaar2016]
-  2. How does compressibility affect displacement of the 410 km discontinuity? [e.g., @gassmoller2020]
-  3. Do feedbacks exist between reaction kinetics and mantle flow that might explain observed displacements in the 410 km discontinuity? [e.g., @powell2018; @wheeler2014; @tajcmanova2015; @wheeler2018; @wheeler2020]
-  4. Can we implement such feedbacks into geodynamic simulations of mantle convection? [e.g., @lu2024]
-  5. Can we determine the timescales of such feedbacks?
-  6. Can we determine the lengthscales of such feedbacks?
-  7. Can we constrain reaction kinetic parameters with emperical seismic data?
-  8. What are the implications of such feedbacks for mantle flow and observed seismic structures?
+  1. Can displacements in seismic discontinuities at 410 km and 660 km be entirely explained by thermal effects? [e.g., @cottaar2016]
+  2. How does the bulk composition affect thermal displacements of seismic discontinuities? [e.g., @cottaar2016]
+  3. How does compressibility affect thermal displacements of seismic discontinuities? [e.g., @gassmoller2020]
+  4. What thermomechanical feedbacks exist between phase changes and nonadiabatic pressures (deviatoric stresses) that might partially, or wholly, explain observed displacements in seismic discontinuities at 410 km and 660 km? [e.g., @powell2018; @wheeler2014; @tajcmanova2015; @wheeler2018; @wheeler2020]
+  5. Can we describe such thermomechanical feedbacks mathematically and implement them into numerical geodynamic simulations of mantle convection? [e.g., @lu2024]
+  6. Can we determine the timescales of such feedbacks?
+  7. What are the implications of such feedbacks for mantle flow and observed seismic structures?
 
-### Hypothesis Statements
+## Hypothesis Statements
 
-  1. Deflection and sharpness of the 410 km discontinuity are inversely correlated with reaction rate
-  2. Clearly-defined discontinuities require a reaction rate : strain rate ratio of > (?)
-  3. Slab ponding at the 410 discontinuity requires a reaction rate : strain rate ratio of < (?)
+  1. Nonadiabatic pressure tends to [counteract ?] [amplify ?] thermal effects at the [410 km] [660 km] seismic discontinuity
+  2. The timescales of nonadiabatic pressure effects on phase transitions is [shorter ?] [longer ?] than the timescales of mantle flow
+  3. Mantle flow responds to [increases] [decreases] of nonadiabatic pressure by [?]
 
 \cleardoublepage
 
@@ -92,9 +95,9 @@ Table: Definition of symbols. {#tbl:symbol-definitions}
 
 \cleardoublepage
 
-## Methods
+# Methods
 
-### Simulating Compressible Mantle Flow
+## Simulating Compressible Mantle Flow
 
 Mantle flow is simulated by using the finite-element geodynamic code ASPECT [v3.0.0, @aspect-doi-v3.0.0; @aspectmanual; @heister2017; @kronbichler2012; @gassmoller2018; @clevenger2021; @fraters2019; @fraters2020] to find the velocity $\vec{u}$, pressure $P$, and temperature $T$ fields that satisfy the following equations:
 
@@ -124,7 +127,7 @@ The *isentropic compression approximation* [ICA, @gassmoller2020] is applied to 
 
 where $\beta_S$ and $\rho$ are the compressibility and density of the fluid, respectively. This formulation of the continuity equation accounts for static compression due to the combined local effects of pressure, temperature, and composition (see Appendix \ref{sec:formulations-appendix}). Our rationale for using the ICA formulation of Equation \ref{eq:continuity-compressible} (the default in ASPECT) is that it is more accurate than an incompressible fluid in cases where materials are undergoing phase transitions and/or being strongly heated or cooled [@gassmoller2020].
 
-### Adiabatic Reference Condition {#sec:adiabatic-reference-condition}
+## Adiabatic Reference Condition {#sec:adiabatic-reference-condition}
 
 ASPECT requires an initial guess for the material properties in Earth's mantle in order for the nonlinear solver to effectively converge on a solution [@aspectmanual; @kronbichler2012; @heister2017]. For this purpose, we computed material properties along a 1-dimensional isentropic adiabat that is characteristic of a steady-state non-convecting isochemical mantle with a potential temperature of 1573 K (Figure \ref{fig:pyr-profiles}). This adiabatic reference condition is also used as a basis for computing "nonadiabatic" quantities such as the nonadiabatic temperature $\hat{T} = T - \bar{T}$, nonadiabatic pressure $\hat{P} = P - \bar{P}$, and nonadiabatic density $\hat{\rho} = \rho - \bar{\rho}$, that quantify how much the solution deviates from a non-convecting ambient mantle.
 
@@ -165,9 +168,9 @@ where $r$ is radial depth. Once the depth profile was obtained, the reference gr
 
 where $M(r)$ is radial mass distribution and $G$ is the gravitational constant. Equations \ref{eq:solve-depth}–\ref{eq:solve-gravity} are repeated five times, refining both depth and gravity profiles at each iteration until gravity becomes self-consistent with the reference pressure and density along the isentrope.
 
-### Material Model {#sec:material-models}
+## Material Models {#sec:material-models}
 
-#### Phase Transition Kinetics
+### Adiabatic Reference Profile (2d_shell_bm)
 
 Experiment 2d_shell_bm allows density to vary in response to local deviations in pressure and temperature by applying a first-order Taylor expansion to $\rho(P, T)$ [@jarvis1980; @gassmoller2020]:
 
@@ -202,7 +205,7 @@ where $\bar{\rho}$, $\bar{\beta_S}$, $\bar{\alpha}$, are the adiabatic reference
 
 where $\rho(P, T)$ is substituted from Equation \ref{eq:density-ala}, the coefficients $\bar{g}$, $\bar{\beta}$, $\bar{C_p}$, and $\bar{\alpha}$ are taken from the reference adiabatic condition (Figure \ref{fig:pyr-profiles}), and the thermal conductivity $k$ = 4.0 Wm$^{-1}$K$^{-1}$ is constant.
 
-#### Thermodynamic Lookup Table (2d_shell_stb and 2d_shell_vp) {#sec:lookup-table-material-model}
+### Thermodynamic Lookup Table (2d_shell_stb and 2d_shell_vp) {#sec:lookup-table-material-model}
 
 In contrast to experiment 2d_shell_bm, experiments 2d_shell_stb and 2d_shell_vp use the thermodynamic calculations shown in Figure \ref{fig:pyr-tables} as PT lookup tables, where material properties are found by interpolation at any PT point within the table. This method ensures that material properties accurately adjust to local changes in PT. For example, major phase transitions found at 410 km and 660 km depths at ambient mantle conditions will be displaced by cold slabs and warm plumes.
 
@@ -225,11 +228,11 @@ The current implementation of this material model in ASPECT [v3.0.0, @aspect-doi
 
 where only the gravity $\bar{g}$ is taken from the reference adiabatic condition, and the other coefficients $\rho(P, T)$, $\beta(P, T)$, $C_p(P, T)$, and $\alpha(P, T)$ are found by interpolation within the PT lookup table (Figure \ref{fig:pyr-tables}) at the full pressure $P$ and temperature $T$. Note that the thermal conductivity $k$ = 4.0 Wm$^{-1}$K$^{-1}$ is constant.
 
-### Rheological Models {#sec:rheological-models}
+## Rheological Models {#sec:rheological-models}
 
 Our numerical experiments use different rheological models to simulate deformation of mantle rocks. The models generally increase in complexity from a simple layered rheological model (2d_shell_bm), to a rheological model that has been optimized with geophysical observations [2d_shell_stb, @steinberger2006], and finally to a viscoplastic rheological model that takes into account different creep mechanisms and plastic yielding [2d_shell_vp, @glerum2018]. Our rationale for using different rheological models was to determine the effects of rheology on the development of nonadiabatic pressure $\hat{P}$ and deviatoric stress $\sigma^{\prime}$ at important phase transitions.
 
-#### Simple Temperature-Dependent Rheological Model (2d_shell_bm)
+### Simple Temperature-Dependent Rheological Model (2d_shell_bm)
 
 In the most simple case, the mantle is assumed to have a nominal viscosity of 1e21 Pa s, which is modified by a piecewise function that depends on radial depth $r$:
 
@@ -253,7 +256,7 @@ This function simulates a strong lithosphere underlain by a relatively weak asth
 
 where $\eta_0$ = 1e21 is the nominal background viscosity, $D$ = 10 is the thermal viscosity exponent factor, and $\hat{T} = T - \bar{T}$ is the difference between the full temperature $T$ and the adiabatic reference temperature $\bar{T}$. The resulting initial viscosity $\eta(r, T)$ used in the 2d_shell_bm models is shown in Figure \ref{fig:viscosity-profiles}a.
 
-#### Steinberger Rheological Model (2d_shell_stb)
+### Steinberger Rheological Model (2d_shell_stb)
 
 @steinberger2006 described an approach to constrain a layered mantle rheology through an optimization procedure that accounts for Earth's geoid, glacial rebound data, and a radial heat flux model based on mineral physics data. Their optimized rheological model is implemented by modifying a reference viscosity $\bar{\eta}(r)$ with a coefficient $\bar{V}(r)$ that approximates variations in viscosity due to temperature and different creep mechanisms:
 
@@ -264,7 +267,7 @@ where $\eta_0$ = 1e21 is the nominal background viscosity, $D$ = 10 is the therm
 
 where $\hat{T}$ and $\bar{T}$ are the same as in Equation \ref{eq:rheology-model-bm}. Mantle viscosity in this case is also arbitrarily constrained to stay within 1e20 and 5e24 Pa s. The resulting initial viscosity $\eta(r, T)$ is shown in Figure \ref{fig:viscosity-profiles}a.
 
-#### Viscoplastic Rheological Model (2d_shell_vp) {#sec:vp-model}
+### Viscoplastic Rheological Model (2d_shell_vp) {#sec:vp-model}
 
 The effective creep viscosity for both Newtonian (linear) diffusion creep and non-Newtonian (non-linear) dislocation creep are defined by the same equation [after @karato2008; @karato1993]:
 
@@ -318,7 +321,7 @@ which is used to limit the effective creep viscosity if plastic yielding is occu
   \label{eq:rheology-model-vp}
 \end{equation}
 
-### Numerical Setup
+## Numerical Setup
 
 Our numerical experiments simulate mantle convection in a 2d annulus with global parameters defined in Table \ref{tbl:global-parameters}. The simulations begin with a cooled outer boundary layer that has an initial thermal age of 50 Ma. A constant temperature of 273 K is maintained at the outer boundary with a imposed steady-state velocity representing present-day plate motions around Earth's equator. The inner boundary is free-slip with a constant temperature of 3773 K. The finite element mesh is initially refined 4 times globally. Adaptive mesh refinement is then applied during each timestep to 1) maintain a minimum refinement level of 9 between 350–720 km radial depth, and 2) adjust refinement levels according to local nonadiabatic temperature $\hat{T}$. The simulations are ran from this initial state for 500 Ma.
 
@@ -349,9 +352,9 @@ Note that although the mesh geometry and refinement functions are formulated wit
 
 \cleardoublepage
 
-## Results
+# Results
 
-### Experiment
+## Experiment 2d_shell_bm
 
 Mantle convection in experiment 2d_shell_bm is driven by cold slabs that sink from the outer boundary where the surface velocity is converging. Two-sided subduction and whole mantle convection develop relatively rapidly (< 100 Ma) due to the relatively weak mantle rheology (Figures \ref{fig:viscosity-profiles} and \ref{fig:bm-mantle-flow}, see also Equation \ref{eq:rheology-model-bm}), especially in the lower mantle where 2d_shell_bm is about 10x weaker than experiments 2d_shell_stb and 2d_shell_vp (Figure \ref{fig:viscosity-profiles}). The cold dense slabs penetrate the MTZ and sink vertically as coherent columns until they deform in the deep lower mantle and begin to pile up against the CMB. Meanwhile, warm buoyant plumes generated at the CMB rise quickly towards the surface where they disperse laterally under the base of the thin lithosphere (Figure \ref{fig:bm-mantle-flow}).
 
@@ -361,33 +364,84 @@ In contrast to cold slabs, warm plumes do not generally generate deviatoric stre
 
 \cleardoublepage
 
-## Discussion
+![](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0020-full-view-1.png)
+
+![](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0033-full-view-1.png)
+
+![Experiment 2d_shell_bm after 100 Ma (top), 165 Ma (middle), and 235 Ma (bottom) showing the global distribution of nonadiabatic temperature $\hat{T}$ (left), nonadiabatic density $\hat{\rho}$ (middle), and log viscosity $\eta$ (right). Models were calculated with ASPECT using the ICA formulation (Equation \ref{eq:continuity-ica}) and a simple temperature dependent rheological model (Equation \ref{eq:rheology-model-bm}). Initial and final viscosities are shown in Figure \ref{fig:viscosity-profiles}. Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white.](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0047-full-view-1.png){#fig:bm-mantle-flow}
+
+![Experiment 2d_shell_bm after 100 Ma of evolution. A representative view of the model domain (top) showing nonadiabatic density $\hat{\rho}$, nonadiabatic pressure $\hat{P}$, and effective deviatoric stress $\sigma_{\text{II}}$. Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white. Bar charts show global averages, binned approximately every 25 km, for slabs (middle) and plumes (bottom). Thin black lines mark the base of the lithosphere at 125 km and major phase transformations at 410 and 660 km.](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles_comps/density-nonadiabatic-pressure-nonadiabatic-sigma-ii-0020-zoomed-view.png){#fig:bm-binned-depth-zoomed-view}
+
+![Experiment 2d_shell_bm after 100 Ma of evolution. A representative view of the model domain (top) showing the normal (xx and yy) and shear (xy = yx) components of the deviatoric stress tensor $\sigma^{\prime}$ (top). Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white. Bar charts show global averages, binned approximately every 25 km, for slabs (middle) and plumes (bottom). Thin black lines mark the base of the lithosphere at 125 km and major phase transformations at 410 and 660 km.](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles_comps/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0020-zoomed-view.png){#fig:bm-binned-depth-zoomed-view2}
+
+\cleardoublepage
+
+## Experiment 2d_shell_stb
+
+Like experiment 2d_shell_bm, mantle convection in experiment 2d_shell_stb is driven by cold downwellings that sink from convergent plate boundaries at the surface. However, the slightly stronger rheological model implemented in 2d_shell_stb (Figures \ref{fig:viscosity-profiles} and \ref{fig:stb-mantle-flow}, see also Equation \ref{eq:rheology-model-stb}) results in slower mantle convection rates and stronger slabs. This is evident by slabs that sink subvertically and bend broadly in the lower mantle while remaining rigid and intact (Figure \ref{fig:stb-mantle-flow}), rather than sink vertically and pile atop the CMB in tight folds (Figure \ref{fig:bm-mantle-flow}). Moreover, it takes about twice as long to initiate whole mantle convection in experiment 2d_shell_stb (> 200 Ma) compared to experiment 2d_shell_bm (> 100 Ma).
+
+As observed in experiment 2d_shell_bm, effective deviatoric stress $\sigma_{\text{II}}$ and nonadiabatic pressure $\hat{P}$ are about an order of magnitude higher in cold slabs than in warm plumes. However, the overall magnitudes of these dynamic effects in experiment 2d_shell_stb are approximately 2–3x higher than in experiment 2d_shell_bm (c.f. Figures \ref{fig:bm-binned-depth-zoomed-view} and \ref{fig:bm-binned-depth-zoomed-view2} with Figures \ref{fig:stb-binned-depth-zoomed-view} and \ref{fig:stb-binned-depth-zoomed-view2}). Additionally, abrupt changes in material properties at major phase transitions are observed in experiment 2d_shell_stb, but not in experiment 2d_shell_bm. For example, nonadiabatic densities of - 0.02 $\leq$ $\hat{\rho}$ $\leq$ 0.15 g/cm$^3$ are observed at the boundaries of the MTZ and correlate with with high nonadiabatic pressures of -500 $\leq$ $\hat{P}$ $\leq$ 0 MPa and effective deviatoric stresses of $\sigma^{\prime}$ $\leq$ 400 MPa (Figure \ref{fig:stb-binned-depth-zoomed-view}). Stronger dynamic effects occur in experiment 2d_shell_stb for two reasons: 1) the stronger rheological model can support higher effective deviatoric stresses, and 2) the material model (thermodynamic lookup table) allows nonadiabatic temperature $\hat{T}$ and pressure $\hat{P}$ in slabs and plumes to drive displacements in phase transition depths (see Section \ref{sec:lookup-table-material-model}).
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0047-full-view-1.png)
+
+![](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0073-full-view-1.png)
+
+![Experiment 2d_shell_stb after 235 Ma (top), 365 Ma (middle), and 500 Ma (bottom) showing the global distribution of nonadiabatic temperature $\hat{T}$ (left), nonadiabatic density $\hat{\rho}$ (middle), and log viscosity $\eta$ (right). Models were calculated with ASPECT using the ICA formulation (Equation \ref{eq:continuity-ica}) and a  rheological model after @steinberger2006 (Equation \ref{eq:rheology-model-stb}). Initial and final viscosities are shown in Figure \ref{fig:viscosity-profiles}. Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white.](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0100-full-view-1.png){#fig:stb-mantle-flow}
+
+![Experiment 2d_shell_stb after 235 Ma of evolution. A representative view of the model domain (top) showing nonadiabatic density $\hat{\rho}$, nonadiabatic pressure $\hat{P}$, and effective deviatoric stress $\sigma_{\text{II}}$. Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white. Bar charts show global averages, binned approximately every 25 km, for slabs (middle) and plumes (bottom). Thin black lines mark the base of the lithosphere at 125 km and major phase transformations at 410 and 660 km.](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles_comps/density-nonadiabatic-pressure-nonadiabatic-sigma-ii-0047-zoomed-view.png){#fig:stb-binned-depth-zoomed-view}
+
+![Experiment 2d_shell_stb after 235 Ma of evolution. A representative view of the model domain (top) showing the normal (xx and yy) and shear (xy = yx) components of the deviatoric stress tensor $\sigma^{\prime}$ (top). Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white. Bar charts show global averages, binned approximately every 25 km, for slabs (middle) and plumes (bottom). Thin black lines mark the base of the lithosphere at 125 km and major phase transformations at 410 and 660 km.](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles_comps/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0047-zoomed-view.png){#fig:stb-binned-depth-zoomed-view2}
+
+\cleardoublepage
+
+## Experiment 2d_shell_vp
+
+Mantle convection in experiment 2d_shell_vp is the most sluggish overall, which is a result of having the strongest rheological model, especially in the lower mantle (see Equation \ref{eq:rheology-model-vp} and Figure \ref{fig:viscosity-profiles}). For example, warm plumes only begin to rise from the CMB after approximately 235 Ma of evolution (Figure \ref{fig:vp-mantle-flow}), whereas whole mantle convection has already completed in experiment 2d_shell_bm by 100 Ma, and in 2d_shell_stb by 235 Ma (c.f. Figures \ref{fig:bm-mantle-flow}, \ref{fig:stb-mantle-flow}, and \ref{fig:vp-mantle-flow}). Despite having a strong rheological model, however, sinking slabs in experiment 2d_shell_vp become completely dismembered or tightly folded due to high deviatoric stresses (up to 200–500 MPa) that exceed their plastic yield strength (Figure \ref{fig:vp-mantle-flow}).
+
+Unlike 2d_shell_bm and 2d_shell_stb, the magnitudes of nonadiabatic pressures in experiment 2d_shell_vp can be roughly equivalent in cold slabs and warm plumes despite large differences in their deviatoric stress. For example, the average nonadiabatic pressure in both slabs and plumes in the lower mantle is 200–250 MPa, but the average deviatoric stress are approximately 200 MPa in slabs vs. 50 MPa in plumes (Figure \ref{fig:vp-binned-depth-zoomed-view}). Moreover, deviatoric stress in slabs can be extremely high, exceeding 500 MPa where the slabs are bending in the lower mantle (Figure \ref{fig:vp-binned-depth-zoomed-view}). As observed in experiment 2d_shell_stb, these regions of high deviatoric stress generally correlate with high nonadiabatic pressures and nonadiabatic densities (e.g., at phase transitions and deforming slabs), but not everywhere (e.g., near the CMB, Figure \ref{fig:vp-binned-depth-zoomed-view}).
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0020-full-view-1.png)
+
+![](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0033-full-view-1.png)
+
+![Experiment 2d_shell_vp after 100 Ma (top), 165 Ma (middle), and 235 Ma (bottom) showing the global distribution of nonadiabatic temperature $\hat{T}$ (left), nonadiabatic density $\hat{\rho}$ (middle), and log viscosity $\eta$ (right). Models were calculated with ASPECT using the ICA formulation (Equation \ref{eq:continuity-ica}) and a viscoplastic rheological model (Equation \ref{eq:rheology-model-vp}). Initial and final viscosities are shown in Figure \ref{fig:viscosity-profiles}. Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white.](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0047-full-view-1.png){#fig:vp-mantle-flow}
+
+![Experiment 2d_shell_vp after 100 Ma of evolution. A representative view of the model domain (top) showing nonadiabatic density $\hat{\rho}$, nonadiabatic pressure $\hat{P}$, and effective deviatoric stress $\sigma_{\text{II}}$. Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white. Bar charts show global averages, binned approximately every 25 km, for slabs (middle) and plumes (bottom). Thin black lines mark the base of the lithosphere at 125 km and major phase transformations at 410 and 660 km.](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles_comps/density-nonadiabatic-pressure-nonadiabatic-sigma-ii-0047-zoomed-view.png){#fig:vp-binned-depth-zoomed-view}
+
+![Experiment 2d_shell_vp after 100 Ma of evolution. A representative view of the model domain (top) showing the normal (xx and yy) and shear (xy = yx) components of the deviatoric stress tensor $\sigma^{\prime}$ (top). Colorbar limits are the same for all numerical experiments. Gray regions indicate where the mantle has not deviated from the adiabatic reference condition (Figure \ref{fig:pyr-profiles}). Values outside of the colorbar limits are filled white. Bar charts show global averages, binned approximately every 25 km, for slabs (middle) and plumes (bottom). Thin black lines mark the base of the lithosphere at 125 km and major phase transformations at 410 and 660 km.](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles_comps/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0047-zoomed-view.png){#fig:vp-binned-depth-zoomed-view2}
+
+\cleardoublepage
+
+# Discussion
 
   1. What is the relationship between $\sigma_\text{II}$ and $\hat{P}$?
   2. How big is the thermal displacement of the 410 and 660?
 
-## Acknowledgements
+# Acknowledgements
 
 This work was funded by the UKRI NERC Large Grant no. NE/V018477/1 awarded to John Wheeler at the University of Liverpool. All computations were undertaken on Barkla2, part of the High Performance Computing facilities at the University of Liverpool, who graciously provided expert support. We thank the Computational Infrastructure for Geodynamics ([geodynamics.org](geodynamics.org)) which is funded by the National Science Foundation under award EAR-0949446 and EAR-1550901 for supporting the development of ASPECT.
 
-## Data Availability
+# Data Availability
 
 The code modifications, parameter, data, and log files used for the models in the study are available at ...
 
 ASPECT version 3.0.0, [@aspect-doi-v3.0.0; @aspectmanual; @heister2017; @kronbichler2012; @gassmoller2018; @clevenger2021; @fraters2019; @fraters2020] used in these computations is freely available under the GPL v2.0 or later license through its software landing page [https://geodynamics.org/resources/aspect](https://geodynamics.org/resources/aspect) or [https://aspect.geodynamics.org](https://aspect.geodynamics.org) and is being actively developed on GitHub and can be accessed via [https://github.com/geodynamics/aspect](https://github.com/geodynamics/aspect).
 
-## References
-
+# References
 ::: {#refs}
 :::
 
 \cleardoublepage
 
-## Appendix {.unnumbered}
+# Appendix {.unnumbered}
 
-### Governing Equations {.unnumbered}
+## Governing Equations {.unnumbered}
 
-#### The Momentum Equation {.unnumbered #sec:momentum-derivation}
+### The Momentum Equation {.unnumbered #sec:momentum-derivation}
 
 The momentum equation in the following form is referred to as the Navier-Stokes equation and describes the flow of a compressible viscous fluid primarily by buoyancy forces:
 
@@ -515,7 +569,7 @@ which is proportional to the second invariant of the deviatoric stress tensor by
   \sigma_{\text{vm}} = \sqrt{3} \, \sigma_{\text{II}}
 \end{equation}
 
-#### The Continuity Equation {.unnumbered}
+### The Continuity Equation {.unnumbered}
 
 The continuity equation describes the conservation of mass (per volume) of the system through time:
 
@@ -528,7 +582,7 @@ where $\rho$ is density, $t$ is time, and $\vec{u}$ is velocity. The form of thi
 
 The paper by @gassmoller2020 discuss the advantages and disadvantages of various treatments of the continuity equation that address numerical instability issues. @gassmoller2020 also propose new ways to solve the compressible momentum and continuity equations that can account for abrupt density changes due to strong heating/cooling and/or phase transformations.
 
-#### The Energy Equation {.unnumbered}
+### The Energy Equation {.unnumbered}
 
 The energy equation accounts for temperature change of the fluid due to conductive and advective heat transfer, plus other source heating (or cooling) terms:
 
@@ -540,9 +594,9 @@ where $\rho$ is density, $C_p$ is the specific heat capacity, $T$ is temperature
 
 \cleardoublepage
 
-### Formulations of Compressible Mantle Flow {.unnumbered #sec:formulations-appendix}
+## Formulations of Compressible Mantle Flow {.unnumbered #sec:formulations-appendix}
 
-#### The (Truncated) Anelastic Liquid Approximation {.unnumbered}
+### The (Truncated) Anelastic Liquid Approximation {.unnumbered}
 
 The anelastic liquid approximation (ALA) is based on the assumption that the density of Earth's mantle changes very little in the lateral direction (i.e., it is entirely depth-dependent). Density is assumed not to deviate very far from the adiabatic reference density $\bar{\rho}$ that is predefined in radial coordinates. Given an adiabatic reference condition, density is calculated via a first-order Taylor expansion with respect to pressure and temperature [@jarvis1980; @gassmoller2020]:
 
@@ -578,7 +632,7 @@ The other assumption is that deviations from the adiabatic reference density onl
   \label{eq:continuity-ala}
 \end{equation}
 
-#### The Boussinesq Approximation {.unnumbered}
+### The Boussinesq Approximation {.unnumbered}
 
 Similar to the ALA, the Boussinesq Approximation (BA) assumes that deviations from the adibatic reference density only apply to the right-hand side of the momentum equation (Equation \ref{eq:navier-stokes-no-inertia-appendix}). The BA simplifies the problem further, however, by assuming that the fluid is completely incompressible. In this case, the momentum and continuity equations become:
 
@@ -591,7 +645,7 @@ Similar to the ALA, the Boussinesq Approximation (BA) assumes that deviations fr
   \label{eq:continuity-incompressible}
 \end{equation}
 
-#### The Isentropic Compression Approximation {.unnumbered}
+### The Isentropic Compression Approximation {.unnumbered}
 
 The isentropic compression approximation (ICA) starts with the full continuity equation:
 
@@ -621,7 +675,7 @@ The ICA is still not completely compressible, however, because it assumes that c
   \label{eq:continuity-ica-appendix}
 \end{equation}
 
-#### The Projected Density Approximation {.unnumbered}
+### The Projected Density Approximation {.unnumbered}
 
 The PDA takes a different approach than the previously mentioned approximations because: 1) it includes the time derivative of density $\partial \rho / \partial t$, and 2) it does not define density as merely a function of PT (and PT derivatives $\partial \rho / \partial T$ and $\partial \rho / \partial P$), but rather uses density as defined in Equation \ref{eq:continuity-expanded-appendix}. In principle, this is a more accurate approach because density is free to evolve dynamically and be influenced by thermal and/or compositional changes. However, the challenge with using Equation \ref{eq:continuity-expanded-appendix} is that density is not a primary variable in the numerical solution of the governing equations. Practically speaking, only the time and spatial derivatives of PT and velocity are defined everywhere across the finite-element (FE) mesh, so the right-hand side of Equation \ref{eq:continuity-expanded-appendix} cannot be evaluated numerically [@gassmoller2020].
 
@@ -629,7 +683,7 @@ The solution proposed by @gassmoller2020 is to project the density field onto th
 
 \cleardoublepage
 
-### Viscoplastic Flow Laws {.unnumbered}
+## Viscoplastic Flow Laws {.unnumbered}
 
 ![Deformation maps of the Earth's upper mantle showing the relationships between temperature $T$, stress $\sigma$, strain rate $\dot{\epsilon}^{\prime}$, and active creep mechanism. The dry mantle is expected be be deforming by dislocation creep at typical values of $\dot{\epsilon}^{\prime}$ = 1e-15 s$^{-1}$and $T$ = 1600 K (a), while a hydrated mantle (or mantle with a very fine grain size) is expected to be deforming by diffusion creep at lower stress (b). At the same conditions, a dry mantle is expected to have a bulk viscosity on the order of 1e20 Pa s (c), while a wet mantle is expected bo be about an order of magnitude weaker (d). Models are based on the flow law from @karato1993: $\dot{\epsilon}^{\prime}_{\text{II}} = A \left( \frac{b}{d} \right)^m \left( \frac{\sigma_\text{II}}{G} \right)^n \exp \left( \frac{-E_a + V_a P}{R T} \right)$ assuming $P$ = 0 and a grain size $d$ of 1 mm. Other relevant parameters are: $G$ = 8e10 Pa is the bulk modulus, $b$ = 5e-10 m is the length of the Burgers vector, and $R$ = 8.314 J/K/mol is the gas constant.](../figs/deformation-map.png){#fig:deformation-map}
 
@@ -660,24 +714,24 @@ Table: Material parameters for a viscous flow law (Equation \ref{eq:viscous-cree
 
 \cleardoublepage
 
-### Installing ASPECT {.unnumbered}
+## Installing ASPECT {.unnumbered}
 
 Native ASPECT installation is preferred to virtual machines or docker containers because it is faster. However, native installation requires configuring and installing a number of dependencies. This process will vary from machine to machine. Thankfully the ASPECT group has written [`candi`](https://github.com/dealii/candi), which tries to Compile AND Install (i.e., "candi") ASPECT's dependencies.
 
 The base packages and libraries needed to run `candi` include:
 
-- `zlib`
-- `bzip2`
-- `git`
-- `cmake`
-- `boost`
-- `numdiff`
-- `openblas`
-- `scalapack`
+  - `zlib`
+  - `bzip2`
+  - `git`
+  - `cmake`
+  - `boost`
+  - `numdiff`
+  - `openblas`
+  - `scalapack`
 
 These packages are normally pre-installed on your machine, for example via homebrew for MacOS, or `apt`, `yum`, `dnf`, for Linux. If you are using a HPC cluster, some of these packages and libraries might be loaded via `module load`. Once the base packages and libraries are installed and available in your environment, you can use `candi` to install the ASPECT dependencies. See the `candi` [github](https://github.com/dealii/candi) and ASPECT [wiki](https://github.com/geodynamics/aspect/wiki) pages for tips.
 
-#### Installing ASPECT on MacOS ARM {.unnumbered #sec:macos-config}
+### Installing ASPECT on MacOS ARM {.unnumbered #sec:macos-config}
 
 Follow the instructions at [hombrew's homepage](https://brew.sh/) to download and install Homebrew on your machine. Then use homebrew to install the base packages required by `candi`.
 
@@ -701,7 +755,7 @@ The following script will check for local or homebrew installations of the base 
 @include ../bash/install/aspect-macos.sh
 ~~~
 
-#### Installing ASPECT on BARKLA2 {.unnumbered #sec:barkla2-config}
+### Installing ASPECT on BARKLA2 {.unnumbered #sec:barkla2-config}
 
 The following script will load the required modules, clone `candi`, and then try to install ASPECT and its dependencies. The script was written based off a lot of trial and error. The full ASPECT build takes 1.5 hours on BARKLA2 with 16 processors.
 
@@ -715,16 +769,86 @@ The following script will load the required modules, clone `candi`, and then try
 
 \cleardoublepage
 
-### Experimental Parameters {.unnumbered #sec:prm-configs}
+## Experimental Parameters {.unnumbered #sec:prm-configs}
 
-#### Experiment 2d_shell_bm {.unnumbered}
+### Experiment 2d_shell_bm {.unnumbered}
 
 Code Block \ref{lst:base-ica-bm-simple-config} shows an example of an ASPECT configuration that uses a simple linear rheological model with material properties from an adiabatic reference condition. The configuration has been modified from the ASPECT cookbook:
 
-- [2D compressible convection with a reference profile and material properties from BurnMan](https://aspect-documentation.readthedocs.io/en/latest/user/cookbooks/cookbooks/burnman/doc/burnman.html)
+  - [2D compressible convection with a reference profile and material properties from BurnMan](https://aspect-documentation.readthedocs.io/en/latest/user/cookbooks/cookbooks/burnman/doc/burnman.html)
 
 ~~~{#lst:base-ica-bm-simple-config .bash caption="Example of an ASPECT configuration with a simple rheological model."}
 @include ../simulation/2d_shell/configs/full-mantle-with-piecewise-viscosity-profile.prm
 ~~~
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0020-full-view.png)
+
+![](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/strain-rate-pressure-nonadiabatic-sigma-ii-0020-full-view.png)
+
+![Mantle convection model 2d_shell_bm after 100 Ma of evolution. Models were calculated with ASPECT using the ICA formulations of the continuity equation (Equation \ref{eq:continuity-ica}) and a simple temperature dependent rheological model (Equation \ref{eq:rheology-model-bm}). The adiabatic reference condition is shown in Figure \ref{fig:pyr-profiles}. Initial and final viscosities are shown in Figure \ref{fig:viscosity-profiles}.](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0020-full-view.png){#fig:bm-mantle-flow-full-view}
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0020-zoomed-view.png)
+
+![](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/strain-rate-pressure-nonadiabatic-sigma-ii-0020-zoomed-view.png)
+
+![Mantle convection model 2d_shell_bm after 100 Ma of evolution. Models were calculated with ASPECT using the ICA formulations of the continuity equation (Equation \ref{eq:continuity-ica}) and a simple temperature dependent rheological model (Equation \ref{eq:rheology-model-bm}). The adiabatic reference condition is shown in Figure \ref{fig:pyr-profiles}. Initial and final viscosities are shown in Figure \ref{fig:viscosity-profiles}.](../figs/simulation/full_mantle_with_piecewise_viscosity_profile/tiles/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0020-zoomed-view-1.png){#fig:bm-mantle-flow-zoomed-view}
+
+\cleardoublepage
+
+### Experiment 2d_shell_stb {.unnumbered}
+
+Code Block \ref{lst:base-ica-stb-simple-config} shows an example of an ASPECT configuration that uses a more complex rheology after @steinberger2006 with material properties from a Perple_X lookup table. The configuration has been modified from the ASPECT cookbook:
+
+  - [Convection using a pressure–temperature look-up table and the rheology of Steinberger and Calderwood (2006)](https://aspect-documentation.readthedocs.io/en/latest/user/cookbooks/cookbooks/steinberger/doc/steinberger.html)
+
+~~~{#lst:base-ica-stb-simple-config .bash caption="Example of an ASPECT configuration with a steinberger rheological model."}
+@include ../simulation/2d_shell/configs/full-mantle-with-steinberger-viscosity-profile.prm
+~~~
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0047-full-view.png)
+
+![](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/strain-rate-pressure-nonadiabatic-sigma-ii-0047-full-view.png)
+
+![Evolution of mantle convection model 2d_shell_stb. Models were calculated with ASPECT using the ICA formulations of the continuity equation (Equation \ref{eq:continuity-ica}) and a rheological model from @steinberger2006 (Equation \ref{eq:rheology-model-stb}). Modified from the ASPECT cookbook: [Convection using a pressure–temperature look-up table and the rheology of Steinberger and Calderwood (2006)](https://aspect-documentation.readthedocs.io/en/latest/user/cookbooks/cookbooks/steinberger/doc/steinberger.html).](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0047-full-view.png){#fig:stb-mantle-flow-full-view}
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0047-zoomed-view.png)
+
+![](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/strain-rate-pressure-nonadiabatic-sigma-ii-0047-zoomed-view.png)
+
+![Evolution of mantle convection model 2d_shell_stb. Models were calculated with ASPECT using the ICA formulations of the continuity equation (Equation \ref{eq:continuity-ica}) and a rheological model from @steinberger2006 (Equation \ref{eq:rheology-model-stb}). Modified from the ASPECT cookbook: [Convection using a pressure–temperature look-up table and the rheology of Steinberger and Calderwood (2006)](https://aspect-documentation.readthedocs.io/en/latest/user/cookbooks/cookbooks/steinberger/doc/steinberger.html).](../figs/simulation/full_mantle_with_steinberger_viscosity_profile/tiles/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0047-zoomed-view-1.png){#fig:stb-mantle-flow-zoomed-view}
+
+\cleardoublepage
+
+### Experiment 2d_shell_vp {.unnumbered}
+
+Code Block \ref{lst:base-ica-vp-simple-config} shows an identical ASPECT configuration as Code Block \ref{lst:base-ica-vp-simple-config}, but with a composite viscoplastic rheology.
+
+~~~{#lst:base-ica-vp-simple-config .bash caption="Example of an ASPECT configuration with a viscoplastic rheological model."}
+@include ../simulation/2d_shell/configs/full-mantle-with-viscoplastic-viscosity-profile.prm
+~~~
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0047-full-view.png)
+
+![](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/strain-rate-pressure-nonadiabatic-sigma-ii-0047-full-view.png)
+
+![Evolution of mantle convection model 2d_shell_bm. Models were calculated with ASPECT using the ICA formulations of the continuity equation (Equation \ref{eq:continuity-ica}) and a viscoplastic rheological model (Equation \ref{eq:rheology-model-vp}) with material parameters after @vanderwiel2024 (Table \ref{tbl:rheological-parameters-vanderwiel20204}). Modified from the ASPECT cookbook: [Mantle convection with continents in an annulus](https://aspect-documentation.readthedocs.io/en/latest/user/cookbooks/cookbooks/mantle_convection_with_continents_in_annulus/doc/mantle_convection_in_annulus.html).](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0047-full-view.png){#fig:vp-mantle-flow-full-view}
+
+\cleardoublepage
+
+![](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/temperature-nonadiabatic-density-nonadiabatic-viscosity-0047-zoomed-view.png)
+
+![](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/strain-rate-pressure-nonadiabatic-sigma-ii-0047-zoomed-view.png)
+
+![Evolution of mantle convection model 2d_shell_bm. Models were calculated with ASPECT using the ICA formulations of the continuity equation (Equation \ref{eq:continuity-ica}) and a viscoplastic rheological model (Equation \ref{eq:rheology-model-vp}) with material parameters after @vanderwiel2024 (Table \ref{tbl:rheological-parameters-vanderwiel20204}). Modified from the ASPECT cookbook: [Mantle convection with continents in an annulus](https://aspect-documentation.readthedocs.io/en/latest/user/cookbooks/cookbooks/mantle_convection_with_continents_in_annulus/doc/mantle_convection_in_annulus.html).](../figs/simulation/full_mantle_with_viscoplastic_viscosity_profile/tiles/sigma-deviatoric-xx-sigma-deviatoric-yy-sigma-deviatoric-xy-0047-zoomed-view-1.png){#fig:vp-mantle-flow-zoomed-view}
 
 \cleardoublepage

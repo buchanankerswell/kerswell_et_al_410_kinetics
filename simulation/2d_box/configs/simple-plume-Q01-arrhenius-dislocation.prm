@@ -4,7 +4,7 @@
 # prescribed temperature. Due to pressure and a phase transition the
 # material compresses and the velocity changes to conserve mass.
 
-set Output directory = 2d_box/results/simple_plume_Q1_arrhenius
+set Output directory = 2d_box/results/simple_plume_Q01_arrhenius_dislocation
 
 include 2d_box/parts/globals.prm
 include 2d_box/parts/solver.prm
@@ -16,5 +16,5 @@ include 2d_box/parts/heating.prm
 include 2d_box/parts/traction-plume.prm
 include 2d_box/parts/gravity.prm
 include 2d_box/parts/adiabat.prm
-include 2d_box/parts/material-Q1-plume-arrhenius.prm
+include 2d_box/parts/material-Q01-plume-arrhenius-dislocation.prm
 include 2d_box/parts/postprocess.prm

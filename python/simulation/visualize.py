@@ -2,10 +2,8 @@
 ## .0. Load Libraries                            !!! ##
 #######################################################
 import gc
-import glob
 import re
 import warnings
-from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -21,11 +19,15 @@ __import__("vtk")
 
 
 #######################################################
-## .1. PlottingConfig                            !!! ##
+## .1. PyVistaModelConfig                            !!! ##
 #######################################################
 @dataclass
-class PlottingConfig:
+class PyVistaModelConfig:
     """Holds all configuration for PyVista visualizations."""
+
+    draw_mesh_plots: bool = True
+    draw_centerline_depth_plots: bool = False
+    draw_deflection_plots: bool = False
 
     # Mappings
     file_mapping: dict[str, str] = field(default_factory=dict)
@@ -72,7 +74,7 @@ class PlottingConfig:
 
     n_colors: int = 11
     show_edges: bool = False
-    default_fig_dir: Path | str = "figs/simulation"
+    default_fig_dir: Path = Path("figs/simulation")
     plotter_window_size: list[int] = field(default_factory=lambda: [1920, 1920])
     plotter_background: str = "#FFFFFF"
     plotter_lighting: str = "none"
@@ -92,12 +94,8 @@ class PlottingConfig:
     camera_y_shift_factor: float = -0.045
     camera_zoom_factor: float = 1.9
     screenshot_dpi: tuple[int, int] = field(default_factory=lambda: (330, 330))
-    depth_contour_depths_km: list[int] = field(
-        default_factory=lambda: [0, 125, 410, 660, 2890]
-    )
-    depth_contour_line_widths: list[int] = field(
-        default_factory=lambda: [6, 3, 3, 3, 6]
-    )
+    depth_contour_depths_km: list[int] = field(default_factory=lambda: [0, 125, 410, 660, 2890])
+    depth_contour_line_widths: list[int] = field(default_factory=lambda: [6, 3, 3, 3, 6])
     depth_contour_tolerance_km: float = 15
     velocity_glyph_factor: float = 7e5
     stress_glyph_factor: float = 1e-3
@@ -109,7 +107,7 @@ class PlottingConfig:
     scale_bar_position: tuple = (0.05, 0.08)
     scale_bar_font_size_factor: float = 1.0
 
-    centerline_depth_plots: bool = False
+    centerline_reaction_depth: float = 132e3
     centerline_plot_fig_width: float = 4.5
     centerline_plot_fig_height: float = 6.5
     centerline_plot_rcParams: dict[str, Any] = field(
@@ -399,11 +397,7 @@ class PlottingConfig:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def get_extra_fields(self) -> list[str]:
         """Returns a list of fields that can be derived from other mesh fields."""
-        return (
-            list(self.stress_components.keys())
-            + list(self.shear_stress_components.keys())
-            + self.add_mesh_fields
-        )
+        return list(self.stress_components.keys()) + list(self.shear_stress_components.keys()) + self.add_mesh_fields
 
 
 #######################################################
@@ -411,61 +405,495 @@ class PlottingConfig:
 #######################################################
 @dataclass
 class PyVistaModelVisualizer:
-    plot_config: "PlottingConfig"
-    pvtu_in_dir: dict[str, Path]
-    tsteps: list[int] | None
+    plot_config: PyVistaModelConfig
+    pvtu_in_dirs: dict[str, Path] = field(default_factory=dict)
+    tsteps_mesh: list[int] = field(default_factory=list)
+    tsteps_profile: list[int] = field(default_factory=list)
+    tsteps_topography: list[int] = field(default_factory=list)
     verbosity: int = 0
 
-    def __post_init__(self):
-        if self.tsteps is None:
-            self.tsteps = []
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # def __post_init__(self):
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _get_pvtu_files(self) -> dict[str, list[str]]:
+    def draw(self):
+        """Main loop to process all models and generate visualizations."""
+        warnings.filterwarnings("ignore", category=RuntimeWarning, module="pyvista")
+
+        cfg = self.plot_config
+        model_out_data = self._get_ordered_pvtu_files()
+
+        centerline_data = {}
+        reaction_depth = cfg.centerline_reaction_depth
+
+        for model_id, (pvtu_files, timesteps) in model_out_data.items():
+            print("    --------------------------------------------------")
+            print(f"    ==> Drawing mesh for: {model_id}")
+            print("    --------------------------------------------------")
+
+            if not pvtu_files:
+                if self.verbosity >= 1:
+                    print(f" !! Warning: no result files to process for model: {model_id}")
+                continue
+
+            out_fig_dir_mesh = cfg.default_fig_dir / model_id
+            if not out_fig_dir_mesh.exists():
+                out_fig_dir_mesh.mkdir(parents=True, exist_ok=True)
+
+            for pvtu_path, tstep in zip(pvtu_files, timesteps):
+                if tstep == -1 or tstep not in set(self.tsteps_mesh + self.tsteps_profile + self.tsteps_topography):
+                    continue
+
+                try:
+                    mesh = pv.read(pvtu_path)
+                    if mesh is None:
+                        if self.verbosity >= 1:
+                            print(f" !! Warning: pyvista.read returned None for pvtu_file:\n" f"    {pvtu_path.name}")
+                        continue
+                except Exception as e:
+                    if self.verbosity >= 1:
+                        print(f" !! Warning: failed to read mesh pvtu_file {pvtu_path.name}:\n" f" !! Error message: {e}")
+                    continue
+
+                self._rotate_mesh(mesh, tstep)
+
+                for field_name in cfg.file_mapping.keys():
+                    self._prepare_mesh(mesh, field_name)
+                    if not self._check_mesh(mesh, field_name):
+                        return
+
+                    field_id = cfg.file_mapping.get(field_name, field_name.replace("_", "-"))
+                    time_myr = self._get_mesh_time_myr(mesh, model_id, tstep)
+                    cmap, clim = self._configure_cmap(mesh, field_name, 0.05)
+
+                    if cfg.draw_mesh_plots and tstep in self.tsteps_mesh:
+                        out_path = out_fig_dir_mesh / f"{model_id.replace('_', '-')}-{field_id}-{str(tstep).zfill(4)}.png"
+                        self.draw_mesh(mesh.copy(), field_name, time_myr, cmap, clim, out_path)
+
+                    if cfg.draw_centerline_depth_plots and (tstep in self.tsteps_profile or tstep in self.tsteps_topography):
+                        centerline_data.setdefault(model_id, {}).setdefault(tstep, {})
+                        centerline_data[model_id][tstep]["time_myr"] = time_myr
+
+                        depths, values = self._get_centerline_profile(mesh.copy(), field_name)
+
+                        centerline_data[model_id][tstep].setdefault("fields", {})
+                        centerline_data[model_id][tstep]["fields"][field_name] = {"depths": depths, "values": values, "clim": clim}
+
+                        if field_name == "X_field":
+                            deflection, sharpness = self._get_profile_deflection_and_sharpness(depths, values, reaction_depth)
+                            centerline_data[model_id][tstep]["deflection"] = float(deflection)
+                            centerline_data[model_id][tstep]["sharpness"] = float(sharpness)
+
+        if cfg.draw_centerline_depth_plots:
+            print("    --------------------------------------------------")
+            print("    ==> Drawing deflections ...")
+            print("    --------------------------------------------------")
+
+            for model_type in ["plume", "slab"]:
+                selected_models = [m for m in centerline_data.keys() if model_type in m]
+                selected_models = sorted(selected_models, key=self._extract_sort_key)
+
+                deflection_group = {}
+                for model_id, tsteps in centerline_data.items():
+                    if model_id in selected_models:
+                        times = []
+                        defs = []
+                        sorted_tsteps = sorted(tsteps.keys())
+                        for tstep in sorted_tsteps:
+                            if tstep in self.tsteps_topography:
+                                data = tsteps[tstep]
+                                if "deflection" in data and "time_myr" in data:
+                                    times.append(data["time_myr"])
+                                    defs.append(data["deflection"])
+                        if times and defs:
+                            deflection_group[model_id] = {
+                                "time_myr": np.array(times, dtype=np.float32),
+                                "deflection": np.array(defs, dtype=np.float32),
+                            }
+
+                out_fig_dir_deflection = cfg.default_fig_dir / "topography"
+                out_fig_dir_deflection.mkdir(parents=True, exist_ok=True)
+                out_path = out_fig_dir_deflection / f"simple-{model_type}-deflection.png"
+                self.draw_deflection(deflection_group, out_path)
+
+        if cfg.draw_centerline_depth_plots:
+            print("    --------------------------------------------------")
+            print("    ==> Drawing sharpnesss ...")
+            print("    --------------------------------------------------")
+
+            for model_type in ["plume", "slab"]:
+                selected_models = [m for m in centerline_data.keys() if model_type in m]
+                selected_models = sorted(selected_models, key=self._extract_sort_key)
+
+                sharpness_group = {}
+                for model_id, tsteps in centerline_data.items():
+                    if model_id in selected_models:
+                        times = []
+                        defs = []
+                        sorted_tsteps = sorted(tsteps.keys())
+                        for tstep in sorted_tsteps:
+                            if tstep in self.tsteps_topography:
+                                data = tsteps[tstep]
+                                if "sharpness" in data and "time_myr" in data:
+                                    times.append(data["time_myr"])
+                                    defs.append(data["sharpness"])
+                        if times and defs:
+                            sharpness_group[model_id] = {
+                                "time_myr": np.array(times, dtype=np.float32),
+                                "sharpness": np.array(defs, dtype=np.float32),
+                            }
+
+                out_fig_dir_sharpness = cfg.default_fig_dir / "topography"
+                out_fig_dir_sharpness.mkdir(parents=True, exist_ok=True)
+                out_path = out_fig_dir_sharpness / f"simple-{model_type}-sharpness.png"
+                self.draw_sharpness(sharpness_group, out_path)
+
+        if cfg.draw_centerline_depth_plots:
+            print("    --------------------------------------------------")
+            print("    ==> Drawing centerline profiles ...")
+            print("    --------------------------------------------------")
+
+            for model_type in ["plume", "slab"]:
+                selected_models = [m for m in centerline_data.keys() if model_type in m]
+                selected_models = sorted(selected_models, key=self._extract_sort_key)
+
+                all_fields = set()
+                for m in selected_models:
+                    for tstep in centerline_data[m].keys():
+                        if tstep in self.tsteps_profile:
+                            all_fields.update(centerline_data[m][tstep].get("fields", {}).keys())
+
+                for field_name in sorted(all_fields):
+                    # Collect all timesteps for this field across models
+                    all_timesteps = sorted({t for m in selected_models for t in centerline_data[m] if field_name in centerline_data[m][t].get("fields", {})})
+
+                    for tstep in all_timesteps:
+                        if tstep in self.tsteps_profile:
+                            profile_group = {}
+
+                            time_myr = 0
+                            for model_id in selected_models:
+                                if tstep not in centerline_data[model_id]:
+                                    continue
+                                field_data = centerline_data[model_id][tstep].get("fields", {}).get(field_name)
+                                if not field_data:
+                                    continue
+                                profile_group[model_id] = field_data
+                                time_myr = centerline_data[model_id][tstep]["time_myr"]
+
+                            if not profile_group:
+                                continue
+
+                            out_fig_dir_profiles = cfg.default_fig_dir / "profiles"
+                            out_fig_dir_profiles.mkdir(parents=True, exist_ok=True)
+
+                            field_id = cfg.file_mapping.get(field_name, field_name.replace("_", "-"))
+                            type_id = f"simple-{model_type}"
+                            out_path = out_fig_dir_profiles / f"{type_id}-{field_id}-centerline-{str(tstep).zfill(4)}.png"
+
+                            self.draw_profile(profile_group, field_name, time_myr, out_path, reaction_depth)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def draw_mesh(
+        self,
+        mesh: pv.DataSet,
+        field_name: str,
+        time_myr: float,
+        cmap: mcolors.Colormap | mcolors.ListedColormap,
+        clim: tuple[float, float],
+        out_path: Path,
+    ) -> None:
+        """Visualizes a single field on the mesh using PyVista."""
+        cfg = self.plot_config
+
+        if out_path.exists():
+            print(f" -- Found plot: {out_path.name}!")
+            return
+
+        print(f"--> {out_path.name}")
+
+        plot_title = f"{int(time_myr):03} Ma"
+
+        plotter: pv.Plotter = pv.Plotter(
+            off_screen=True,
+            window_size=cfg.plotter_window_size,
+            lighting=cfg.plotter_lighting,
+        )
+        plotter.ren_win.OffScreenRenderingOn()
+        plotter.set_background(cfg.plotter_background)  # type: ignore
+
+        glyph_arrows = None
+        if (field_name == "velocity" or cfg.velocity_mapping[field_name]) and "velocity" in mesh.point_data:
+            if "velocity_mag" not in mesh.point_data:
+                mesh["velocity_mag"] = np.linalg.norm(mesh["velocity"], axis=1)
+            glyph_arrows = mesh.glyph(
+                orient="velocity",  # type: ignore[arg-type]
+                scale="velocity_mag",  # type: ignore[arg-type]
+                factor=cfg.velocity_glyph_factor,
+                geom=pv.Arrow(),
+                tolerance=0.05,
+            )
+        elif field_name == "principal_stress_1" and "principal_stress_direction_1" in mesh.point_data:
+            glyph_arrows = mesh.glyph(
+                orient="principal_stress_direction_1",  # type: ignore[arg-type]
+                scale="principal_stress_1",  # type: ignore[arg-type]
+                factor=cfg.stress_glyph_factor,
+                geom=pv.Line(),
+            )
+        elif field_name == "principal_stress_2" and "principal_stress_direction_2" in mesh.point_data:
+            glyph_arrows = mesh.glyph(
+                orient="principal_stress_direction_2",  # type: ignore[arg-type]
+                scale="principal_stress_2",  # type: ignore[arg-type]
+                factor=cfg.stress_glyph_factor,
+                geom=pv.Line(),
+            )
+
+        if glyph_arrows:
+            plotter.add_mesh(
+                glyph_arrows,
+                color="black",
+                line_width=cfg.glyph_line_width,
+                render_lines_as_tubes=False,
+            )
+
+        sargs = dict(
+            title=cfg.bar_mapping.get(field_name, field_name),
+            vertical=cfg.cbar_vertical,
+            title_font_size=cfg.cbar_title_font_size,
+            label_font_size=cfg.cbar_label_font_size,
+            fmt=cfg.fmt_mapping.get(field_name, "%.1f"),
+            width=cfg.cbar_width,
+            n_labels=cfg.cbar_n_labels,
+            position_x=cfg.cbar_position[0],
+            position_y=cfg.cbar_position[1],
+        )
+
+        plotter.add_mesh(
+            mesh,
+            scalars=f"{field_name}_viz",
+            cmap=cmap,
+            clim=clim,
+            show_edges=cfg.show_edges,
+            edge_opacity=cfg.edge_opacity,
+            scalar_bar_args=sargs,
+            nan_color="#FEFEFE",
+        )
+
+        camera_settings = self._compute_camera_settings(mesh, cfg.camera_full_view)
+        plotter.camera_position = camera_settings
+
+        if cfg.scale_bar_enabled:
+            self._add_scale_bar(mesh, plotter)
+
+        plotter.add_text(plot_title, font_size=cfg.title_font_size, position=cfg.title_position, viewport=True)  # type: ignore[arg-type]
+
+        if "depth" in mesh.point_data:
+            for depth, width in zip(cfg.depth_contour_depths_km, cfg.depth_contour_line_widths):
+                self._add_depth_contour(plotter, mesh, depth, line_width=width, tolerance_km=cfg.depth_contour_tolerance_km)
+
+        gc.collect()
+        plotter.screenshot(out_path)
+        gc.collect()
+        plotter.close()
+        pv.close_all()
+
+        del mesh, plotter, glyph_arrows
+        gc.collect()
+
+        try:
+            img = Image.open(out_path)
+            img.save(out_path, dpi=cfg.screenshot_dpi)
+        except Exception as e:
+            print(f"PIL failed to resave {out_path} with new DPI: {e}")
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def draw_profile(self, profile_group: dict[str, dict], field_name: str, time_myr: float, out_path: Path, reaction_depth: float) -> None:
+        """Draw depth profile plots for given models at a timestep for a specific field."""
+        cfg = self.plot_config
+
+        if out_path.exists():
+            print(f" -- Found plot: {out_path.name}!")
+            return
+
+        print(f"--> {out_path.name}")
+
+        plt.rcParams.update(cfg.centerline_plot_rcParams)
+        fig, ax = plt.subplots(figsize=(cfg.centerline_plot_fig_width, cfg.centerline_plot_fig_height))
+
+        all_clim_lows = []
+        all_clim_highs = []
+        for data in profile_group.values():
+            if data:
+                all_clim_lows.append(data["clim"][0])
+                all_clim_highs.append(data["clim"][1])
+        if all_clim_lows and all_clim_highs:
+            clim = (min(all_clim_lows), max(all_clim_highs))
+        else:
+            clim = (0, 1)
+
+        plot_title = ""
+
+        cmap = plt.get_cmap("Set1")
+        for i, (model_id, data) in enumerate(profile_group.items()):
+            if not data:
+                continue
+
+            depths = data["depths"]
+            values = data["values"]
+            label = model_id.replace("_", "-")
+            color = cmap(i % 10)
+            ax.plot(values, depths / 1e3, label=label, color=color)
+            plot_title = f"{int(time_myr):03} Ma"
+
+        ax.set_xlabel(cfg.bar_mapping.get(field_name, field_name))
+        ax.set_ylabel("Depth (km)")
+        ax.invert_yaxis()
+        ax.set_xlim(clim)
+        ax.grid(True, which="both", linewidth=0.5, color="#999999")
+        ax.tick_params(axis="both", which="both", length=0)
+        ax.axhline(reaction_depth / 1e3, color="black", linestyle="--", linewidth=1, zorder=1)
+        ax.legend(fontsize="small", loc="best")
+        plt.title(plot_title)
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=cfg.centerline_plot_rcParams.get("figure.dpi", 300))
+        plt.close(fig)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def draw_deflection(self, deflection_group: dict[str, dict], out_path: Path) -> None:
+        """Plot deflection vs. time for all models on one plot using deflection_group data."""
+        cfg = self.plot_config
+
+        if out_path.exists():
+            print(f" -- Found plot: {out_path.name}!")
+            return
+
+        print(f"--> {out_path.name}")
+
+        all_models = sorted(deflection_group.keys(), key=self._extract_sort_key)
+
+        plt.rcParams.update(cfg.centerline_plot_rcParams)
+        fig, ax = plt.subplots(figsize=(cfg.centerline_plot_fig_height, cfg.centerline_plot_fig_width))
+        cmap = plt.get_cmap("Set1")
+
+        for i, model_id in enumerate(all_models):
+            data = deflection_group[model_id]
+            times = data["time_myr"]
+            deflections = data["deflection"]
+
+            if len(times) > 0 and len(deflections) > 0:
+                label = model_id.replace("_", "-")
+                color = cmap(i % 10)
+                ax.plot(times, deflections / 1e3, label=label, color=color)
+
+        ax.set_xlabel("Time (Ma)")
+        ax.set_ylabel("Deflection (km)")
+        ax.grid(True, which="both", linewidth=0.5, color="#999999")
+        ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
+        plt.title("Deflection of the 410km discontinuity")
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=cfg.centerline_plot_rcParams.get("figure.dpi", 300))
+        plt.close(fig)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def draw_sharpness(self, sharpness_group: dict[str, dict], out_path: Path) -> None:
+        """Plot sharpness vs. time for all models on one plot using sharpness_group data."""
+        cfg = self.plot_config
+
+        if out_path.exists():
+            print(f" -- Found plot: {out_path.name}!")
+            return
+
+        print(f"--> {out_path.name}")
+
+        all_models = sorted(sharpness_group.keys(), key=self._extract_sort_key)
+
+        plt.rcParams.update(cfg.centerline_plot_rcParams)
+        fig, ax = plt.subplots(figsize=(cfg.centerline_plot_fig_height, cfg.centerline_plot_fig_width))
+        cmap = plt.get_cmap("Set1")
+
+        for i, model_id in enumerate(all_models):
+            data = sharpness_group[model_id]
+            times = data["time_myr"]
+            sharpnesss = data["sharpness"]
+
+            if len(times) > 0 and len(sharpnesss) > 0:
+                label = model_id.replace("_", "-")
+                color = cmap(i % 10)
+                ax.plot(times, sharpnesss / 1e3, label=label, color=color)
+
+        ax.set_xlabel("Time (Ma)")
+        ax.set_ylabel("Sharpness (km)")
+        ax.grid(True, which="both", linewidth=0.5, color="#999999")
+        ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
+        plt.title("Sharpness of the 410km discontinuity")
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=cfg.centerline_plot_rcParams.get("figure.dpi", 300))
+        plt.close(fig)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _get_ordered_pvtu_files(self) -> dict[str, tuple[list[Path], list[int]]]:
         """"""
-        pvtu_files: dict[str, list[str]] = {}
-        for model_id, directory in self.pvtu_in_dir.items():
+        model_entries: list[tuple[str, tuple[list[Path], list[int]]]] = []
+
+        for model_id, directory in self.pvtu_in_dirs.items():
             solution_dir = directory / "solution"
             if not solution_dir.is_dir():
                 if self.verbosity >= 1:
-                    print(" !! Warning: solution directory not found!")
-                pvtu_files[model_id] = []
+                    print(f" !! Warning: solution directory not found for model: {model_id}")
+                model_entries.append((model_id, ([], [])))
                 continue
 
             try:
-                files = glob.glob(str(solution_dir / "*.pvtu"))
+                files = list(solution_dir.glob("*.pvtu"))
                 if not files:
                     if self.verbosity >= 1:
-                        print(" !! Warning: no .pvtu files found!")
-                    pvtu_files[model_id] = []
+                        print(f" !! Warning: no .pvtu files found for model: {model_id}")
+                    model_entries.append((model_id, ([], [])))
                     continue
-
-                def extract_step_number(filename: Path | str) -> int:
-                    if isinstance(filename, str):
-                        filename = Path(filename)
-                    match = re.search(r"solution-(\d+)\.pvtu", filename.name)
-                    if match:
-                        return int(match.group(1))
-                    else:
-                        if self.verbosity >= 1:
-                            print(
-                                f" !! Warning: filename does not match expected pattern: {filename}"
-                            )
-                        return -1
-
-                pvtu_files[model_id] = sorted(files, key=extract_step_number)
-
             except Exception as e:
                 if self.verbosity >= 1:
-                    print(
-                        f" !! Warning: error processing directory {solution_dir}:\n    {e}"
-                    )
-                pvtu_files[model_id] = []
+                    print(f" !! Warning: error processing directory {solution_dir}:\n    {e}")
+                model_entries.append((model_id, ([], [])))
+                continue
 
-        return pvtu_files
+            parsed = []
+            for file in files:
+                match = re.search(r"solution-(\d+)\.pvtu", file.name)
+                if match:
+                    timestep = int(match.group(1))
+                else:
+                    timestep = -1
+                    if self.verbosity >= 1:
+                        print(f" !! Warning: could not parse timestep from filename:\n    {file.name}")
+                parsed.append((timestep, file))
+
+            # Sort by timestep
+            parsed.sort(key=lambda x: x[0])
+            sorted_timesteps = [t for t, _ in parsed]
+            sorted_files = [f for _, f in parsed]
+
+            # Sort by model id
+            model_entries.append((model_id, (sorted_files, sorted_timesteps)))
+
+        model_entries.sort(key=lambda x: self._extract_sort_key(x[0]))
+
+        # Convert back to dict to preserve sorted order
+        ordered_pvtu_files: dict[str, tuple[list[Path], list[int]]] = dict(model_entries)
+
+        return ordered_pvtu_files
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _prepare_mesh_fields(self, mesh: pv.DataSet, field_name: str) -> pv.DataSet:
+    def _extract_sort_key(self, model_id: str):
+        """"""
+        match = re.match(r"(.*?)(\d+)$", model_id)
+        if match:
+            prefix, number = match.groups()
+            return (prefix, int(number))
+        else:
+            return (model_id, float("inf"))
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _prepare_mesh(self, mesh: pv.DataSet, field_name: str) -> None:
         """Ensures necessary fields are on the mesh, calculating them if possible."""
         if re.fullmatch(r"stress_[xyz]{2}", field_name) and "stress" in mesh.point_data:
             if field_name not in mesh.point_data:
@@ -473,29 +901,19 @@ class PyVistaModelVisualizer:
                 if idx is not None:
                     mesh[field_name] = mesh["stress"][:, idx]
 
-        elif (
-            re.fullmatch(r"shear_stress_[xyz]{2}", field_name)
-            and "shear_stress" in mesh.point_data
-        ):
+        elif re.fullmatch(r"shear_stress_[xyz]{2}", field_name) and "shear_stress" in mesh.point_data:
             if field_name not in mesh.point_data:
                 idx = self.plot_config.shear_stress_components.get(field_name)
                 if idx is not None:
                     mesh[field_name] = mesh["shear_stress"][:, idx]
 
         elif field_name == "differential_stress":
-            if (
-                "principal_stress_1" in mesh.point_data
-                and "principal_stress_2" in mesh.point_data
-            ):
+            if "principal_stress_1" in mesh.point_data and "principal_stress_2" in mesh.point_data:
                 if field_name not in mesh.point_data:
-                    mesh[field_name] = (
-                        mesh["principal_stress_1"] - mesh["principal_stress_2"]
-                    )
+                    mesh[field_name] = mesh["principal_stress_1"] - mesh["principal_stress_2"]
             else:
                 if self.verbosity >= 1:
-                    print(
-                        " !! Warning: cannot calculate 'differential_stress': missing principal stress components."
-                    )
+                    print(" !! Warning: cannot calculate 'differential_stress': missing principal stress components.")
 
         elif field_name == "nonadiabatic_density":
             if "density" in mesh.point_data and "adiabatic_density" in mesh.point_data:
@@ -503,62 +921,37 @@ class PyVistaModelVisualizer:
                     mesh[field_name] = mesh["density"] - mesh["adiabatic_density"]
             else:
                 if self.verbosity >= 1:
-                    print(
-                        " !! Warning: cannot calculate 'nonadiabatic_density': missing density components."
-                    )
+                    print(" !! Warning: cannot calculate 'nonadiabatic_density': missing density components.")
 
         elif field_name == "Vp_Vs_ratio":
-            if "Vp_anomaly" in mesh.point_data and "Vs_anomaly" in mesh.point_data:
+            if "seismic_Vp" in mesh.point_data and "seismic_Vs" in mesh.point_data:
                 if field_name not in mesh.point_data:
-                    vp_anom = mesh["Vp_anomaly"]
-                    vs_anom = mesh["Vs_anomaly"]
-                    mesh[field_name] = np.divide(
-                        vp_anom, vs_anom, out=np.zeros_like(vp_anom), where=vs_anom != 0
-                    )
+                    vp_anom = mesh["seismic_Vp"]
+                    vs_anom = mesh["seismic_Vs"]
+                    mesh[field_name] = np.divide(vp_anom, vs_anom, out=np.zeros_like(vp_anom), where=vs_anom != 0)
             else:
                 if self.verbosity >= 1:
-                    print(
-                        " !! Warning: cannot calculate 'Vp_Vs_ratio': missing Vp/Vs anomaly data."
-                    )
-
-        return mesh
+                    print(" !! Warning: cannot calculate 'Vp_Vs_ratio': missing Vp/Vs data.")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _rotate_mesh(self, mesh: pv.DataSet, tstep: int) -> pv.DataSet:
+    def _check_mesh(self, mesh: pv.DataSet, field_name: str) -> bool:
+        """"""
+        if field_name not in mesh.point_data and field_name not in self.plot_config.get_extra_fields():
+            return False
+
+        if field_name not in mesh.point_data:
+            return False
+
+        return True
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _rotate_mesh(self, mesh: pv.DataSet, tstep: int) -> None:
         """"""
         plot_config = self.plot_config
 
         if plot_config.rotation_coeff != 0 and plot_config.rotation_init != 0:
-            rotation_angle = (
-                int(tstep) * plot_config.rotation_coeff
-            ) + plot_config.rotation_init
+            rotation_angle = (int(tstep) * plot_config.rotation_coeff) + plot_config.rotation_init
             mesh.rotate_z(rotation_angle, inplace=True)
-
-        return mesh
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _check_mesh_field(
-        self, mesh: pv.DataSet, field_name: str, model_id: str, tstep: int
-    ) -> bool:
-        """"""
-        plot_config = self.plot_config
-
-        if (
-            field_name not in mesh.point_data
-            and field_name not in plot_config.get_extra_fields()
-        ):
-            print(
-                f" -- Skipping plot: field '{field_name}' not available on mesh for timestep {tstep}, model {model_id}!"
-            )
-            return False
-
-        if field_name not in mesh.point_data:
-            print(
-                f" -- Skipping plot: field '{field_name}' could not be prepared/calculated for mesh!"
-            )
-            return False
-
-        return True
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _get_mesh_time_myr(self, mesh: pv.DataSet, model_id: str, tstep: int) -> float:
@@ -567,11 +960,66 @@ class PyVistaModelVisualizer:
             time_myr = mesh.field_data["TIME"][0] / 1e6
         else:
             time_myr = 0.0
-            print(
-                f"'TIME' field not found in mesh.field_data for timestep {tstep}, model {model_id}."
-            )
+            print(f"'TIME' field not found in mesh.field_data for timestep {tstep}, model {model_id}.")
 
         return time_myr
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _get_centerline_profile(self, mesh: pv.DataSet, field_name: str) -> tuple[np.ndarray, np.ndarray]:
+        """"""
+        cfg = self.plot_config
+
+        x_coords = mesh.points[:, 0]
+        x_center = 0.5 * (x_coords.min() + x_coords.max())
+        epsilon = (x_coords.max() - x_coords.min()) * 0.005
+        center_mask = np.abs(x_coords - x_center) < epsilon
+
+        if not np.any(center_mask):
+            print(" !! No centerline points found!")
+            return np.empty(0), np.empty(0)
+
+        if (field_name == "velocity" or cfg.velocity_mapping.get(field_name, False)) and "velocity" in mesh.point_data:
+            mesh["velocity"] = mesh["velocity"][:, 1]
+
+        depths = mesh.point_data["depth"][center_mask]
+        values = mesh.point_data[field_name][center_mask] * cfg.scale_mapping.get(field_name, 1.0)
+
+        sort_idx = np.argsort(depths)
+        return depths[sort_idx], values[sort_idx]
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _get_profile_deflection_and_sharpness(self, depths: np.ndarray, values: np.ndarray, reaction_depth: float) -> tuple[float, float]:
+        """"""
+
+        def interpolate_depth_at_target(target):
+            diffs = values - target
+            sign_change = np.where(np.diff(np.sign(diffs)) != 0)[0]
+
+            if not len(sign_change):
+                return np.nan
+
+            i = sign_change[np.argmin(np.abs(diffs[sign_change]))]
+
+            x0, x1 = values[i], values[i + 1]
+            z0, z1 = depths[i], depths[i + 1]
+
+            if x1 == x0:
+                return float((z0 + z1) / 2)
+
+            weight = (target - x0) / (x1 - x0)
+            return float(z0 + weight * (z1 - z0))
+
+        epsilon = 1e-3
+        depth_at_X0 = interpolate_depth_at_target(epsilon)
+        depth_at_X1 = interpolate_depth_at_target(1.0 - epsilon)
+
+        if np.isnan(depth_at_X0) or np.isnan(depth_at_X1):
+            return np.nan, np.nan
+
+        deflection = reaction_depth - depth_at_X1
+        sharpness = depth_at_X1 - depth_at_X0
+
+        return deflection, sharpness
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _is_diverging_cmap(self, cmap_name: str) -> bool:
@@ -589,9 +1037,7 @@ class PyVistaModelVisualizer:
             "bwr",
             "seismic",
         ]
-        diverging_names = diverging_base_names + [
-            name + "_r" for name in diverging_base_names
-        ]
+        diverging_names = diverging_base_names + [name + "_r" for name in diverging_base_names]
 
         return cmap_name in diverging_names
 
@@ -626,20 +1072,14 @@ class PyVistaModelVisualizer:
             "YlGn",
         ]
 
-        sequential_names = sequential_base_names + [
-            name + "_r" for name in sequential_base_names
-        ]
+        sequential_names = sequential_base_names + [name + "_r" for name in sequential_base_names]
 
         return cmap_name in sequential_names
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _modify_diverging_cmap(
-        self, cmap_name: str, central_color_hex: str, n_colors: int = 11
-    ) -> mcolors.Colormap | mcolors.ListedColormap:
+    def _modify_diverging_cmap(self, cmap_name: str, central_color_hex: str, n_colors: int = 11) -> mcolors.Colormap | mcolors.ListedColormap:
         if not self._is_diverging_cmap(cmap_name):
-            print(
-                f"'{cmap_name}' is not a recognized diverging colormap. Returning original."
-            )
+            print(f"'{cmap_name}' is not a recognized diverging colormap. Returning original.")
             return plt.get_cmap(cmap_name, n_colors)
 
         original_cmap = plt.get_cmap(cmap_name)
@@ -650,13 +1090,9 @@ class PyVistaModelVisualizer:
         return mcolors.ListedColormap(cmap_colors)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _modify_sequential_cmap(
-        self, cmap_name: str, end_color_hex: str, n_colors: int = 11
-    ) -> mcolors.Colormap | mcolors.ListedColormap:
+    def _modify_sequential_cmap(self, cmap_name: str, end_color_hex: str, n_colors: int = 11) -> mcolors.Colormap | mcolors.ListedColormap:
         if not self._is_sequential_cmap(cmap_name):
-            print(
-                f"'{cmap_name}' is not a recognized sequential colormap. Returning original."
-            )
+            print(f"'{cmap_name}' is not a recognized sequential colormap. Returning original.")
             return plt.get_cmap(cmap_name, n_colors)
 
         original_cmap = plt.get_cmap(cmap_name)
@@ -712,44 +1148,35 @@ class PyVistaModelVisualizer:
 
             if x_range < 1e-3 or y_range < 1e-3:
                 if verbosity >= 1:
-                    print(
-                        f" !! Warning: points at {depth_km} km are effectively 1D!\n"
-                        " -- Skipping depth contour"
-                    )
+                    print(f" !! Warning: points at {depth_km} km are effectively 1D!\n" " -- Skipping depth contour")
                 return
 
             try:
                 hull = ConvexHull(xy)
                 ordered_contour_points = contour_points[hull.vertices]
                 polyline = pv.lines_from_points(ordered_contour_points, close=True)
-                plotter.add_mesh(
-                    polyline, color=color, line_width=line_width, opacity=alpha
-                )
+                plotter.add_mesh(polyline, color=color, line_width=line_width, opacity=alpha)
             except Exception as e:
-                print(
-                    f" !! Error: could not generate convex hull for depth contour at {depth_km}km:\n    {e}"
-                )
+                print(f" !! Error: could not generate convex hull for depth contour at {depth_km}km:\n    {e}")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _configure_cmap(
         self, mesh: pv.DataSet, field_name: str, expansion: float = 0.0
-    ) -> tuple:
+    ) -> tuple[mcolors.Colormap | mcolors.ListedColormap, tuple[float, float]]:
         """"""
         plot_config = self.plot_config
 
         cmap_choice = plot_config.cmap_mapping.get(field_name, "viridis")
 
-        current_scalars = mesh.point_data[field_name] * plot_config.scale_mapping.get(
-            field_name, 1.0
-        )
+        current_scalars = mesh.point_data[field_name] * plot_config.scale_mapping.get(field_name, 1.0)
 
         if field_name in ["viscosity", "strain_rate"]:
             current_scalars = np.log10(np.abs(np.maximum(current_scalars, 1e-30)))
 
         mesh[f"{field_name}_viz"] = current_scalars
 
-        clim_actual = plot_config.clim_mapping.get(field_name, None)
-        if clim_actual is None or clim_actual == "auto":
+        clim_config = plot_config.clim_mapping.get(field_name, None)
+        if clim_config is None or clim_config == "auto":
             finite_data = current_scalars[np.isfinite(current_scalars)]
             if finite_data.size > 0:
                 clim_min = np.min(finite_data)
@@ -763,16 +1190,8 @@ class PyVistaModelVisualizer:
                     if self._is_diverging_cmap(cmap_choice):
                         clim_max_abs = max(abs(clim_min), abs(clim_max))
                         clim_actual = (
-                            (
-                                -clim_max_abs - 0.1 * abs(clim_max_abs)
-                                if clim_max_abs != 0
-                                else -0.1
-                            ),
-                            (
-                                clim_max_abs + 0.1 * abs(clim_max_abs)
-                                if clim_max_abs != 0
-                                else 0.1
-                            ),
+                            (-clim_max_abs - 0.1 * abs(clim_max_abs) if clim_max_abs != 0 else -0.1),
+                            (clim_max_abs + 0.1 * abs(clim_max_abs) if clim_max_abs != 0 else 0.1),
                         )
                     else:
                         clim_actual = (clim_min, clim_max)
@@ -780,6 +1199,8 @@ class PyVistaModelVisualizer:
                 clim_actual = (0, 1)
             if self.verbosity >= 1:
                 print(f" !! Warning: Using auto CLIM for '{field_name}': {clim_actual}")
+        else:
+            clim_actual = (0, 1)
 
         if expansion != 0.0:
             try:
@@ -788,32 +1209,22 @@ class PyVistaModelVisualizer:
                 clim_actual = (cmin - expansion * crange, cmax + expansion * crange)
             except (TypeError, ValueError) as e:
                 if self.verbosity >= 1:
-                    print(
-                        f" !! Expansion skipped: CLIM values not numeric: {clim_actual} ({e})"
-                    )
+                    print(f" !! Expansion skipped: CLIM values not numeric: {clim_actual} ({e})")
 
         modified_seq_target = ["stress_second_invariant", "X_field"]
 
         if self._is_diverging_cmap(cmap_choice):
             central_color = "#FFFFFF" if cmap_choice in ["RdGy"] else "#E5E5E5"
-            final_cmap = self._modify_diverging_cmap(
-                cmap_choice, central_color, plot_config.n_colors
-            )
-        elif (
-            self._is_sequential_cmap(cmap_choice) and field_name in modified_seq_target
-        ):
-            final_cmap = self._modify_sequential_cmap(
-                cmap_choice, "#E5E5E5", plot_config.n_colors
-            )
+            final_cmap = self._modify_diverging_cmap(cmap_choice, central_color, plot_config.n_colors)
+        elif self._is_sequential_cmap(cmap_choice) and field_name in modified_seq_target:
+            final_cmap = self._modify_sequential_cmap(cmap_choice, "#E5E5E5", plot_config.n_colors)
         else:
             final_cmap = plt.get_cmap(cmap_choice, plot_config.n_colors)
 
         return final_cmap, clim_actual
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _compute_camera_settings(
-        self, mesh, full_view: bool
-    ) -> list[tuple[float, ...]]:
+    def _compute_camera_settings(self, mesh, full_view: bool) -> list[tuple[float, ...]]:
         """"""
         bounds = mesh.bounds
 
@@ -864,8 +1275,7 @@ class PyVistaModelVisualizer:
 
         start_point = [
             bounds[0] + x_range * self.plot_config.scale_bar_position[0],
-            bounds[2]
-            + (bounds[3] - bounds[2]) * self.plot_config.scale_bar_position[1],
+            bounds[2] + (bounds[3] - bounds[2]) * self.plot_config.scale_bar_position[1],
             0,
         ]
         end_point = [start_point[0] + scale_length, start_point[1], 0]
@@ -892,358 +1302,3 @@ class PyVistaModelVisualizer:
             point_size=0,
             shape=None,
         )
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def draw(self):
-        """Main loop to process all models and generate visualizations."""
-        warnings.filterwarnings("ignore", category=RuntimeWarning, module="pyvista")
-
-        all_pvtu_files = self._get_pvtu_files()
-
-        for model_id, result_files in all_pvtu_files.items():
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            print(f"==> Looking for results: {model_id}")
-
-            if not result_files:
-                if self.verbosity >= 1:
-                    print(
-                        f" !! Warning: no result files to process for model: {model_id}"
-                    )
-                continue
-
-            if isinstance(self.plot_config.default_fig_dir, str):
-                model_fig_dir = Path(self.plot_config.default_fig_dir)
-            else:
-                model_fig_dir = self.plot_config.default_fig_dir
-
-            if not model_fig_dir.exists():
-                model_fig_dir.mkdir(parents=True, exist_ok=True)
-
-            timesteps_in_files = []
-            for file in result_files:
-                if isinstance(file, str):
-                    file = Path(file)
-
-                match = re.search(r"solution-(\d+)\.pvtu", file.name)
-                if match:
-                    timesteps_in_files.append(int(match.group(1)))
-                else:
-                    if self.verbosity >= 1:
-                        print(
-                            f" !! Warning: could not parse timestep from filename:\n"
-                            f"    {file.name}"
-                        )
-                    timesteps_in_files.append(-1)
-
-            for pvtu_path, tstep in zip(result_files, timesteps_in_files):
-                if tstep == -1 or (self.tsteps and tstep not in self.tsteps):
-                    continue
-
-                if isinstance(pvtu_path, str):
-                    pvtu_path = Path(pvtu_path)
-
-                try:
-                    mesh = pv.read(pvtu_path)
-                    if mesh is None:
-                        if self.verbosity >= 1:
-                            print(
-                                f" !! Warning: pyvista.read returned None for file:\n"
-                                f"    {pvtu_path.name}"
-                            )
-                        continue
-                except Exception as e:
-                    if self.verbosity >= 1:
-                        print(
-                            f" !! Warning: failed to read mesh file {pvtu_path.name}:\n"
-                            f" !! Error message: {e}"
-                        )
-                    continue
-
-                print("    --------------------------------------------------")
-                print(
-                    f"    Drawing mesh plots @ timestep: {tstep} (File: {pvtu_path.name})"
-                )
-                print("    --------------------------------------------------")
-                for field_key in self.plot_config.file_mapping.keys():
-                    self.visualize_mesh(
-                        mesh.copy(), field_key, tstep, model_id, model_fig_dir
-                    )
-
-                if self.plot_config.centerline_depth_plots:
-                    print("    --------------------------------------------------")
-                    print(
-                        f"    Drawing centerline depth plots: @ timestep: {tstep} (File: {pvtu_path.name})"
-                    )
-                    print("    --------------------------------------------------")
-                    for field_key in self.plot_config.file_mapping.keys():
-                        self.visualize_centerline_depth(
-                            mesh.copy(),
-                            field_key,
-                            tstep,
-                            model_id,
-                            model_fig_dir,
-                            reaction_depth=132,
-                        )
-
-        pv.close_all()
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def visualize_mesh(
-        self,
-        mesh: pv.DataSet,
-        field_name: str,
-        tstep: int,
-        model_id: str,
-        base_fig_dir: Path | str,
-    ) -> None:
-        """Visualizes a single field on the mesh using PyVista."""
-        if isinstance(base_fig_dir, str):
-            base_fig_dir = Path(base_fig_dir)
-
-        plot_config = self.plot_config
-
-        mesh = self._prepare_mesh_fields(mesh, field_name)
-        mesh = self._rotate_mesh(mesh, tstep)
-
-        if not self._check_mesh_field(mesh, field_name, model_id, tstep):
-            return
-
-        mapped_file_str = plot_config.file_mapping.get(
-            field_name, field_name.replace("_", "-")
-        )
-        out_path = (
-            base_fig_dir
-            / f"{model_id.replace('_', '-')}-{mapped_file_str}-{str(tstep).zfill(4)}.png"
-        )
-
-        if out_path.exists():
-            print(f" -- Found plot: {out_path.name}!")
-            return
-
-        print(f"--> {out_path.name}")
-
-        time_myr = self._get_mesh_time_myr(mesh, model_id, tstep)
-
-        plot_title = f"{int(time_myr):03} Ma"
-
-        cmap, clim = self._configure_cmap(mesh, field_name)
-
-        plotter: pv.Plotter = pv.Plotter(
-            off_screen=True,
-            window_size=plot_config.plotter_window_size,
-            lighting=plot_config.plotter_lighting,
-        )
-        plotter.set_background(plot_config.plotter_background)  # type: ignore
-
-        glyph_arrows = None
-        if (
-            field_name == "velocity" or plot_config.velocity_mapping[field_name]
-        ) and "velocity" in mesh.point_data:
-            if "velocity_mag" not in mesh.point_data:
-                mesh["velocity_mag"] = np.linalg.norm(mesh["velocity"], axis=1)
-            glyph_arrows = mesh.glyph(
-                orient="velocity",  # type: ignore[arg-type]
-                scale="velocity_mag",  # type: ignore[arg-type]
-                factor=plot_config.velocity_glyph_factor,
-                geom=pv.Arrow(),
-                tolerance=0.05,
-            )
-        elif (
-            field_name == "principal_stress_1"
-            and "principal_stress_direction_1" in mesh.point_data
-        ):
-            glyph_arrows = mesh.glyph(
-                orient="principal_stress_direction_1",  # type: ignore[arg-type]
-                scale="principal_stress_1",  # type: ignore[arg-type]
-                factor=plot_config.stress_glyph_factor,
-                geom=pv.Line(),
-            )
-        elif (
-            field_name == "principal_stress_2"
-            and "principal_stress_direction_2" in mesh.point_data
-        ):
-            glyph_arrows = mesh.glyph(
-                orient="principal_stress_direction_2",  # type: ignore[arg-type]
-                scale="principal_stress_2",  # type: ignore[arg-type]
-                factor=plot_config.stress_glyph_factor,
-                geom=pv.Line(),
-            )
-
-        if glyph_arrows:
-            plotter.add_mesh(
-                glyph_arrows,
-                color="black",
-                line_width=plot_config.glyph_line_width,
-                render_lines_as_tubes=False,
-            )
-
-        sargs = dict(
-            title=plot_config.bar_mapping.get(field_name, field_name),
-            vertical=plot_config.cbar_vertical,
-            title_font_size=plot_config.cbar_title_font_size,
-            label_font_size=plot_config.cbar_label_font_size,
-            fmt=plot_config.fmt_mapping.get(field_name, "%.1f"),
-            width=plot_config.cbar_width,
-            n_labels=plot_config.cbar_n_labels,
-            position_x=plot_config.cbar_position[0],
-            position_y=plot_config.cbar_position[1],
-        )
-
-        plotter.add_mesh(
-            mesh,
-            scalars=f"{field_name}_viz",
-            cmap=cmap,
-            clim=clim,
-            show_edges=plot_config.show_edges,
-            edge_opacity=plot_config.edge_opacity,
-            scalar_bar_args=sargs,
-            nan_color="#FEFEFE",
-        )
-
-        camera_settings = self._compute_camera_settings(
-            mesh, plot_config.camera_full_view
-        )
-        plotter.camera_position = camera_settings
-
-        if plot_config.scale_bar_enabled:
-            self._add_scale_bar(mesh, plotter)
-
-        plotter.add_text(
-            plot_title,
-            font_size=plot_config.title_font_size,
-            position=plot_config.title_position,  # type: ignore[arg-type]
-            viewport=True,
-        )
-
-        if "depth" in mesh.point_data:
-            for depth, width in zip(
-                plot_config.depth_contour_depths_km,
-                plot_config.depth_contour_line_widths,
-            ):
-                self._add_depth_contour(
-                    plotter,
-                    mesh,
-                    depth,
-                    line_width=width,
-                    tolerance_km=plot_config.depth_contour_tolerance_km,
-                )
-
-        plotter.screenshot(out_path)
-        plotter.close()
-
-        try:
-            img = Image.open(out_path)
-            img.save(out_path, dpi=plot_config.screenshot_dpi)
-        except Exception as e:
-            print(f"PIL failed to resave {out_path} with new DPI: {e}")
-
-        del mesh, plotter, glyph_arrows
-        gc.collect()
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def visualize_centerline_depth(
-        self,
-        mesh: pv.DataSet,
-        field_name: str,
-        tstep: int,
-        model_id: str,
-        base_fig_dir: Path | str,
-        reaction_depth: float,
-    ):
-        """Plots a 1D vertical profile of a field through the center of the mesh in the x-direction."""
-        if isinstance(base_fig_dir, str):
-            base_fig_dir = Path(base_fig_dir)
-
-        plot_config = self.plot_config
-
-        mesh = self._prepare_mesh_fields(mesh, field_name)
-        mesh = self._rotate_mesh(mesh, tstep)
-
-        if not self._check_mesh_field(mesh, field_name, model_id, tstep):
-            return
-
-        mapped_file_str = plot_config.file_mapping.get(
-            field_name, field_name.replace("_", "-")
-        )
-        out_path = (
-            base_fig_dir
-            / f"{model_id.replace('_', '-')}-centerline-{mapped_file_str}-{str(tstep).zfill(4)}.png"
-        )
-
-        if out_path.exists():
-            print(f" -- Found plot: {out_path.name}!")
-            return
-
-        print(f"--> {out_path.name}")
-
-        time_myr = self._get_mesh_time_myr(mesh, model_id, tstep)
-
-        plot_title = f"{int(time_myr):03} Ma"
-
-        cmap, clim = self._configure_cmap(mesh, field_name, 0.05)
-
-        x_coords = mesh.points[:, 0]
-        x_center = 0.5 * (x_coords.min() + x_coords.max())
-        epsilon = (x_coords.max() - x_coords.min()) * 0.005
-        center_mask = np.abs(x_coords - x_center) < epsilon
-
-        if not np.any(center_mask):
-            print(" !! No centerline points found!")
-            return
-
-        if (
-            field_name == "velocity" or plot_config.velocity_mapping.get(field_name, False)
-        ) and "velocity" in mesh.point_data:
-            mesh["velocity"] = mesh["velocity"][:, 1]
-
-        depths = mesh.point_data["depth"][center_mask] / 1e3
-        values = mesh.point_data[field_name][
-            center_mask
-        ] * plot_config.scale_mapping.get(field_name, 1.0)
-
-        sort_idx = np.argsort(depths)
-        depths = depths[sort_idx]
-        values = values[sort_idx]
-
-        plt.rcParams.update(plot_config.centerline_plot_rcParams)
-        fig, ax = plt.subplots(
-            figsize=(
-                plot_config.centerline_plot_fig_width,
-                plot_config.centerline_plot_fig_height,
-            )
-        )
-
-        ax.plot(values, depths, color=cmap(0.8))
-
-        ax.set_xlabel(plot_config.bar_mapping.get(field_name, field_name))
-        ax.set_ylabel("Depth (km)")
-        ax.set_title(plot_title)
-        ax.set_xlim(clim)
-        ax.invert_yaxis()
-        ax.grid(True, which="both", linewidth=0.5, color="#999999")
-        ax.tick_params(axis="both", which="both", length=0)
-
-        depth_max = depths.max()
-        ax.axhspan(reaction_depth, depth_max, color="lightgrey", alpha=0.5, zorder=0)
-        ax.axhline(reaction_depth, color="black", linestyle="--", linewidth=1, zorder=1)
-
-        plt.tight_layout()
-        plt.savefig(
-            out_path, dpi=plot_config.centerline_plot_rcParams.get("figure.dpi", 300)
-        )
-        plt.close(fig)
-
-
-#######################################################
-## .3. Parse Arguments                           !!! ##
-#######################################################
-def parse_arguments() -> Namespace:
-    """Parse command line arguments."""
-    parser = ArgumentParser(description="Visualize simulation results.")
-    parser.add_argument("--model-id", type=str, help="Simulation name")
-    parser.add_argument("--timesteps", type=str, help="Timesteps to visualize")
-    parser.add_argument("--in-dir", type=str, help="Simulation results dir")
-    parser.add_argument("--out-fig-dir", type=str, help="Out fig dir")
-    parser.add_argument("--visualization-type", type=str, help="Visualization type")
-
-    return parser.parse_args()
