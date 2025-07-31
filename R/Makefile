@@ -1,6 +1,7 @@
 # Top-level dirs
 PROJECT_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 R := $(PROJECT_ROOT)/R
+PYTHON := $(PROJECT_ROOT)/python
 PERPLEX := $(PROJECT_ROOT)/perplex
 SIMULATION := $(PROJECT_ROOT)/simulation
 FIGS := $(PROJECT_ROOT)/figs
@@ -30,15 +31,15 @@ visualize: adiabat 2d-box-models 2d-shell-models misc
 adiabat: $(R)/adiabat/main.R
 	@for model in $(PERPLEX_MODELS); do \
 		IN_DIR=$(SIMULATION)/data; \
-		OUT_FIG_DIR=$(FIGS)/perplex/$$model; \
+		OUT_FIG_DIR=$(FIGS); \
 		Rscript $(R)/adiabat/main.R $$model $$IN_DIR $$OUT_FIG_DIR; \
 	done
 
 2d-box-models: $(R)/simulation/main.R
 	@for model in $(2D_BOX_MODELS); do \
-		DIR_NAME=$$(echo $$model | tr '/-' '_'); \
+		DIR_NAME=$$(echo $$model | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
 		IN_DIR=$(SIMULATION)/2d_box/results/$$DIR_NAME; \
-		OUT_FIG_DIR=$(FIGS)/simulation/$$DIR_NAME; \
+		OUT_FIG_DIR=$(FIGS)/simulation/2d_box/stats/$$DIR_NAME; \
 		VIS_TYPE=2d_box; \
 		if [ -d "$$IN_DIR" ]; then \
 			Rscript $(R)/simulation/main.R $$IN_DIR $$OUT_FIG_DIR; \
@@ -47,17 +48,18 @@ adiabat: $(R)/adiabat/main.R
 
 2d-shell-models: $(R)/simulation/main.R
 	@for model in $(2D_SHELL_MODELS); do \
-		DIR_NAME=$$(echo $$model | tr '/-' '_'); \
+		DIR_NAME=$$(echo $$model | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
 		IN_DIR=$(SIMULATION)/2d_shell/results/$$DIR_NAME; \
-		OUT_FIG_DIR=$(FIGS)/simulation/$$DIR_NAME; \
+		OUT_FIG_DIR=$(FIGS)/simulation/2d_box/stats/$$DIR_NAME; \
 		VIS_TYPE=2d_shell; \
 		if [ -d "$$IN_DIR" ]; then \
 			Rscript $(R)/simulation/main.R $$IN_DIR $$OUT_FIG_DIR; \
 		fi \
 	done
 
-misc: $(R)/misc/main.R
-	@Rscript $(R)/misc/main.R $(DEPTH_AVERAGE_PATHS) $(FIGS)/simulation $(FIGS)/misc
+misc: $(R)/misc/main.R $(R)/simulation/deflection.R
+	@Rscript $(R)/misc/main.R $(DEPTH_AVERAGE_PATHS) $(FIGS) $(FIGS)
+	@Rscript $(R)/simulation/deflection.R $(PYTHON)/simulation/data $(FIGS)
 
 manuscript: $(R)/manuscript/main.R
 	@Rscript $(R)/manuscript/main.R $(R)/manuscript/data/rheological-parameters.csv $(MARKDOWN)/manuscript/rheological-parameters.md
@@ -69,13 +71,13 @@ clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -88,25 +90,27 @@ deep-clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 help:
-	@echo "Available targets:"
-	@echo "  visualize       Visualize all results"
-	@echo "  adiabat         Visualize adiabatic profiles"
-	@echo "  2d-box-models   Visualize ASPECT box model statistics"
-	@echo "  2d-shell-models Visualize ASPECT shell model statistics"
-	@echo "  misc            Visualize miscelaneous plots"
-	@echo "  clean           Cleanup unnecessary files and directories (safe)"
-	@echo "  deep-clean      Deep clean figures and results (use with caution!)"
-	@echo "  help            Show this help message"
+	@echo "    --------------------------------------------------"
+	@echo "    Available targets:"
+	@echo "    --------------------------------------------------"
+	@echo "    visualize         Visualize all results"
+	@echo "    adiabat           Visualize adiabatic profiles"
+	@echo "    2d-box-models     Visualize ASPECT box model statistics"
+	@echo "    2d-shell-models   Visualize ASPECT shell model statistics"
+	@echo "    misc              Visualize miscelaneous plots"
+	@echo "    clean             Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean        Deep clean figures and results (use with caution!)"
+	@echo "    help              Show this help message"

@@ -17,20 +17,22 @@ PERPLEX_MODELS := $(shell find $(PERPLEX) -type f -name '*.dat' -exec basename {
 
 # Simulations
 2D_BOX_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm'))
-# 2D_BOX_CONFIGS := 2d_box/configs/simple-slab-Q08.prm 2d_box/configs/simple-slab-Q09.prm
-2D_BOX_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 1 150)
-2D_BOX_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 50)
-2D_BOX_TIMESTEPS_PROFILE := $(shell seq -f "%03g" 0 10 50)
-2D_BOX_TIMESTEPS_TOPOGRAPHY := $(shell seq -f "%03g" 0 1 150)
+# 2D_BOX_TIMESTEPS_SYNC := 000 005 010 050 100
+# 2D_BOX_TIMESTEPS_MESH := 000 005 010 050 100
+2D_BOX_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 5 100)
+2D_BOX_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 5 100)
+2D_BOX_TIMESTEPS_PROFILE := $(2D_BOX_TIMESTEPS_MESH)
+2D_BOX_TIMESTEPS_TOPOGRAPHY := $(2D_BOX_TIMESTEPS_SYNC)
 2D_SHELL_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_shell/configs -type f -name '*.prm'))
-2D_SHELL_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 1 150)
+2D_SHELL_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 2 100)
 2D_SHELL_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 50)
-2D_SHELL_TIMESTEPS_PROFILE := $(shell seq -f "%03g" 0 10 50)
-2D_SHELL_TIMESTEPS_TOPOGRAPHY := $(shell seq -f "%03g" 0 1 150)
+2D_SHELL_TIMESTEPS_PROFILE := $(2D_SHELL_TIMESTEPS_MESH)
+2D_SHELL_TIMESTEPS_TOPOGRAPHY := $(2D_SHELL_TIMESTEPS_SYNC)
 
 # Script paths
 MAIN_ADIABAT := $(PYTHON)/adiabat/main.py
 MAIN_SIMULATION := $(PYTHON)/simulation/main.py
+INITIAL_SETUP := $(PYTHON)/simulation/initial-setup.py
 
 # Cleanup targets
 CLEAN := $(PYTHON)/**/__pycache__
@@ -39,19 +41,21 @@ DEEP_CLEAN :=
 # Targets
 .PHONY: all visualize 2d-box-models 2d-shell-models adiabat clean deep-clean help
 
-all: adiabat
+all: 2d-box-models
 
-visualize: adiabat 2d-box-models 2d-shell-models
+visualize: initial-setup 2d-box-models
 
 sync-barkla:
 	@source $(BASH)/simulation/sync-barkla2.sh "$(2D_BOX_CONFIGS)" "$(2D_BOX_TIMESTEPS_SYNC)"
 
+initial-setup: $(INITIAL_SETUP)
+	@$(CONDA_PYTHON_PYVISTA) -u $(INITIAL_SETUP) --out-fig-dir $(FIGS)
 
 2d-box-models: $(MAIN_SIMULATION)
 	@MODEL_IDS=""; \
 	IN_DIRS=""; \
 	for prm in $(2D_BOX_CONFIGS); do \
-		MODEL_DIR=$$(basename $$prm .prm | tr '-' '_'); \
+		MODEL_DIR=$$(basename $$prm .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
 		IN_DIR=$(SIMULATION)/2d_box/results/$$MODEL_DIR; \
 		MODEL_IDS="$$MODEL_IDS $$MODEL_DIR"; \
 		IN_DIRS="$$IN_DIRS $$IN_DIR"; \
@@ -74,7 +78,7 @@ sync-barkla:
 	@MODEL_IDS=""; \
 	IN_DIRS=""; \
 	for prm in $(2D_SHELL_CONFIGS); do \
-		MODEL_DIR=$$(basename $$prm .prm | tr '-' '_'); \
+		MODEL_DIR=$$(basename $$prm .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
 		IN_DIR=$(SIMULATION)/2d_shell/results/$$MODEL_DIR; \
 		MODEL_IDS="$$MODEL_IDS $$MODEL_DIR"; \
 		IN_DIRS="$$IN_DIRS $$IN_DIR"; \
@@ -113,13 +117,13 @@ clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -132,24 +136,26 @@ deep-clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 help:
-	@echo "Available targets:"
-	@echo "  visualize        Visualize all results"
-	@echo "  2d-shell-models  Visualize ASPECT shell models"
-	@echo "  2d-box-models    Visualize ASPECT box models"
-	@echo "  adiabat          Generate adiabatic profiles using BurnMan"
-	@echo "  clean            Cleanup unnecessary files and directories (safe)"
-	@echo "  deep-clean       Deep clean figures and results (use with caution!)"
-	@echo "  help             Show this help message"
+	@echo "    --------------------------------------------------"
+	@echo "    Available targets:"
+	@echo "    --------------------------------------------------"
+	@echo "    visualize        Visualize all results"
+	@echo "    2d-shell-models  Visualize ASPECT shell models"
+	@echo "    2d-box-models    Visualize ASPECT box models"
+	@echo "    adiabat          Generate adiabatic profiles using BurnMan"
+	@echo "    clean            Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean       Deep clean figures and results (use with caution!)"
+	@echo "    help             Show this help message"

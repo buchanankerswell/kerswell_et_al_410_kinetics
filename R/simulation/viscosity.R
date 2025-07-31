@@ -3,6 +3,7 @@
 #######################################################
 ## .0. Load Libraries and Functions              !!! ##
 #######################################################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 get_script_dir <- function() {
   cmd_args <- commandArgs(trailingOnly = FALSE)
   needle <- "--file="
@@ -12,7 +13,7 @@ get_script_dir <- function() {
   } else if (!is.null(sys.frames()) && !is.null(sys.frame(1)$ofile)) {
     dirname(normalizePath(sys.frame(1)$ofile))
   } else {
-    stop("Cannot determine script location.")
+    stop(" !! Error: cannot determine script location!")
   }
 }
 
@@ -83,12 +84,14 @@ visualize_viscosity_profile <- function(profile_path, out_path) {
 
   p <- (p0 | p1 | p2) + plot_annotation(tag_levels = "a")
 
-  ggsave(
-    out_path,
-    plot = p,
-    width = 10.5,
-    height = 5.5,
-    dpi = 300,
-    bg = "white"
-  )
+  suppressWarnings({
+    ggsave(
+      out_path,
+      plot = p,
+      width = 10.5,
+      height = 5.5,
+      dpi = 300,
+      bg = "white"
+    )
+  })
 }

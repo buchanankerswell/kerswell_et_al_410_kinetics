@@ -226,7 +226,7 @@ class ImageTiler:
 
             self.tiled_images.append(str(out_tile))
 
-            print(f"--> Tile: {out_tile.name}")
+            print(f" -> Tile: {out_tile.name}")
 
         if self.movie and self.tiled_images:
             self._create_movie()
@@ -280,7 +280,7 @@ class ImageTiler:
             composed.close()
 
             composed_tiles.append(str(out_path))
-            print(f"--> Composition: {out_path.name}")
+            print(f" -> Composition: {out_path.name}")
 
         if self.movie and composed_tiles:
             movie_path = (
@@ -300,7 +300,7 @@ class ImageTiler:
             )
             clip.close()
 
-            print(f"--> Composition movie: {movie_path.name}")
+            print(f" -> Composition movie: {movie_path.name}")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _create_movie(self) -> None:
@@ -320,4 +320,4 @@ class ImageTiler:
         )
         clip.close()
 
-        print(f"--> Movie: {out_path.name}")
+        print(f" -> Movie: {out_path.name}")

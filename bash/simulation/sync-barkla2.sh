@@ -19,7 +19,7 @@ echo "Establishing master SSH connection (expect Duo 2FA prompt) ..."
 "${SSH_BASE[@]}" -MNf "${REMOTE_USER}@${REMOTE_HOST}"
 
 for prm_path in "${CONFIG_LIST[@]}"; do
-    model_name="$(basename "$prm_path" .prm | tr '-' '_')"
+    model_name="$(basename "$prm_path" .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g')"
 
     REMOTE_CONFIGS_DIR="/users/kersweb/scratch/kerswell_et_al_dynp/simulation/2d_box/configs"
     REMOTE_RESULTS_DIR="/users/kersweb/scratch/kerswell_et_al_dynp/simulation/2d_box/results/$model_name"
@@ -32,8 +32,8 @@ for prm_path in "${CONFIG_LIST[@]}"; do
 
     mkdir -p "$LOCAL_CONFIGS_DIR" "$LOCAL_RESULTS_DIR/solution"
 
-    rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/*.out" \
-      "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No .out files found"
+    # rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/*.out" \
+    #   "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No .out files found"
 
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_CONFIGS_DIR}/*.run" \
       "$LOCAL_CONFIGS_DIR/" 2>/dev/null || echo "Warning: No .run files found"
@@ -44,8 +44,8 @@ for prm_path in "${CONFIG_LIST[@]}"; do
     rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/depth_average.txt" \
       "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: 'No depth_average.txt' file found"
 
-    rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/stokes_residuals.txt" \
-      "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No 'stokes_residuals.txt' file found"
+    # rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/stokes_residuals.txt" \
+    #   "$LOCAL_RESULTS_DIR/" 2>/dev/null || echo "Warning: No 'stokes_residuals.txt' file found"
 
     for tstep in "${TIMESTEP_LIST[@]}"; do
         rsync "${RSYNC_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_RESULTS_DIR}/solution/solution-00*${tstep}.*.vtu" \

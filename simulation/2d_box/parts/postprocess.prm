@@ -23,5 +23,5 @@ subsection Postprocess
 end
 
 subsection Checkpointing
-  set Time between checkpoint = 600
+  set Time between checkpoint = 300
 end

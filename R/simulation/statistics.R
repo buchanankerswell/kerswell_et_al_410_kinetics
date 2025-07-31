@@ -3,6 +3,7 @@
 #######################################################
 ## .0. Load Libraries and Functions              !!! ##
 #######################################################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 get_script_dir <- function() {
   cmd_args <- commandArgs(trailingOnly = FALSE)
   needle <- "--file="
@@ -12,7 +13,7 @@ get_script_dir <- function() {
   } else if (!is.null(sys.frames()) && !is.null(sys.frame(1)$ofile)) {
     dirname(normalizePath(sys.frame(1)$ofile))
   } else {
-    stop("Cannot determine script location.")
+    stop(" !! Error: cannot determine script location!")
   }
 }
 

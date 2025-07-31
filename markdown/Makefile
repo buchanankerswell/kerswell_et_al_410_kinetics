@@ -24,11 +24,12 @@ all: manuscript
 manuscript: $(DOC).pdf
 
 $(DOC).pdf:
-	@echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-	@echo "==> Rendering manuscript"
-	@echo "--> Updating date in $(shell basename $(DOC).md)"
+	@echo "    --------------------------------------------------"
+	@echo "    Rendering manuscript"
+	@echo "    --------------------------------------------------"
+	@echo " -> Updating date in $(shell basename $(DOC).md)"
 	@sed -i '' -E "s/^date: \".*\"/date: \"$(shell date '+%d %B %Y')\"/" $(DOC).md
-	@echo "--> Rendering $(shell basename $(DOC).md) with $(shell basename $(TEMPLATE)) template"
+	@echo " -> Rendering $(shell basename $(DOC).md) with $(shell basename $(TEMPLATE)) template"
 	@pandoc "$(DOC).md" -o "$(DOC).pdf" --from markdown --template "$(TEMPLATE)" --listings \
 		--bibliography=$(BIB) --csl=$(CSL) --filter=pandoc-crossref --citeproc \
 		--lua-filter=$(INCLUDE_FILES_LUA) --pdf-engine=pdflatex --pdf-engine-opt="-shell-escape" \
@@ -48,13 +49,13 @@ clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -67,20 +68,22 @@ deep-clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 help:
-	@echo "Available targets:"
-	@echo "  clean            Cleanup unnecessary files and directories (safe)"
-	@echo "  deep-clean       Deep clean figures and results (use with caution!)"
-	@echo "  help             Show this help message"
+	@echo "    --------------------------------------------------"
+	@echo "    Available targets:"
+	@echo "    --------------------------------------------------"
+	@echo "    clean       Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean  Deep clean figures and results (use with caution!)"
+	@echo "    help        Show this help message"

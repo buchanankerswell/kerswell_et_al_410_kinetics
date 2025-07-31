@@ -3,7 +3,7 @@ subsection Boundary composition model
   set List of model names = function
 
   subsection Function
-    set Function expression = if(y>132e3, 1, 0); 3300
+    set Function expression = if(y>132e3, 1, 0); 3500
     set Variable names      = x, y
   end
 end
@@ -12,7 +12,7 @@ subsection Initial composition model
   set List of model names = function
 
   subsection Function
-    set Function expression = if(y>132e3, 1, 0); 3300
+    set Function expression = if(y>132e3, 1, 0); 3500
     set Variable names      = x, y
   end
 end

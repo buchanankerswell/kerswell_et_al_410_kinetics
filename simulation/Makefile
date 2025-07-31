@@ -17,8 +17,8 @@ else ifeq ($(OS_ID), rocky)
   OPENMPI := openmpi/5.0.8-gcc14.2.0
   OPENBLAS := openblas/0.3.29/gcc-14.2.0
   CMAKE := cmake/3.30.5-gcc14.2.0
-  NNODES := 1
   NTASKS := 128
+  NTASKSPERNODE := 168
   TIME := 2-12:00:00
   MAIL_ADDRESS := b.kerswell@liverpool.ac.uk
   MAIL_TYPE := ALL
@@ -52,7 +52,8 @@ CLEAN := \
 	$(SIMULATION)/**/plugins/CMakeFiles \
 	$(SIMULATION)/**/plugins/Makefile \
 	$(SIMULATION)/**/plugins/CMakeCache.txt \
-	$(SIMULATION)/**/plugins/cmake_install.cmake
+	$(SIMULATION)/**/plugins/cmake_install.cmake \
+	$(SIMULATION)/**/plugins/.cache
 DEEP_CLEAN := \
 	$(SIMULATION)/**/configs/logs
 
@@ -70,22 +71,22 @@ all: 2d-box-models 2d-shell-models
 	PRM=$<; \
 	RUN_OUT=$@; \
 	MODEL_TYPE=$$(echo $$PRM | cut -d/ -f1); \
-	MODEL_DIR=$$(basename $$PRM .prm | tr '-' '_'); \
+	MODEL_DIR=$$(basename $$PRM .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
 	PRM_DIR="$$ROOT_DIR/$$MODEL_TYPE/configs"; \
 	RESULTS_DIR="$$ROOT_DIR/$$MODEL_TYPE/results"; \
 	JOB_NAME=$$(echo $* | tr '/_' '-'); \
 	LOG_OUT="$$RESULTS_DIR/$$MODEL_DIR/aspect.$$JOB_NAME.out"; \
 	if [ -f "$$ROOT_DIR/$$RUN_OUT" ]; then \
-		echo "  $$RUN_OUT found!"; \
+		echo " -- $$RUN_OUT found!"; \
 	else \
 		if [ "$(OS_ID)" = "rocky" ]; then \
 			sbatch --job-name="$$JOB_NAME" \
 			       --output="$$LOG_OUT" \
 			       --partition="nodes" \
-			       --nodes=$(NNODES) \
 			       --ntasks=$(NTASKS) \
+			       --ntasks-per-node=$(NTASKSPERNODE) \
 			       --time=$(TIME) \
-			       --mail-user=$(MAIL) \
+			       --mail-user=$(MAIL_ADDRESS) \
 			       --mail-type=$(MAIL_TYPE) \
 			       $(RUN_ASPECT) $(ASPECT_EXEC) "$$ROOT_DIR/$$PRM"; \
 		else \
@@ -117,13 +118,13 @@ clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -132,10 +133,10 @@ clean:
 	@find $(PROJECT_ROOT)/simulation -type l -path '*/plugins/aspect*' | while read -r item; do \
 		case "$$item" in \
 			$(PROJECT_ROOT)*) \
-				echo "-> Safely removing symlink\n   $$item"; \
+				echo " -> Safely removing symlink\n   $$item"; \
 				rm -v "$$item";; \
 			*) \
-				echo "!! Skipping (outside project root)\n   $$item";; \
+				echo " -- Skipping (outside project root)\n   $$item";; \
 		esac; \
 	done
 
@@ -146,23 +147,25 @@ deep-clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 help:
-	@echo "Available targets:"
-	@echo "  2d-shell-models   Run ASPECT shell models"
-	@echo "  2d-box-models     Run ASPECT box models"
-	@echo "  clean       Cleanup unnecessary files and directories (safe)"
-	@echo "  deep-clean  Deep clean figures and results (use with caution!)"
-	@echo "  help        Show this help message"
+	@echo "    --------------------------------------------------"
+	@echo "    Available targets:"
+	@echo "    --------------------------------------------------"
+	@echo "    2d-shell-models  Run ASPECT shell models"
+	@echo "    2d-box-models    Run ASPECT box models"
+	@echo "    clean            Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean       Deep clean figures and results (use with caution!)"
+	@echo "    help             Show this help message"
 

@@ -52,6 +52,7 @@ fi
 echo "  ==========================================="
 echo "  Loading openmpi and openblas modules ..."
 
+module purge
 module load "$GCC" "$OPENMPI" "$OPENBLAS" "$CMAKE"
 
 export CC=mpicc
@@ -59,18 +60,31 @@ export CXX=mpicxx
 export FC=mpif90
 export FF=mpif77
 
+# Ensure GCC runtime libs are first in search path
+export LD_LIBRARY_PATH=$GCCDIR/lib64:$LD_LIBRARY_PATH
+
 # ===========================
 # Clone candi
 # ===========================
 echo "  ==========================================="
-git clone https://github.com/dealii/candi.git && cd candi
+if [ -d "candi" ]; then
+    echo "  Found candi directory! Pulling latest changes ..."
+    cd candi && git pull
+else
+    git clone https://github.com/dealii/candi.git && cd candi
+fi
+if [ -f "local.cfg" ]; then
+    echo "  local.cfg found! Removing old config and reconfiguring ..."
+    rm local.cfg
+fi
+echo "  Downloading and configuring new local.cfg ..."
 curl -O https://raw.githubusercontent.com/geodynamics/aspect/main/contrib/install/local.cfg
 cat << EOF >> local.cfg
 GIVEN_PLATFORM=deal.II-toolchain/platforms/supported/linux_cluster.platform
 DEAL_II_VERSION=$DEALII_VERSION
 TRILINOS_MAJOR_VERSION=$TRILINOS_VERSION
-BLAS_DIR=$OPENBLASDIR
-TRILINOS_CONFOPTS="-D TPL_BLAS_LIBRARIES=$OPENBLASLIB/libopenblas.so -D TPL_LAPACK_LIBRARIES=$OPENBLASLIB/libopenblas.so"
+BLAS_DIR=$OPENBLAS_DIR
+TRILINOS_CONFOPTS="-D TPL_BLAS_LIBRARIES=$OPENBLAS_LIBDIR/libopenblas.so -D TPL_LAPACK_LIBRARIES=$OPENBLAS_LIBDIR/libopenblas.so"
 EOF
 
 # ===========================

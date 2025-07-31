@@ -7,7 +7,7 @@ subsection Initial temperature model
   set List of model names = adiabatic, function
 
   subsection Function
-    set Function expression = -500 * exp(-((y-264e3)*(y-264e3)+(x-198e3)*(x-198e3))/(2*15e3*15e3))
+    set Function expression = -500 * exp(-((y-264e3)*(y-264e3)+(x-118e3)*(x-118e3))/(2*15e3*15e3))
     set Variable names      = x, y
   end
 

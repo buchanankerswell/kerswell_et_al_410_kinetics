@@ -46,44 +46,45 @@ def main():
             # "adiabatic_pressure",
             "nonadiabatic_pressure",
             "X_field",
-            "density",
+            # "density",
             # "adiabatic_density",
             "nonadiabatic_density",
-            "velocity",
+            # "velocity",
             # "stress_xx",
             # "stress_yy",
             # "shear_stress_xx",
             # "shear_stress_xy",
             # "shear_stress_yy",
             "stress_second_invariant",
-            # "strain_rate",
+            "strain_rate",
             # "viscosity",
             "seismic_Vp",
             "seismic_Vs",
-            # "Vp_anomaly",
-            # "Vs_anomaly",
-            "driving_force",
+            "Vp_Vs_ratio",
+            # "preexponential",
+            # "arrhenius",
+            "thermodynamic",
+            "growth_rate",
             "reaction_rate_C0",
+            "rate_ratio"
         ]
     else:
         raise ValueError(f"Unrecognized visualization type {visualization_type}!")
 
     plot_config = PyVistaModelConfig()
-
     plot_config.file_mapping = {k: plot_config.file_mapping[k] for k in active_plot_fields if k in plot_config.file_mapping}
-
     plot_config.default_fig_dir = out_fig_dir
 
     if visualization_type == "2d_shell":
         plot_config.draw_mesh_plots = True
-        plot_config.draw_centerline_depth_plots = False
-        plot_config.draw_deflection_plots = False
+        plot_config.draw_centerline_profile_plots = False
+        plot_config.draw_topography_plots = False
         plot_config.camera_center_zoom = False
 
     elif visualization_type == "2d_box":
         plot_config.draw_mesh_plots = True
-        plot_config.draw_centerline_depth_plots = True
-        plot_config.draw_deflection_plots = True
+        plot_config.draw_centerline_profile_plots = True
+        plot_config.draw_topography_plots = True
         plot_config.camera_center_zoom = True
         plot_config.title_position = (0.39, 0.90)
         plot_config.cbar_position = [0.30, 0.05]
@@ -116,8 +117,13 @@ def main():
             "seismic_Vs": "auto",
             "Vp_anomaly": "auto",
             "Vs_anomaly": "auto",
-            "driving_force": "auto",
+            "Vp_Vs_ratio": "auto",
+            "preexponential": "auto",
+            "arrhenius": "auto",
+            "thermodynamic": "auto",
+            "growth_rate": "auto",
             "reaction_rate_C0": "auto",
+            "rate_ratio": "auto",
         }
         plot_config.fmt_mapping = {
             "T": "%.0f",
@@ -145,8 +151,13 @@ def main():
             "seismic_Vs": "%.1f",
             "Vp_anomaly": "%.0f",
             "Vs_anomaly": "%.0f",
-            "driving_force": "%.0f",
-            "reaction_rate_C0": "%.1f",
+            "Vp_Vs_ratio": "%.0f",
+            "preexponential": "%0.1f",
+            "arrhenius": "%0.1e",
+            "thermodynamic": "%.1f",
+            "growth_rate": "%.1f",
+            "reaction_rate_C0": "%.2f",
+            "rate_ratio": "%.1f",
         }
         plot_config.scale_mapping = {
             "T": 1,
@@ -174,8 +185,13 @@ def main():
             "seismic_Vs": 1e-3,
             "Vp_anomaly": 1,
             "Vs_anomaly": 1,
-            "driving_force": 1e-3,
+            "Vp_Vs_ratio": 1,
+            "preexponential": 1,
+            "arrhenius": 1,
+            "thermodynamic": 1,
+            "growth_rate": 3.154e9,
             "reaction_rate_C0": 3.154e13,
+            "rate_ratio": 1,
         }
 
         plot_config.bar_mapping = {
@@ -204,8 +220,13 @@ def main():
             "seismic_Vs": "$V_s$ (km/s)",
             "Vp_anomaly": "$\\hat{V}_p$ (%)",
             "Vs_anomaly": "$\\hat{V}_s$ (%)",
-            "driving_force": "$\\Delta G$ (kJ/mol)",
-            "reaction_rate_C0": "$dX/dt$ (1/Ma)",
+            "Vp_Vs_ratio": "$V_p$/$V_s$",
+            "preexponential": "Preexponential term (m/s)",
+            "arrhenius": "Arrhenius term",
+            "thermodynamic": "Thermodynamic term",
+            "growth_rate": "$\\dot{x}$ (cm/yr)",
+            "reaction_rate_C0": "$\\dot{X}$ (1/Ma)",
+            "rate_ratio": "$\\dot{X}\\colon\\dot{\\epsilon}_{II}$",
         }
 
         plot_config.velocity_mapping = {
@@ -234,8 +255,13 @@ def main():
             "seismic_Vs": False,
             "Vp_anomaly": False,
             "Vs_anomaly": False,
-            "driving_force": False,
+            "Vp_Vs_ratio": False,
+            "preexponential": False,
+            "arrhenius": False,
+            "thermodynamic": False,
+            "growth_rate": False,
             "reaction_rate_C0": False,
+            "rate_ratio": False,
         }
     else:
         raise ValueError(f"Unrecognized visualiztion type {visualization_type}!")
@@ -257,40 +283,32 @@ def main():
             "tags": None,
             "fields": [
                 "nonadiabatic_temperature",
-                "reaction_rate_C0",
-                "X_field",
+                "nonadiabatic_pressure",
+                "nonadiabatic_density",
             ],
         },
         "set1": {
             "tags": None,
             "fields": [
-                "nonadiabatic_temperature",
-                "driving_force",
+                "thermodynamic",
                 "reaction_rate_C0",
+                "X_field",
             ],
         },
         "set2": {
             "tags": None,
             "fields": [
-                "nonadiabatic_temperature",
-                "X_field",
-                "nonadiabatic_density",
+                "strain_rate",
+                "rate_ratio",
+                "stress_second_invariant",
             ],
         },
         "set3": {
             "tags": None,
             "fields": [
-                "velocity",
-                "nonadiabatic_pressure",
-                "stress_second_invariant",
-            ],
-        },
-        "set4": {
-            "tags": None,
-            "fields": [
-                "density",
                 "seismic_Vp",
                 "seismic_Vs",
+                "Vp_Vs_ratio",
             ],
         },
     }

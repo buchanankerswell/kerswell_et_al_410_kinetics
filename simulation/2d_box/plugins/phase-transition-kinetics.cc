@@ -28,6 +28,7 @@
 #include <aspect/global.h>
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
@@ -258,7 +259,9 @@ namespace aspect
             }
 
           // Calculate density
-          const double density_factor = (1.0 - alpha * (T - T_adiabatic)) * (1.0 + beta * (P - P_adiabatic));
+          const double temperature_correction_density = (T - T_adiabatic) * alpha;
+          const double pressure_correction_density = (P - P_adiabatic) * beta;
+          const double density_factor = (1.0 - temperature_correction_density) * (1.0 + pressure_correction_density);
           const double final_rho = rho * density_factor;
 
           // Update material model
@@ -275,34 +278,57 @@ namespace aspect
             out.reaction_terms[q][c] = 0.0;
 
           // Compute reaction rates at each evaluation point
+          // Inter-grain: dX/dt = (6.7 / d) * growth_rate * (1 - X)
+          // Intra-grain: dX/dt = 2sqrt(D) * growth_rate * (1 - X)
+          //   where growth_rate = kT * C_OH^r * exp(-H_a + PV_a/RT) * (1 - exp(ΔG/RT))
           if (reaction_rate_out != nullptr)
             {
-              // Calculate driving force:
-              // ΔG = ΔG₀ + (P - P_adiabatic)ΔV - (T - T_adiabatic)ΔS
-              const double driving_force = dG + (P - P_adiabatic) * dV - (T - T_adiabatic) * dS;
+              // Gas constant
+              const double R = 8.314; // J/mol/K
 
               // Get time scale
               const double time_scale = this->convert_output_to_years() ? year_in_seconds : 1.0;
 
-              // Calculate arrhenius component
-              const double R = 8.314; // J/mol K
-              double arrhenius = 1.0;
-              if (use_arrhenius)
-                {
-                  arrhenius = std::exp(-E_activation / (R * T));
-                }
+              // Calculate geometric term
+              // Nucleation at grain boundaries ('inter': default) or within grains ('intra': requires high dislocation density)
+              const double geometric_term = (nucleation_site == "intra") ? 2 * std::sqrt(dislocation_density) : 6.7 / grain_size;
 
-              // Calculate saturation component
-              const double saturation = (1.0 - X_clamped);
+              // Calculate preexponential term (m/s)
+              const double k_factor = std::exp(ln_kinetic_prefactor);
+              const double OH_factor = std::pow(water_content, water_content_exponent);
+              const double preexponential_term = k_factor * T * OH_factor;
+              phase_transition_kinetics_out->preexponential[q] = preexponential_term;
 
-              // Calculate reaction rate: dX/dt = Q * exp(-Ea/RT) * ΔG * (1 - X)
-              const double rate = (driving_force < 0) ? Q_kinetic_prefactor * arrhenius * std::abs(driving_force) * saturation / time_scale : 0.0;
+              // Calculate exponential temperature dependence (dimensionless)
+              const double arrhenius_exponent = -(H_a + (P * V_a)) / (R * T);
+              const double arrhenius_exponent_clamped = std::max(-700.0, std::min(700.0, arrhenius_exponent));
+              double arrhenius_term = std::exp(arrhenius_exponent_clamped);
+              if (arrhenius_term == 0.0) arrhenius_term = 0.0;
+              phase_transition_kinetics_out->arrhenius[q] = arrhenius_term;
 
-              // Update additional named outputs
-              phase_transition_kinetics_out->driving_force[q] = driving_force;
+              // Calculate excess Gibbs (J/mol)
+              const double temperature_correction_gibbs = (T - T_adiabatic) * dS;
+              const double pressure_correction_gibbs = (P - P_adiabatic) * dV;
+              const double excess_gibbs = dG + pressure_correction_gibbs - temperature_correction_gibbs;
 
-              // Update reaction rates
-              reaction_rate_out->reaction_rates[q][X_idx] = rate;
+              // Calculate thermodynamic driving force
+              const double exponent_gibbs = excess_gibbs / (R * T);
+              double thermodynamic_term = 1 - std::exp(exponent_gibbs);
+              phase_transition_kinetics_out->thermodynamic[q] = thermodynamic_term;
+
+              // Clamp thermodynamic term to 0 if negative (don't care about reverse reaction)
+              thermodynamic_term = (thermodynamic_term < 0) ? 0 : thermodynamic_term;
+
+              // Calculate site saturation
+              const double saturation_term = 1.0 - X_clamped;
+
+              // Calculate growth rate
+              const double growth_rate = preexponential_term * arrhenius_term * thermodynamic_term;
+              phase_transition_kinetics_out->growth_rate[q] = growth_rate;
+
+              // Calculate reaction rate
+              double reaction_rate = geometric_term * growth_rate * saturation_term / time_scale;
+              reaction_rate_out->reaction_rates[q][X_idx] = reaction_rate;
 
               // Set other compositional fields to zero reaction rate
               for (unsigned int c = 0; c < this->introspection().n_compositional_fields; ++c)
@@ -379,21 +405,45 @@ namespace aspect
                             "by the reference viscosity specified through the parameter `Viscosity'. List must have one more "
                             "entry than Transition depths. Units: non-dimensional.");
           prm.declare_entry("Thermal conductivity", "4.0", Patterns::Double(0.), "Reference thermal conductivity. Units: W/m/K");
-          prm.declare_entry("Kinetic prefactor Q",
-                            "1e-5",
+          prm.declare_entry("Nucleation site",
+                            "inter",
+                            Patterns::Anything(),
+                            "The style of nucleation that determins the geometric term: 'inter' (grain boundaries) or 'intra' (within grains).");
+          prm.declare_entry("Grain size",
+                            "1e-3",
                             Patterns::Double(0.0),
-                            "The scalar kinetic prefactor Q in the reaction rate equation dX/dt = Q * arrhenius * driving_force * (1-X). "
-                            "Units: mol/J/s");
-          prm.declare_entry("Use arrhenius",
-                            "false",
-                            Patterns::Bool(),
-                            "Use Arrhenius term in the reaction rate equation dX/dt = Q * arrhenius * driving_force * (1-X)? "
-                            "Units: none");
-          prm.declare_entry("Activation energy",
-                            "300e3",
+                            "The grain size 'd' used in the geometric term: (6.7 / d). "
+                            "Units: m");
+          prm.declare_entry("Dislocation density",
+                            "1e13",
                             Patterns::Double(0.0),
-                            "The activation energy used in the Arrhenius term exp(-Ea/RT). "
+                            "The dislocation density 'D' used in the geometric term: 2sqrt(D). "
+                            "Units: m");
+          prm.declare_entry("Ln kinetic prefactor",
+                            "-18",
+                            Patterns::Double(),
+                            "The natural log of the kinetic prefactor 'k' used in the linear temperature dependence term: (kT). "
+                            "Units: ln(m/s/K)");
+          prm.declare_entry("Activation enthalpy",
+                            "274e3",
+                            Patterns::Double(0.0),
+                            "The activation enthalpy 'H_a' used in the Arrhenius term: exp(-H_a + PV_a/RT). "
                             "Units: J/mol");
+          prm.declare_entry("Activation volume",
+                            "3.3e-6",
+                            Patterns::Double(0.0),
+                            "The activation volume 'V_a' used in the Arrhenius term: exp(-H_a + PV_a/RT). "
+                            "Units: m^3/mol");
+          prm.declare_entry("Water content",
+                            "60",
+                            Patterns::Double(0.0),
+                            "The water content 'C_OH' used in the water dependence term: C_OH^r. "
+                            "Units: Wt. ppm");
+          prm.declare_entry("Water content exponent",
+                            "3.2",
+                            Patterns::Double(),
+                            "The water content exponent 'r' used in the water dependence term: C_OH^r. "
+                            "Units: none");
         }
         prm.leave_subsection();
       }
@@ -426,9 +476,14 @@ namespace aspect
           transition_depths = Utilities::string_to_double(Utilities::split_string_list(prm.get("Transition depths")));
           viscosity_prefactors = Utilities::string_to_double(Utilities::split_string_list(prm.get("Viscosity prefactors")));
           k = prm.get_double("Thermal conductivity");
-          Q_kinetic_prefactor = prm.get_double("Kinetic prefactor Q");
-          use_arrhenius = prm.get_bool("Use arrhenius");
-          E_activation = prm.get_double("Activation energy");
+          nucleation_site = prm.get("Nucleation site");
+          grain_size = prm.get_double("Grain size");
+          dislocation_density = prm.get_double("Dislocation density");
+          ln_kinetic_prefactor = prm.get_double("Ln kinetic prefactor");
+          H_a = prm.get_double("Activation enthalpy");
+          V_a = prm.get_double("Activation volume");
+          water_content = prm.get_double("Water content");
+          water_content_exponent = prm.get_double("Water content exponent");
         }
         prm.leave_subsection();
       }
@@ -437,8 +492,6 @@ namespace aspect
       // Validate parameters
       AssertThrow(this->introspection().n_compositional_fields >= 1,
                   ExcMessage("Phase transition kinetics model requires at least one compositional field."));
-      AssertThrow(Q_kinetic_prefactor > 0.0,
-                  ExcMessage("Kinetic prefactor Q must be positive."));
       if (viscosity_prefactors.size() != transition_depths.size() + 1)
         AssertThrow(false,
                     ExcMessage("Error: The list of Viscosity prefactors needs to have exactly one more "
@@ -496,7 +549,10 @@ namespace aspect
       std::vector<std::string> make_additional_output_names()
       {
         std::vector<std::string> names;
-        names.emplace_back("driving_force");
+        names.emplace_back("preexponential");
+        names.emplace_back("arrhenius");
+        names.emplace_back("thermodynamic");
+        names.emplace_back("growth_rate");
         return names;
       }
     }
@@ -504,7 +560,10 @@ namespace aspect
     template <int dim>
     PhaseTransitionKineticsOutputs<dim>::PhaseTransitionKineticsOutputs(const unsigned int n_points)
       : NamedAdditionalMaterialOutputs<dim>(make_additional_output_names())
-      , driving_force(n_points, numbers::signaling_nan<double>())
+      , preexponential(n_points, numbers::signaling_nan<double>())
+      , arrhenius(n_points, numbers::signaling_nan<double>())
+      , thermodynamic(n_points, numbers::signaling_nan<double>())
+      , growth_rate(n_points, numbers::signaling_nan<double>())
     {}
 
 
@@ -513,16 +572,21 @@ namespace aspect
     std::vector<double>
     PhaseTransitionKineticsOutputs<dim>::get_nth_output(const unsigned int idx) const
     {
-      AssertIndexRange (idx, 1);
+      AssertIndexRange(idx, make_additional_output_names().size());
       switch (idx)
         {
           case 0:
-            return driving_force;
-
+            return preexponential;
+          case 1:
+            return arrhenius;
+          case 2:
+            return thermodynamic;
+          case 3:
+            return growth_rate;
           default:
             AssertThrow(false, ExcInternalError());
         }
-      return driving_force;
+      return thermodynamic;
     }
   } // namespace MaterialModel
 } // namespace aspect

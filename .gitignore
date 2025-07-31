@@ -1,7 +1,8 @@
 **/.DS_Store
-dealii
 aspect
 figs
+dealii
+bash/candi
 bash/install/log*.log
 perplex/**/*-table.txt
 perplex/**/*-profile.txt

@@ -1,0 +1,20 @@
+# This cookbook illustrates the effect of a thermodynamic driving force on
+# the olivine --> wadsleyite phase transition. It features a simplified
+# thermal plume, induced by warm material entering the model with a
+# prescribed temperature. Due to pressure and a phase transition the
+# material compresses and the velocity changes to conserve mass.
+
+set Output directory = 2d_box/results/plume_lnk18_Ha274_d5mm_140ppm
+
+include 2d_box/parts/globals.prm
+include 2d_box/parts/solver.prm
+include 2d_box/parts/geometry.prm
+include 2d_box/parts/velocity-plume.prm
+include 2d_box/parts/composition-plume.prm
+include 2d_box/parts/temperature-plume.prm
+include 2d_box/parts/heating.prm
+include 2d_box/parts/traction-plume.prm
+include 2d_box/parts/gravity.prm
+include 2d_box/parts/adiabat.prm
+include 2d_box/parts/material-plume-lnk18-Ha274-d5mm-140ppm.prm
+include 2d_box/parts/postprocess.prm

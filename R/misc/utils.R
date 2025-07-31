@@ -36,7 +36,7 @@ plot_exists <- function(out_path) {
 
   ensure_output_dir(out_path)
 
-  cat("--> ", basename(out_path), "\n")
+  cat(" -> ", basename(out_path), "\n", sep = "")
   FALSE
 }
 

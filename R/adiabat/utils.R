@@ -35,7 +35,7 @@ plot_exists <- function(out_path) {
 
   ensure_output_dir(out_path)
 
-  cat("--> ", basename(out_path), "\n")
+  cat(" -> ", basename(out_path), "\n", sep = "")
   FALSE
 }
 
@@ -79,7 +79,8 @@ read_material_table <- function(filepath) {
       density = "rho,kg/m3",
       thermal_expansivity = "alpha,1/K",
       compressibility = "beta,1/bar",
-      specific_heat = "cp,J/K/kg"
+      specific_heat = "cp,J/K/kg",
+      entropy = "s,J/K/kg"
     ) |>
     select(c(
       temperature,
@@ -87,14 +88,17 @@ read_material_table <- function(filepath) {
       density,
       thermal_expansivity,
       compressibility,
-      specific_heat
+      specific_heat,
+      entropy
     )) |>
     mutate(across(everything(), ~ as.numeric(.))) |>
     mutate(
       pressure = pressure / 1e4,
       density = density / 1e3,
       thermal_expansivity = thermal_expansivity * 1e5,
-      compressibility = compressibility * 1e7
+      compressibility = compressibility * 1e7,
+      specific_heat = specific_heat / 1e3,
+      entropy = entropy / 1e3
     )
 }
 

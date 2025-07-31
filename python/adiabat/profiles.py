@@ -57,12 +57,11 @@ class AdiabaticProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __post_init__(self) -> None:
         """"""
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print(f"==> Generating adiabatic profile for {self.model_id}")
+        print("    --------------------------------------------------\n")
+        print(f"   Generating adiabatic profile for {self.model_id}")
 
         if not self.out_table.exists():
             if not self.out_table.parent.exists():
-                print("--> Created out directory:", self.out_table.parent.name)
                 self.out_table.parent.mkdir(parents=True, exist_ok=True)
 
             create_perplex_table(
@@ -344,7 +343,6 @@ class AdiabaticProfile:
         )
 
         if not self.out_profile.parent.exists():
-            print("--> Created out directory:", self.out_profile.parent.name)
             self.out_profile.parent.mkdir(parents=True, exist_ok=True)
 
         np.savetxt(
@@ -356,7 +354,7 @@ class AdiabaticProfile:
             comments="",
         )
 
-        print(f"--> Adiabatic profile saved to: {self.out_profile.name}")
+        print(f" -> Adiabatic profile saved to: {self.out_profile.name}")
 
 
 #######################################################
@@ -404,10 +402,8 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __post_init__(self) -> None:
         """"""
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print(
-            f"==> Generating driving force profile for {self.material_a.name} <==> {self.material_b.name}"
-        )
+        print("    --------------------------------------------------\n")
+        print(f"    Generating driving force profile for {self.material_a.name} -> {self.material_b.name}")
 
         # Initialize arrays
         _ = self.depths
@@ -941,7 +937,7 @@ class DrivingForceProfile:
         """Write profile."""
 
         header = (
-            f"# This ASPECT-compatible file contains data to calculate the thermodynamic driving force in the PhaseTransitionKinetics material model. This table is for {self.material_a.name} <==> {self.material_b.name} evaluated along an isentrope produced by the BurnMan software.\n"
+            f"# This ASPECT-compatible file contains data to calculate the thermodynamic driving force in the PhaseTransitionKinetics material model. This table is for {self.material_a.name} -> {self.material_b.name} evaluated along an isentrope produced by the BurnMan software.\n"
             f"# POINTS: {len(self.depths)}\n"
             "#\n"
             "# pressure (Pa), temperature (K), density a (kg/m3), density b (kg/m3), thermal expansivity a (1/K), thermal expansivity b (1/K), specific heat a (J/K/kg), specific heat b (J/K/kg), compressibility a (1/Pa), compressibility b (1/Pa), seismic Vp a (m/s), seismic Vp b (m/s), seismic dVp/dT a (m/s/K), seismic dVp/dT b (m/s/K), seismic Vs a (m/s), seismic Vs b (m/s), seismic dVs/dT a (m/s/K), seismic dVs/dT b (m/s/K), molar internal energy a (J/mol), molar internal energy b (J/mol), molar Gibbs a (J/mol), molar Gibbs b (J/mol), molar entropy a (J/mol), molar entropy b (J/mol), molar volume a (m^3/mol), molar volume b (m^3/mol), delta density (kg/m3), delta thermal expansivity (1/K), delta specific heat (J/K/kg), delta compressibility (1/Pa), delta internal energy (J/mol), delta molar Gibbs (J/mol), delta molar entropy (J/K/mol), delta molar volume (m^3/mol)\n"
@@ -988,7 +984,6 @@ class DrivingForceProfile:
         )
 
         if not self.out_profile.parent.exists():
-            print("--> Created out directory:", self.out_profile.parent.name)
             self.out_profile.parent.mkdir(parents=True, exist_ok=True)
 
         np.savetxt(
@@ -1000,7 +995,7 @@ class DrivingForceProfile:
             comments="",
         )
 
-        print(f"--> Reaction driving force profile saved to: {self.out_profile.name}")
+        print(f" -> Reaction driving force profile saved to: {self.out_profile.name}")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def visualize(
@@ -1011,7 +1006,6 @@ class DrivingForceProfile:
     ) -> None:
         """"""
         if not self.out_fig_dir.exists():
-            print("--> Created out directory:", self.out_fig_dir.name)
             self.out_fig_dir.mkdir(parents=True, exist_ok=True)
 
         target_depth = self.equilibrium_depth
@@ -1177,10 +1171,9 @@ class DrivingForceProfile:
             return True
 
         if not out_path.parent.exists():
-            print("--> Created out directory:", out_path.parent.name)
             out_path.parent.mkdir(parents=True, exist_ok=True)
 
-        print(f"--> Visualizing {out_path.name}")
+        print(f" -> Visualizing {out_path.name}")
 
         return False
 

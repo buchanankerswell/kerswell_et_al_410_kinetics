@@ -9,10 +9,6 @@ subsection Solver parameters
     set GMRES solver restart length         = 200
     set Number of cheap Stokes solver steps = 5000
   end
-
-  subsection Operator splitting parameters
-    set Reaction time step = 5e-4
-  end
 end
 
 subsection Discretization

@@ -13,7 +13,7 @@ get_script_dir <- function() {
   } else if (!is.null(sys.frames()) && !is.null(sys.frame(1)$ofile)) {
     dirname(normalizePath(sys.frame(1)$ofile))
   } else {
-    stop("Cannot determine script location.")
+    stop(" !! Error: cannot determine script location!")
   }
 }
 
@@ -29,9 +29,9 @@ main <- function() {
   args <- commandArgs(trailingOnly = TRUE)
 
   if (length(args) < 2) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-    cat("  Usage: Rscript main.R [in_path] [out_path]\n")
-    cat("  Example: Rscript main.R /path/to/in_path /path/to/out_path\n")
+    cat("    --------------------------------------------------\n")
+    cat(" !! Usage: Rscript main.R [in_dir] [out_dir]\n")
+    cat(" !! Example: Rscript main.R /path/to/sim_out_dir /path/to/fig_dir\n")
     return(invisible(NULL))
   }
 
@@ -39,15 +39,14 @@ main <- function() {
   out_path <- args[2]
 
   if (!file.exists(in_path)) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-    cat("Warning: The following input files do not exist:\n")
-    cat(in_path, "\n")
-    cat("Please check the paths and try again.\n")
+    cat("    --------------------------------------------------\n")
+    cat(" !! Warning: the following input files do not exist:\n")
+    cat(" -- ", in_path, "\n", sep = "")
     return(invisible(NULL))
   }
 
-  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-  cat("==> Processing csv file:", basename(in_path), "\n")
+  cat("    --------------------------------------------------\n")
+  cat("    Processing csv file: ", basename(in_path), "\n", sep = "")
 
   tryCatch(
     {
@@ -56,8 +55,8 @@ main <- function() {
         write_markdown_table(out_path)
     },
     error = function(e) {
-      cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-      cat("  Error occurred during conversion:", conditionMessage(e), "\n")
+      cat("    --------------------------------------------------\n")
+      cat(" !! Error: drawing issue: ", conditionMessage(e), "\n", sep = "")
     }
   )
 }

@@ -13,7 +13,7 @@ get_script_dir <- function() {
   } else if (!is.null(sys.frames()) && !is.null(sys.frame(1)$ofile)) {
     dirname(normalizePath(sys.frame(1)$ofile))
   } else {
-    stop("Cannot determine script location.")
+    stop(" !! Error: cannot determine script location!")
   }
 }
 
@@ -31,9 +31,9 @@ main <- function() {
   args <- commandArgs(trailingOnly = TRUE)
 
   if (length(args) < 2) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-    cat("  Usage: Rscript main.R [in_dir] [out_dir]\n")
-    cat("  Example: Rscript main.R /path/to/sim_out_dir /path/to/fig_dir\n")
+    cat("    --------------------------------------------------\n")
+    cat(" !! Usage: Rscript main.R [in_dir] [out_dir]\n")
+    cat(" !! Example: Rscript main.R /path/to/sim_out_dir /path/to/fig_dir\n")
     return(invisible(NULL))
   }
 
@@ -42,9 +42,7 @@ main <- function() {
   out_dir <- args[3]
 
   if (!dir.exists(out_dir)) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
     dir.create(out_dir, recursive = TRUE)
-    cat("==> Created out directory:", out_dir, "\n")
   }
 
   in_adiabatic_profile <-
@@ -52,14 +50,18 @@ main <- function() {
   in_material_table <-
     file.path(in_dir, paste0(model_id, "-material-table.txt"))
   in_driving_force_profile <-
-    file.path(in_dir, "thermodynamic-driving-force-profile-olivine-wadsleyite.txt")
+    file.path(in_dir, "forward-reaction-410-profile.txt")
+  in_phase_transition_profile <-
+    file.path(in_dir, "forward-reaction-410-profile.txt")
 
   out_adiabatic_profile <-
     file.path(out_dir, paste0(model_id, "-adiabatic-profile.png"))
   out_material_table <-
     file.path(out_dir, paste0(model_id, "-material-table.png"))
   out_driving_force_profile <-
-    file.path(out_dir, paste0(model_id, "-driving-force-profile.png"))
+    file.path(out_dir, "phase-transition-kinetics-profile.png")
+  out_phase_transition_profile <-
+    file.path(out_dir, "material-property-profiles.png")
 
   missing <- c()
   if (!file.exists(in_adiabatic_profile)) {
@@ -73,17 +75,16 @@ main <- function() {
   }
 
   if (length(missing) > 0) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-    cat("Warning: The following input files do not exist:\n")
+    cat("    --------------------------------------------------\n")
+    cat(" !! Warning: the following input files do not exist:\n")
     for (f in missing) {
-      cat(" - ", f, "\n")
+      cat(" -- ", f, "\n", sep = "")
     }
-    cat("Please check the paths and try again.\n")
     return(invisible(NULL))
   }
 
-  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-  cat("==> Processing perplex model:", basename(in_dir), "\n")
+  cat("    --------------------------------------------------\n")
+  cat("    Processing perplex model: ", basename(in_dir), "\n", sep = "")
 
   tryCatch(
     {
@@ -100,10 +101,14 @@ main <- function() {
         in_driving_force_profile,
         out_driving_force_profile
       )
+      visualize_phase_transition_profile(
+        in_phase_transition_profile,
+        out_phase_transition_profile
+      )
     },
     error = function(e) {
-      cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-      cat("  Error occurred during visualization:", conditionMessage(e), "\n")
+      cat("    --------------------------------------------------\n")
+      cat(" !! Error: drawing issue: ", conditionMessage(e), "\n", sep = "")
     }
   )
 }

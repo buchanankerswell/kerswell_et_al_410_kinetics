@@ -40,8 +40,17 @@ fi
 # Clone candi
 # ===========================
 echo "  ==========================================="
-git clone https://github.com/buchanankerswell/candi.git && cd candi
-git checkout update-macos-platform
+if [ -d "candi" ]; then
+    echo "  Found candi directory! Pulling latest changes ..."
+    cd candi && git checkout update-macos-platform && git pull
+else
+    git clone https://github.com/buchanankerswell/candi.git && cd candi && git checkout update-macos-platform && git pull
+fi
+if [ -f "local.cfg" ]; then
+    echo "  local.cfg found! Removing old config and reconfiguring ..."
+    rm local.cfg
+fi
+echo "  Downloading and configuring new local.cfg ..."
 curl -O https://raw.githubusercontent.com/geodynamics/aspect/main/contrib/install/local.cfg
 cat << EOF >> local.cfg
 DEAL_II_VERSION=$DEALII_VERSION

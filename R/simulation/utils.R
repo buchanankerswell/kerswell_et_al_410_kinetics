@@ -35,7 +35,7 @@ plot_exists <- function(out_path) {
 
   ensure_output_dir(out_path)
 
-  cat("--> ", basename(out_path), "\n")
+  cat(" -> ", basename(out_path), "\n", sep = "")
   FALSE
 }
 
@@ -146,6 +146,12 @@ read_depth_average <- function(filepath) {
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+read_deflections <- function(filepath) {
+  suppressWarnings(df <- read_csv(filepath, show_col_types = FALSE))
+  df |> mutate(deflection = deflection / 1e3, sharpness = sharpness / 1e3)
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 profile_theme <- function() {
   theme(
     panel.grid.major = element_line(linewidth = 0.4, color = "white"),
@@ -181,6 +187,26 @@ theme_1 <- function() {
     legend.position = "inside",
     legend.position.inside = c(0.00, 0.85),
     legend.direction = "horizontal",
+    legend.key.height = unit(0.5, "cm"),
+    legend.key.width = unit(1, "cm"),
+    legend.box.margin = margin(2, 2, 2, 2),
+    legend.margin = margin(),
+    legend.title = element_text(vjust = 0, size = 14),
+    legend.background = element_blank()
+  )
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+theme_2 <- function() {
+  theme(
+    panel.grid.major = element_line(linewidth = 0.4, color = "white"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "grey90"),
+    plot.margin = margin(15, 15, 15, 15),
+    plot.title = element_text(hjust = 0.5),
+    axis.ticks = element_blank(),
+    legend.justification = "left",
+    legend.position = "right",
     legend.key.height = unit(0.5, "cm"),
     legend.key.width = unit(1, "cm"),
     legend.box.margin = margin(2, 2, 2, 2),

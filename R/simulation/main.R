@@ -13,7 +13,7 @@ get_script_dir <- function() {
   } else if (!is.null(sys.frames()) && !is.null(sys.frame(1)$ofile)) {
     dirname(normalizePath(sys.frame(1)$ofile))
   } else {
-    stop("Cannot determine script location.")
+    stop(" !! Error: cannot determine script location!")
   }
 }
 
@@ -32,9 +32,9 @@ main <- function() {
   args <- commandArgs(trailingOnly = TRUE)
 
   if (length(args) < 2) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-    cat("  Usage: Rscript main.R [in_dir] [out_dir]\n")
-    cat("  Example: Rscript main.R /path/to/sim_out_dir /path/to/fig_dir\n")
+    cat("    --------------------------------------------------\n")
+    cat(" !! Usage: Rscript main.R [in_dir] [out_dir]\n")
+    cat(" !! Example: Rscript main.R /path/to/sim_out_dir /path/to/fig_dir\n")
     return(invisible(NULL))
   }
 
@@ -45,9 +45,7 @@ main <- function() {
     str_replace("output-", "")
 
   if (!dir.exists(out_dir)) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
     dir.create(out_dir, recursive = TRUE)
-    cat("==> Created out directory:", out_dir, "\n")
   }
 
   in_stat <- file.path(in_dir, "statistics")
@@ -64,27 +62,27 @@ main <- function() {
   if (!file.exists(in_davg)) missing <- c(missing, in_davg)
 
   if (length(missing) > 0) {
-    cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-    cat("Warning: The following input files do not exist:\n")
+    cat("    --------------------------------------------------\n")
+    cat(" !! Warning: the following input files do not exist:\n")
     for (f in missing) {
-      cat(" - ", f, "\n")
+      cat(" -- ", f, "\n", sep = "")
     }
-    cat("Please check the paths and try again.\n")
     return(invisible(NULL))
   }
 
-  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-  cat("==> Processing simulation:", basename(in_dir), "\n")
+  cat("    --------------------------------------------------\n")
+  cat("    Processing simulation: ", basename(in_dir), "\n", sep = "")
+  cat("    --------------------------------------------------\n")
 
   tryCatch(
     {
       # visualize_statistics(in_stat, in_res, out_stats)
-      # visualize_viscosity_profile(in_davg, out_viscosity)
+      visualize_viscosity_profile(in_davg, out_viscosity)
       visualize_depth_averages(in_davg, out_depth)
     },
     error = function(e) {
-      cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-      cat("  Error occurred during visualization:", conditionMessage(e), "\n")
+      cat("    --------------------------------------------------\n")
+      cat(" !! Error: drawing issue: ", conditionMessage(e), "\n", sep = "")
     }
   )
 }

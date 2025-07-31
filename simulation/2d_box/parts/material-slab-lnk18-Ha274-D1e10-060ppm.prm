@@ -1,0 +1,24 @@
+subsection Material model
+  set Model name = phase transition kinetics
+
+  subsection Phase transition kinetics
+    set Ln kinetic prefactor       = -18
+    set Activation enthalpy        = 274e3
+    set Activation volume          = 3.3e-6
+    set Nucleation site            = intra
+    set Grain size                 = 0.005
+    set Dislocation density        = 1e10
+    set Water content              = 60
+    set Water content exponent     = 3.2
+
+    set Viscosity                  = 1e21
+    set Minimum viscosity          = 1e19
+    set Maximum viscosity          = 1e24
+    set Thermal viscosity exponent = 1
+    set Transition depths          = 132e3
+    set Viscosity prefactors       = 1, 1
+
+    set Data directory             = data/
+    set Data file name             = forward-reaction-410-profile.txt
+  end
+end

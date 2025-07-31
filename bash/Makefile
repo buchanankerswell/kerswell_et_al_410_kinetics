@@ -6,7 +6,8 @@ OS_ID := $(shell [ -f /etc/os-release ] && . /etc/os-release && echo $$ID || ech
 PROJECT_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 DEALII := $(PROJECT_ROOT)/dealii
 ASPECT := $(PROJECT_ROOT)/aspect
-INSTALL := $(PROJECT_ROOT)/bash/install
+BASH := $(PROJECT_ROOT)/bash
+INSTALL := $(BASH)/install
 
 # Platform scripts
 DEALII_MACOS := $(INSTALL)/dealii-macos.sh
@@ -18,7 +19,7 @@ ASPECT_BARKLA2 := $(INSTALL)/aspect-barkla2.sh
 ASPECT_EXE := $(ASPECT)/aspect-release
 
 # Install config
-DEALII_VERSION := v9.6.1
+DEALII_VERSION := v9.7.0
 
 ifeq ($(UNAME_S), Darwin)
   DEALII_LIB := $(DEALII)/deal.II-$(DEALII_VERSION)/lib/libdeal_II.dylib
@@ -29,7 +30,7 @@ else ifeq ($(OS_ID), rocky)
   DEALII_LIB := $(DEALII)/deal.II-$(DEALII_VERSION)/lib/libdeal_II.so
   INSTALL_DEALII := $(DEALII_BARKLA2)
   INSTALL_ASPECT := $(ASPECT_BARKLA2)
-  TRILINOS_VERSION := 14
+  TRILINOS_VERSION := AUTO
   GCC := gcc/14.2.0
   OPENMPI := openmpi/5.0.8-gcc14.2.0
   OPENBLAS := openblas/0.3.29/gcc-14.2.0
@@ -45,7 +46,7 @@ LOGGER := 2>&1 | tee -a $(LOG_FILE)
 
 # Cleanup targets
 CLEAN := $(INSTALL)/log-*.log $(DEALII)/tmp
-DEEP_CLEAN :=
+DEEP_CLEAN := $(BASH)/candi
 
 # Targets
 .PHONY: all install uninstall install-aspect install-dealii uninstall-dealii uninstall-aspect clean help
@@ -61,51 +62,57 @@ install-dealii:$(LOG_FILE) $(DEALII_LIB)
 uninstall: uninstall-aspect uninstall-dealii
 
 uninstall-aspect:
-	@echo "==> Uninstalling ASPECT ..."
+	@echo "    --------------------------------------------------"
+	@echo "    Uninstalling ASPECT ..."
+	@echo "    --------------------------------------------------"
 	@for item in $(ASPECT); do \
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 uninstall-dealii:
-	@echo "==> Uninstalling deal.II ..."
+	@echo "    --------------------------------------------------"
+	@echo "    Uninstalling deal.II ..."
+	@echo "    --------------------------------------------------"
 	@for item in $(DEALII); do \
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 $(ASPECT_EXE): $(LOG_FILE)
-	@echo "==> Installing ASPECT ..." $(LOGGER)
+	@echo "    --------------------------------------------------"
+	@echo "    Installing ASPECT ..." $(LOGGER)
+	@echo "    --------------------------------------------------"
 	@if [ "$(OS_ID)" = "rocky" ]; then \
 		if echo "$(shell hostname)" | grep -q "login"; then \
-			echo "This script cannot be run on the BARKLA login node!" $(LOGGER); \
-			echo "Start an interactive session with 'srun --ntasks=<N> --pty /bin/bash'" $(LOGGER); \
+			echo " !! Warning: This script cannot be run on the BARKLA login node!" $(LOGGER); \
+			echo " !!          Start an interactive session with 'srun --ntasks=<N> --pty /bin/bash'" $(LOGGER); \
 			exit 1; \
 		fi; \
 		bash -i -c "source $(INSTALL_ASPECT) $(DEALII_VERSION) $(GCC) $(OPENMPI) $(OPENBLAS) $(CMAKE)" $(LOGGER) || exit 1; \
@@ -114,11 +121,13 @@ $(ASPECT_EXE): $(LOG_FILE)
 	fi
 
 $(DEALII_LIB): $(LOG_FILE)
-	@echo "==> Installing deal.II ..." $(LOGGER)
+	@echo "    --------------------------------------------------"
+	@echo "    Installing deal.II ..." $(LOGGER)
+	@echo "    --------------------------------------------------"
 	@if [ "$(OS_ID)" = "rocky" ]; then \
 		if echo "$(shell hostname)" | grep -q "login"; then \
-			echo "This script cannot be run on the BARKLA login node!" $(LOGGER); \
-			echo "Start an interactive session with 'srun --ntasks=<N> --pty /bin/bash'" $(LOGGER); \
+			echo " !! Warning: This script cannot be run on the BARKLA login node!" $(LOGGER); \
+			echo " !!          Start an interactive session with 'srun --ntasks=<N> --pty /bin/bash'" $(LOGGER); \
 			exit 1; \
 		fi; \
 		bash -i -c "source $(INSTALL_DEALII) $(DEALII_VERSION) $(TRILINOS_VERSION) $(GCC) $(OPENMPI) $(OPENBLAS) $(CMAKE)" $(LOGGER) || exit 1; \
@@ -137,13 +146,13 @@ clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -156,26 +165,28 @@ deep-clean:
 				ABS_PATH=$$(realpath "$$1"); \
 				case "$$ABS_PATH" in \
 					$(PROJECT_ROOT)*) \
-						echo "-> Safely removing\n   $$ABS_PATH"; \
+						echo " -> Safely removing\n   $$ABS_PATH"; \
 						rm -rf "$$ABS_PATH";; \
 					*) \
-						echo "!! Skipping (outside project root)\n   $$ABS_PATH";; \
+						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
 				esac; \
 			else \
-				echo "-- Skipping (not found)\n   $$1"; \
+				echo " -- Skipping (not found)\n   $$1"; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 help:
-	@echo "Available targets:"
-	@echo "  install           Build deal.II and ASPECT"
-	@echo "  install-aspect    Build ASPECT"
-	@echo "  install-dealii    Build deal.II"
-	@echo "  uninstall         Uninstall deal.II and ASPECT"
-	@echo "  uninstall-aspect  UninstallASPECT"
-	@echo "  uninstall-dealii  Uninstall deal.II"
-	@echo "  clean             Cleanup unnecessary files and directories (safe)"
-	@echo "  deep-clean        Deep clean figures and results (use with caution!)"
-	@echo "  help              Show this help message"
+	@echo "    --------------------------------------------------"
+	@echo "    Available targets:"
+	@echo "    --------------------------------------------------"
+	@echo "    install           Build deal.II and ASPECT"
+	@echo "    install-aspect    Build ASPECT"
+	@echo "    install-dealii    Build deal.II"
+	@echo "    uninstall         Uninstall deal.II and ASPECT"
+	@echo "    uninstall-aspect  UninstallASPECT"
+	@echo "    uninstall-dealii  Uninstall deal.II"
+	@echo "    clean             Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean        Deep clean figures and results (use with caution!)"
+	@echo "    help              Show this help message"

@@ -239,27 +239,67 @@ namespace aspect
         double k;
 
         /**
-         * The kinetic prefactor Q used to calculate the reaction rate
-         * $\frac{dX}{dt} = Q \exp(-E_a/RT) \Delta G (1 - X)$
+         * The style of nucleation that determins the geometric term: 'inter' (grain boundaries) or 'intra' (within grains).
          *
-         * Units: J/mol/s
+         * Inter: $(6.7 / d)$, intra: $2 \sqrt{D}$
          */
-        double Q_kinetic_prefactor;
+        std::string nucleation_site;
 
         /**
-         * Use Arrhenius term in the reaction rate equation
-         * $\frac{dX}{dt} = Q \exp(-E_a/RT) \Delta G (1 - X)$?
+         * The grain size '$d$' used in the geometric term: $(6.7 / d)$
+         * $\frac{dX}{dt} = (6.7 / d) kT C_{OH}^r \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
          *
-         * Units: none
+         * Units: m
          */
-        bool use_arrhenius;
+        double grain_size;
 
         /**
-         * The activation energy used in the Arrhenius term $\exp(-E_a/RT)$.
+         * The dislocation density '$D$' used in the geometric term: $2\sqrt{D}$
+         * $\frac{dX}{dt} = 2\sqrt{D} kT C_{OH}^r \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         *
+         * Units: m^-2
+         */
+        double dislocation_density;
+
+        /**
+         * The natural log of the kinetic prefactor '$k$' used in the linear temperature dependence term: $kT$
+         * $\frac{dX}{dt} = (6.7 / d) kT C_{OH}^r \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         *
+         * Units: ln(m/s/K)
+         */
+        double ln_kinetic_prefactor;
+
+        /**
+         * The activation enthalpy '$H_a$' used in the Arrhenius term $\exp(-H_a + PV_a/RT)$.
+         * $\frac{dX}{dt} = (6.7 / d) kT C_{OH}^r \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
          *
          * Units: J/mol
          */
-        double E_activation;
+        double H_a;
+
+        /**
+         * The activation volume '$V_a$' used in the Arrhenius term $\exp(-H_a + PV_a/RT)$.
+         * $\frac{dX}{dt} = (6.7 / d) kT C_{OH}^r \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         *
+         * Units: m^3/mol
+         */
+        double V_a;
+
+        /**
+         * The water content '$C_{OH}$' used in the water dependence term: $C_{OH}^r$.
+         * $\frac{dX}{dt} = (6.7 / d) kT C_{OH}^r \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         *
+         * Units: Wt. ppm
+         */
+        double water_content;
+
+        /**
+         * The water content exponent '$r$' used in the water dependence term: $C_{OH}^r$.
+         * $\frac{dX}{dt} = (6.7 / d) kT C_{OH}^r \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         *
+         * Units: Wt. ppm
+         */
+        double water_content_exponent;
     };
 
 
@@ -278,13 +318,40 @@ namespace aspect
         std::vector<double> get_nth_output(const unsigned int idx) const override;
 
         /**
-         * Driving force $\Delta G$ at the evaluation points passed to
+         * Preexponential term $kTC_{OH}^r$ at the evaluation points passed to
+         * the instance of MaterialModel::Interface::evaluate() that fills
+         * the current object.
+         *
+         * Units: m/s
+         */
+        std::vector<double> preexponential;
+
+        /**
+         * Arrhenius term $\exp(-H_a + PV_a/RT)$ at the evaluation points passed to
+         * the instance of MaterialModel::Interface::evaluate() that fills
+         * the current object.
+         *
+         * Units: none
+         */
+        std::vector<double> arrhenius;
+
+        /**
+         * Thermodynamic driving force $\Delta G$ at the evaluation points passed to
          * the instance of MaterialModel::Interface::evaluate() that fills
          * the current object.
          *
          * Units: J/mol
          */
-        std::vector<double> driving_force;
+        std::vector<double> thermodynamic;
+
+        /**
+         * Growth rate $\dot{x}$ at the evaluation points passed to
+         * the instance of MaterialModel::Interface::evaluate() that fills
+         * the current object.
+         *
+         * Units: m/s
+         */
+        std::vector<double> growth_rate;
 
     };
   } // namespace MaterialModel
