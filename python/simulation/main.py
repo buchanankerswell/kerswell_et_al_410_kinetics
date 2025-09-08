@@ -49,7 +49,7 @@ def main():
             # "density",
             # "adiabatic_density",
             "nonadiabatic_density",
-            # "velocity",
+            "velocity",
             # "stress_xx",
             # "stress_yy",
             # "shear_stress_xx",
@@ -84,7 +84,7 @@ def main():
     elif visualization_type == "2d_box":
         plot_config.draw_mesh_plots = True
         plot_config.draw_centerline_profile_plots = True
-        plot_config.draw_topography_plots = True
+        plot_config.draw_topography_plots = False
         plot_config.camera_center_zoom = True
         plot_config.title_position = (0.39, 0.90)
         plot_config.cbar_position = [0.30, 0.05]
@@ -155,7 +155,7 @@ def main():
             "preexponential": "%0.1f",
             "arrhenius": "%0.1e",
             "thermodynamic": "%.1f",
-            "growth_rate": "%.1f",
+            "growth_rate": "%.2f",
             "reaction_rate_C0": "%.2f",
             "rate_ratio": "%.1f",
         }
@@ -179,7 +179,7 @@ def main():
             "principal_stress_1": 1e-6,
             "principal_stress_2": 1e-6,
             "stress_second_invariant": 1e-6,
-            "strain_rate": 1,
+            "strain_rate": 3.154e13,
             "viscosity": 1,
             "seismic_Vp": 1e-3,
             "seismic_Vs": 1e-3,
@@ -280,7 +280,7 @@ def main():
 
     tile_sets = {
         "set0": {
-            "tags": None,
+            "tags": "abc",
             "fields": [
                 "nonadiabatic_temperature",
                 "nonadiabatic_pressure",
@@ -288,27 +288,67 @@ def main():
             ],
         },
         "set1": {
-            "tags": None,
+            "tags": "def",
             "fields": [
                 "thermodynamic",
+                "growth_rate",
+                "reaction_rate_C0",
+            ],
+        },
+        "set3": {
+            "tags": "ghi",
+            "fields": [
+                "X_field",
+                "seismic_Vp",
+                "seismic_Vs",
+            ],
+        },
+        "set4": {
+            "tags": "abc",
+            "fields": [
+                "nonadiabatic_temperature",
                 "reaction_rate_C0",
                 "X_field",
             ],
         },
-        "set2": {
-            "tags": None,
+        "set5": {
+            "tags": "def",
             "fields": [
-                "strain_rate",
-                "rate_ratio",
-                "stress_second_invariant",
+                "nonadiabatic_temperature",
+                "reaction_rate_C0",
+                "X_field",
             ],
         },
-        "set3": {
-            "tags": None,
+        "set6": {
+            "tags": "ghi",
             "fields": [
+                "nonadiabatic_temperature",
+                "reaction_rate_C0",
+                "X_field",
+            ],
+        },
+        "set7": {
+            "tags": "abc",
+            "fields": [
+                "nonadiabatic_temperature",
+                "nonadiabatic_density",
                 "seismic_Vp",
-                "seismic_Vs",
-                "Vp_Vs_ratio",
+            ],
+        },
+        "set8": {
+            "tags": "def",
+            "fields": [
+                "nonadiabatic_temperature",
+                "nonadiabatic_density",
+                "seismic_Vp",
+            ],
+        },
+        "set9": {
+            "tags": "ghi",
+            "fields": [
+                "nonadiabatic_temperature",
+                "nonadiabatic_density",
+                "seismic_Vp",
             ],
         },
     }
@@ -325,12 +365,10 @@ def main():
             if fields and len(fields) == 3:
                 tiler = ImageTiler(
                     plot_config=plot_config,
-                    out_fig_dir=out_fig_dir / model_id,
+                    out_fig_dir=out_fig_dir / "meshes" / model_id,
                     field1=fields[0],
                     field2=fields[1],
                     field3=fields[2],
-                    movie=False,
-                    fps=12,
                     tags=tags,
                 )
                 tiler.tile_images()

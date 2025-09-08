@@ -153,12 +153,13 @@ table_theme <- function() {
     ),
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = NA),
-    plot.margin = margin(50, 15, 15, 15),
+    plot.margin = margin(50, 10, 5, 5),
     plot.title = element_text(hjust = 0.5),
     plot.tag.location = "panel",
     plot.tag = element_text(
-      margin = margin(5, 2, 2, -5),
+      margin = margin(5, 0, 0, -5),
       hjust = 0,
+      face = "bold",
       color = "white"
     ),
     axis.ticks = element_blank(),

@@ -58,8 +58,8 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
     "density" = "g/cm^3",
     "thermal_expansivity" = "K%*%10^-5",
     "compressibility" = "Pa%*%10^-12",
-    "specific_heat" = "KJ/K*kg",
-    "entropy" = "kJ/K*kg"
+    "specific_heat" = "KJ/K~kg",
+    "entropy" = "kJ/K~kg"
   )
 
   labs <- c(
@@ -118,8 +118,8 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
       ) +
       geom_path(
         data = data.frame(
-          x = c(1705, 1783, 1783, 1705, 1705),
-          y = c(10, 10, 16, 16, 10)
+          x = c(1705, 1809, 1809, 1705, 1705),
+          y = c(10, 10, 18, 18, 10)
         ),
         aes(x, y),
         color = "black",
@@ -129,6 +129,7 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
         option = color_map[props[1]],
         direction = color_direction[props[1]],
         limits = color_lims[[props[1]]],
+        breaks = scales::pretty_breaks(n = 4),
         na.value = "grey90"
       ) +
       labs(
@@ -158,8 +159,8 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
       ) +
       geom_path(
         data = data.frame(
-          x = c(1705, 1783, 1783, 1705, 1705),
-          y = c(10, 10, 16, 16, 10)
+          x = c(1705, 1809, 1809, 1705, 1705),
+          y = c(10, 10, 18, 18, 10)
         ),
         aes(x, y),
         color = "black",
@@ -169,6 +170,7 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
         option = color_map[props[2]],
         direction = color_direction[props[2]],
         limits = color_lims[[props[2]]],
+        breaks = scales::pretty_breaks(n = 5),
         na.value = "grey90"
       ) +
       labs(
@@ -251,7 +253,7 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
     ggsave(
       out_path,
       plot = p,
-      width = 11.5,
+      width = 11,
       height = 6,
       # width = 13,
       # height = 12,

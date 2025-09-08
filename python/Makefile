@@ -17,10 +17,10 @@ PERPLEX_MODELS := $(shell find $(PERPLEX) -type f -name '*.dat' -exec basename {
 
 # Simulations
 2D_BOX_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm'))
-# 2D_BOX_TIMESTEPS_SYNC := 000 005 010 050 100
-# 2D_BOX_TIMESTEPS_MESH := 000 005 010 050 100
-2D_BOX_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 5 100)
-2D_BOX_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 5 100)
+2D_BOX_TIMESTEPS_SYNC := 100
+2D_BOX_TIMESTEPS_MESH := 100
+# 2D_BOX_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 5 100)
+# 2D_BOX_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 5 100)
 2D_BOX_TIMESTEPS_PROFILE := $(2D_BOX_TIMESTEPS_MESH)
 2D_BOX_TIMESTEPS_TOPOGRAPHY := $(2D_BOX_TIMESTEPS_SYNC)
 2D_SHELL_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_shell/configs -type f -name '*.prm'))
@@ -36,17 +36,20 @@ INITIAL_SETUP := $(PYTHON)/simulation/initial-setup.py
 
 # Cleanup targets
 CLEAN := $(PYTHON)/**/__pycache__
-DEEP_CLEAN :=
+DEEP_CLEAN := $(PYTHON)/*/data
 
 # Targets
 .PHONY: all visualize 2d-box-models 2d-shell-models adiabat clean deep-clean help
 
 all: 2d-box-models
 
-visualize: initial-setup 2d-box-models
+visualize: initial-setup 2d-box-models compositions
 
 sync-barkla:
 	@source $(BASH)/simulation/sync-barkla2.sh "$(2D_BOX_CONFIGS)" "$(2D_BOX_TIMESTEPS_SYNC)"
+
+compositions:
+	@(cd $(BASH)/simulation && ./make-compositions.sh)
 
 initial-setup: $(INITIAL_SETUP)
 	@$(CONDA_PYTHON_PYVISTA) -u $(INITIAL_SETUP) --out-fig-dir $(FIGS)

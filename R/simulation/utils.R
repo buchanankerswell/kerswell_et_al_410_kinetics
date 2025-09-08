@@ -146,9 +146,9 @@ read_depth_average <- function(filepath) {
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-read_deflections <- function(filepath) {
+read_displacements <- function(filepath) {
   suppressWarnings(df <- read_csv(filepath, show_col_types = FALSE))
-  df |> mutate(deflection = deflection / 1e3, sharpness = sharpness / 1e3)
+  df |> mutate(displacement = displacement / 1e3, width = width / 1e3)
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -180,7 +180,7 @@ theme_1 <- function() {
     panel.grid.major = element_line(linewidth = 0.4, color = "white"),
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = "grey90"),
-    plot.margin = margin(15, 15, 15, 15),
+    plot.margin = margin(5, 5, 5, 5),
     plot.title = element_text(hjust = 0.5),
     axis.ticks = element_blank(),
     legend.justification = "left",
@@ -202,16 +202,29 @@ theme_2 <- function() {
     panel.grid.major = element_line(linewidth = 0.4, color = "white"),
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = "grey90"),
-    plot.margin = margin(15, 15, 15, 15),
+    plot.margin = margin(5, 5, 5, 5),
     plot.title = element_text(hjust = 0.5),
+    plot.tag.location = "panel",
+    plot.tag.position = "topleft",
+    plot.tag = element_text(
+      size = 18,
+      margin = margin(5, 0, 0, 0),
+      hjust = 0,
+      color = "black",
+      face = "bold"
+    ),
     axis.ticks = element_blank(),
     legend.justification = "left",
-    legend.position = "right",
-    legend.key.height = unit(0.5, "cm"),
-    legend.key.width = unit(1, "cm"),
+    legend.position = "inside",
+    legend.position.inside = c(0.03, 0.12),
+    legend.direction = "horizontal",
+    # legend.key.height = unit(0.5, "cm"),
+    # legend.key.width = unit(1, "cm"),
     legend.box.margin = margin(2, 2, 2, 2),
     legend.margin = margin(),
-    legend.title = element_text(vjust = 0, size = 14),
+    legend.title = element_text(vjust = 0, size = 10, margin = margin()),
+    legend.title.position = "top",
+    legend.text = element_text(size = 9),
     legend.background = element_blank()
   )
 }

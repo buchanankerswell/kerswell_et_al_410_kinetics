@@ -31,6 +31,9 @@ visualize:
 	@$(MAKE) --no-print-directory -C $(R) visualize
 	@$(MAKE) --no-print-directory -C $(PYTHON) visualize
 
+manuscript-diff:
+	@$(MAKE) --no-print-directory -C $(MARKDOWN) diff
+
 manuscript:
 	@$(MAKE) --no-print-directory -C $(MARKDOWN)
 

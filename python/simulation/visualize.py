@@ -203,16 +203,16 @@ class PyVistaModelConfig:
                 "differential_stress": "Oranges",
                 "stress_second_invariant": "Reds",
                 "strain_rate": "BuPu_r",
-                "seismic_Vp": "bone_r",
-                "seismic_Vs": "bone_r",
+                "seismic_Vp": "copper_r",
+                "seismic_Vs": "copper_r",
                 "Vp_anomaly": "seismic",
                 "Vs_anomaly": "seismic",
                 "Vp_Vs_ratio": "seismic",
-                "preexponential": "bone",
-                "arrhenius": "bone",
-                "thermodynamic": "RdGy",
-                "growth_rate": "bone_r",
-                "reaction_rate_C0": "bone_r",
+                "preexponential": "bone_r",
+                "arrhenius": "bone_r",
+                "thermodynamic": "RdGy_r",
+                "growth_rate": "gist_heat_r",
+                "reaction_rate_C0": "pink_r",
                 "rate_ratio": "Blues",
             }
         if not self.clim_mapping:
@@ -252,7 +252,7 @@ class PyVistaModelConfig:
                 "Vp_Vs_ratio": (-4.5, 4.5),
                 "preexponential": (0, 1e2),
                 "arrhenius": (0, 1e2),
-                "thermodynamic": (-15, 15),
+                "thermodynamic": (-1, 1),
                 "growth_rate": (0, 1e2),
                 "reaction_rate_C0": (0, 1e2),
                 "rate_ratio": (0, 150),
@@ -294,7 +294,7 @@ class PyVistaModelConfig:
                 "Vp_Vs_ratio": "$V_p$/$V_s$",
                 "preexponential": "Preexponential term (m/s)",
                 "arrhenius": "Arrhenius term",
-                "thermodynamic": "$\\Delta G$ (kJ/mol)",
+                "thermodynamic": "Thermodynamic term",
                 "growth_rate": "$\\dot{x}$ (cm/Ma)",
                 "reaction_rate_C0": "$\\dot{X} (1/Ma)$",
                 "rate_ratio": "$\\dot{X}\\colon\\dot{\\epsilon}_{II}$",
@@ -329,7 +329,7 @@ class PyVistaModelConfig:
                 "principal_stress_1": "%.1f",
                 "differential_stress": "%.1f",
                 "stress_second_invariant": "%.1f",
-                "strain_rate": "%.0f",
+                "strain_rate": "%.1f",
                 "seismic_Vp": "%.1f",
                 "seismic_Vs": "%.1f",
                 "Vp_anomaly": "%.0f",
@@ -337,7 +337,7 @@ class PyVistaModelConfig:
                 "Vp_Vs_ratio": "%.0f",
                 "preexponential": "%0.1e",
                 "arrhenius": "%0.1e",
-                "thermodynamic": "%.0f",
+                "thermodynamic": "%.1f",
                 "growth_rate": "%.1f",
                 "reaction_rate_C0": "%.1f",
                 "rate_ratio": "%.0f",
@@ -371,7 +371,7 @@ class PyVistaModelConfig:
                 "principal_stress_2": 1e-9,
                 "differential_stress": 1e-9,
                 "stress_second_invariant": 1e-9,
-                "strain_rate": 1,
+                "strain_rate": 3.154e13,
                 "seismic_Vp": 1e-3,
                 "seismic_Vs": 1e-3,
                 "Vp_anomaly": 1,
@@ -379,8 +379,8 @@ class PyVistaModelConfig:
                 "Vp_Vs_ratio": 1,
                 "preexponential": 1,
                 "arrhenius": 1,
-                "thermodynamic": 1e-3,
-                "growth_rate": 3.154e15,
+                "thermodynamic": 1,
+                "growth_rate": 3.154e9,
                 "reaction_rate_C0": 3.154e13,
                 "rate_ratio": 1,
             }
@@ -458,7 +458,7 @@ class PyVistaModelVisualizer:
 
         centerline_data = {}
         reaction_depth = cfg.centerline_reaction_depth
-        deflection_sharpness_data = []
+        centerline_profile_data = []
 
         for model_id, (pvtu_files, timesteps) in model_out_data.items():
             print("    --------------------------------------------------")
@@ -502,7 +502,7 @@ class PyVistaModelVisualizer:
 
                     if cfg.draw_mesh_plots and tstep in self.tsteps_mesh:
                         out_path = out_fig_dir_mesh / f"{model_id.replace('_', '-')}-{field_id}-{str(tstep).zfill(4)}.png"
-                        self.draw_mesh(mesh.copy(), field_name, time_myr, cmap, clim, out_path)
+                        self.draw_mesh(mesh.copy(), field_name, cmap, clim, out_path)
 
                     if cfg.draw_centerline_profile_plots and (tstep in self.tsteps_profile or tstep in self.tsteps_topography):
                         centerline_data.setdefault(model_id, {}).setdefault(tstep, {})
@@ -514,25 +514,44 @@ class PyVistaModelVisualizer:
                         centerline_data[model_id][tstep]["fields"][field_name] = {"depths": depths, "values": values, "clim": clim}
 
                         if field_name == "X_field":
-                            deflection, sharpness = self._get_profile_deflection_and_sharpness(depths, values, reaction_depth)
-                            centerline_data[model_id][tstep]["deflection"] = float(deflection)
-                            centerline_data[model_id][tstep]["sharpness"] = float(sharpness)
+                            displacement, width = self._get_profile_data(depths, values, reaction_depth)
+                            centerline_data[model_id][tstep]["displacement"] = displacement
+                            centerline_data[model_id][tstep]["width"] = width
 
-                            # Append data to the list
-                            deflection_sharpness_data.append(
-                                {
-                                    "model_id": model_id,
-                                    "timestep": tstep,
-                                    "time_myr": time_myr,
-                                    "deflection": float(deflection),
-                                    "sharpness": float(sharpness),
-                                }
-                            )
+                        elif field_name == "reaction_rate_C0":
+                            max_reaction_rate = np.nanmax(values)
+                            centerline_data[model_id][tstep]["max_reaction_rate"] = max_reaction_rate
 
-        if deflection_sharpness_data:
+                        elif field_name == "velocity":
+                            max_velocity = np.nanmax(values)
+                            centerline_data[model_id][tstep]["max_velocity"] = max_velocity
+
+                        elif field_name == "strain_rate":
+                            max_strain_rate = np.nanmax(values)
+                            centerline_data[model_id][tstep]["max_strain_rate"] = max_strain_rate
+
+                    if (
+                        "displacement" in centerline_data[model_id][tstep]
+                        and "max_reaction_rate" in centerline_data[model_id][tstep]
+                        and "max_velocity" in centerline_data[model_id][tstep]
+                    ):
+                        centerline_profile_data.append(
+                            {
+                                "model_id": model_id,
+                                "timestep": tstep,
+                                "time_myr": time_myr,
+                                "displacement": centerline_data[model_id][tstep]["displacement"],
+                                "width": centerline_data[model_id][tstep]["width"],
+                                "max_velocity": centerline_data[model_id][tstep]["max_velocity"],
+                                "max_strain_rate": centerline_data[model_id][tstep]["max_strain_rate"],
+                                "max_reaction_rate": centerline_data[model_id][tstep]["max_reaction_rate"],
+                            }
+                        )
+
+        if centerline_profile_data:
             try:
-                df = pd.DataFrame(deflection_sharpness_data)
-                csv_path = Path("simulation") / "data" / "deflection_sharpness_data.csv"
+                df = pd.DataFrame(centerline_profile_data)
+                csv_path = Path("simulation") / "data" / "centerline-profile-data.csv"
                 csv_path.parent.mkdir(parents=True, exist_ok=True)
                 df.to_csv(csv_path, index=False)
             except Exception as e:
@@ -540,14 +559,14 @@ class PyVistaModelVisualizer:
 
         if cfg.draw_centerline_profile_plots:
             print("    --------------------------------------------------")
-            print("    Drawing deflections ...")
+            print("    Drawing displacements ...")
             print("    --------------------------------------------------")
 
             for model_type in ["plume", "slab"]:
                 selected_models = [m for m in centerline_data.keys() if model_type in m]
                 selected_models = sorted(selected_models, key=self._extract_sort_key)
 
-                deflection_group = {}
+                displacement_group = {}
                 for model_id, tsteps in centerline_data.items():
                     if model_id in selected_models:
                         times = []
@@ -556,30 +575,30 @@ class PyVistaModelVisualizer:
                         for tstep in sorted_tsteps:
                             if tstep in self.tsteps_topography:
                                 data = tsteps[tstep]
-                                if "deflection" in data and "time_myr" in data:
+                                if "displacement" in data and "time_myr" in data:
                                     times.append(data["time_myr"])
-                                    defs.append(data["deflection"])
+                                    defs.append(data["displacement"])
                         if times and defs:
-                            deflection_group[model_id] = {
+                            displacement_group[model_id] = {
                                 "time_myr": np.array(times, dtype=np.float32),
-                                "deflection": np.array(defs, dtype=np.float32),
+                                "displacement": np.array(defs, dtype=np.float32),
                             }
 
-                out_fig_dir_deflection = cfg.default_fig_dir / "topography"
-                out_fig_dir_deflection.mkdir(parents=True, exist_ok=True)
-                out_path = out_fig_dir_deflection / f"simple-{model_type}-deflection.png"
-                self.draw_deflection(deflection_group, out_path)
+                out_fig_dir_displacement = cfg.default_fig_dir / "topography"
+                out_fig_dir_displacement.mkdir(parents=True, exist_ok=True)
+                out_path = out_fig_dir_displacement / f"{model_type}-displacement.png"
+                self.draw_displacement(displacement_group, out_path)
 
         if cfg.draw_centerline_profile_plots:
             print("    --------------------------------------------------")
-            print("    Drawing sharpnesss ...")
+            print("    Drawing widths ...")
             print("    --------------------------------------------------")
 
             for model_type in ["plume", "slab"]:
                 selected_models = [m for m in centerline_data.keys() if model_type in m]
                 selected_models = sorted(selected_models, key=self._extract_sort_key)
 
-                sharpness_group = {}
+                width_group = {}
                 for model_id, tsteps in centerline_data.items():
                     if model_id in selected_models:
                         times = []
@@ -588,19 +607,19 @@ class PyVistaModelVisualizer:
                         for tstep in sorted_tsteps:
                             if tstep in self.tsteps_topography:
                                 data = tsteps[tstep]
-                                if "sharpness" in data and "time_myr" in data:
+                                if "width" in data and "time_myr" in data:
                                     times.append(data["time_myr"])
-                                    defs.append(data["sharpness"])
+                                    defs.append(data["width"])
                         if times and defs:
-                            sharpness_group[model_id] = {
+                            width_group[model_id] = {
                                 "time_myr": np.array(times, dtype=np.float32),
-                                "sharpness": np.array(defs, dtype=np.float32),
+                                "width": np.array(defs, dtype=np.float32),
                             }
 
-                out_fig_dir_sharpness = cfg.default_fig_dir / "topography"
-                out_fig_dir_sharpness.mkdir(parents=True, exist_ok=True)
-                out_path = out_fig_dir_sharpness / f"simple-{model_type}-sharpness.png"
-                self.draw_sharpness(sharpness_group, out_path)
+                out_fig_dir_width = cfg.default_fig_dir / "topography"
+                out_fig_dir_width.mkdir(parents=True, exist_ok=True)
+                out_path = out_fig_dir_width / f"{model_type}-width.png"
+                self.draw_width(width_group, out_path)
 
         if cfg.draw_centerline_profile_plots:
             print("    --------------------------------------------------")
@@ -644,17 +663,16 @@ class PyVistaModelVisualizer:
                             out_fig_dir_profiles.mkdir(parents=True, exist_ok=True)
 
                             field_id = cfg.file_mapping.get(field_name, field_name.replace("_", "-"))
-                            type_id = f"simple-{model_type}"
+                            type_id = f"{model_type}"
                             out_path = out_fig_dir_profiles / f"{type_id}-{field_id}-centerline-{str(tstep).zfill(4)}.png"
 
-                            self.draw_profile(profile_group, field_name, time_myr, out_path, reaction_depth)
+                            self.draw_profile(profile_group, field_name, out_path, reaction_depth)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def draw_mesh(
         self,
         mesh: pv.DataSet,
         field_name: str,
-        time_myr: float,
         cmap: mcolors.Colormap | mcolors.ListedColormap,
         clim: tuple[float, float],
         out_path: Path,
@@ -667,8 +685,6 @@ class PyVistaModelVisualizer:
         print(f" -> {out_path.name}")
 
         cfg = self.plot_config
-
-        plot_title = f"{int(time_myr):03} Ma"
 
         plotter: pv.Plotter = pv.Plotter(
             off_screen=True,
@@ -741,8 +757,6 @@ class PyVistaModelVisualizer:
         if cfg.scale_bar_enabled:
             self._add_scale_bar(mesh, plotter)
 
-        plotter.add_text(plot_title, font_size=cfg.title_font_size, position=cfg.title_position, viewport=True)  # type: ignore[arg-type]
-
         if "depth" in mesh.point_data:
             for depth, width in zip(cfg.depth_contour_depths_km, cfg.depth_contour_line_widths):
                 self._add_depth_contour(plotter, mesh, depth, line_width=width, tolerance_km=cfg.depth_contour_tolerance_km)
@@ -763,7 +777,7 @@ class PyVistaModelVisualizer:
             print(f"PIL failed to resave {out_path} with new DPI: {e}")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def draw_profile(self, profile_group: dict[str, dict], field_name: str, time_myr: float, out_path: Path, reaction_depth: float) -> None:
+    def draw_profile(self, profile_group: dict[str, dict], field_name: str, out_path: Path, reaction_depth: float) -> None:
         """Draw depth profile plots for given models at a timestep for a specific field."""
         if out_path.exists():
             print(f" -- Found plot: {out_path.name}!")
@@ -787,8 +801,6 @@ class PyVistaModelVisualizer:
         else:
             clim = (0, 1)
 
-        plot_title = ""
-
         cmap = plt.get_cmap("tab20")
         for i, (model_id, data) in enumerate(profile_group.items()):
             if not data:
@@ -799,7 +811,6 @@ class PyVistaModelVisualizer:
             label = model_id.replace("_", "-")
             color = cmap(i % 20)
             ax.plot(values, depths / 1e3, label=label, color=color)
-            plot_title = f"{int(time_myr):03} Ma"
 
         ax.set_xlabel(cfg.bar_mapping.get(field_name, field_name))
         ax.set_ylabel("Depth (km)")
@@ -809,14 +820,13 @@ class PyVistaModelVisualizer:
         ax.tick_params(axis="both", which="both", length=0)
         ax.axhline(reaction_depth / 1e3, color="black", linestyle="--", linewidth=1, zorder=1)
         ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
-        plt.title(plot_title)
         plt.tight_layout()
         plt.savefig(out_path, dpi=cfg.centerline_profile_plot_rcParams.get("figure.dpi", 300))
         plt.close(fig)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def draw_deflection(self, deflection_group: dict[str, dict], out_path: Path) -> None:
-        """Plot deflection vs. time for all models on one plot using deflection_group data."""
+    def draw_displacement(self, displacement_group: dict[str, dict], out_path: Path) -> None:
+        """Plot displacement vs. time for all models on one plot using displacement_group data."""
         if out_path.exists():
             print(f" -- Found plot: {out_path.name}!")
             return
@@ -825,34 +835,34 @@ class PyVistaModelVisualizer:
 
         cfg = self.plot_config
 
-        all_models = sorted(deflection_group.keys(), key=self._extract_sort_key)
+        all_models = sorted(displacement_group.keys(), key=self._extract_sort_key)
 
         plt.rcParams.update(cfg.centerline_profile_plot_rcParams)
         fig, ax = plt.subplots(figsize=(cfg.topography_plot_width, cfg.topography_plot_height))
         cmap = plt.get_cmap("tab20")
 
         for i, model_id in enumerate(all_models):
-            data = deflection_group[model_id]
+            data = displacement_group[model_id]
             times = data["time_myr"]
-            deflections = data["deflection"]
+            displacements = data["displacement"]
 
-            if len(times) > 0 and len(deflections) > 0:
+            if len(times) > 0 and len(displacements) > 0:
                 label = model_id.replace("_", "-")
                 color = cmap(i % 20)
-                ax.plot(times, deflections / 1e3, label=label, color=color)
+                ax.plot(times, displacements / 1e3, label=label, color=color)
 
         ax.set_xlabel("Time (Ma)")
         ax.set_ylabel("Distance from Equil. Reaction (km)")
         ax.grid(True, which="both", linewidth=0.5, color="#999999")
         ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
-        plt.title("Deflection of the 410km discontinuity")
+        plt.title("displacement of the 410km discontinuity")
         plt.tight_layout()
         plt.savefig(out_path, dpi=cfg.centerline_profile_plot_rcParams.get("figure.dpi", 300))
         plt.close(fig)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def draw_sharpness(self, sharpness_group: dict[str, dict], out_path: Path) -> None:
-        """Plot sharpness vs. time for all models on one plot using sharpness_group data."""
+    def draw_width(self, width_group: dict[str, dict], out_path: Path) -> None:
+        """Plot width vs. time for all models on one plot using width_group data."""
         if out_path.exists():
             print(f" -- Found plot: {out_path.name}!")
             return
@@ -861,27 +871,27 @@ class PyVistaModelVisualizer:
 
         cfg = self.plot_config
 
-        all_models = sorted(sharpness_group.keys(), key=self._extract_sort_key)
+        all_models = sorted(width_group.keys(), key=self._extract_sort_key)
 
         plt.rcParams.update(cfg.centerline_profile_plot_rcParams)
         fig, ax = plt.subplots(figsize=(cfg.topography_plot_width, cfg.topography_plot_height))
         cmap = plt.get_cmap("tab20")
 
         for i, model_id in enumerate(all_models):
-            data = sharpness_group[model_id]
+            data = width_group[model_id]
             times = data["time_myr"]
-            sharpnesss = data["sharpness"]
+            widths = data["width"]
 
-            if len(times) > 0 and len(sharpnesss) > 0:
+            if len(times) > 0 and len(widths) > 0:
                 label = model_id.replace("_", "-")
                 color = cmap(i % 20)
-                ax.plot(times, sharpnesss / 1e3, label=label, color=color)
+                ax.plot(times, widths / 1e3, label=label, color=color)
 
         ax.set_xlabel("Time (Ma)")
         ax.set_ylabel("Phase Transition Zone Width (km)")
         ax.grid(True, which="both", linewidth=0.5, color="#999999")
         ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
-        plt.title("Sharpness of the 410km discontinuity")
+        plt.title("width of the 410km discontinuity")
         plt.tight_layout()
         plt.savefig(out_path, dpi=cfg.centerline_profile_plot_rcParams.get("figure.dpi", 300))
         plt.close(fig)
@@ -1045,7 +1055,7 @@ class PyVistaModelVisualizer:
             return np.empty(0), np.empty(0)
 
         if (field_name == "velocity" or cfg.velocity_mapping.get(field_name, False)) and "velocity" in mesh.point_data:
-            mesh["velocity"] = mesh["velocity"][:, 1]
+            mesh["velocity"] = np.abs(mesh["velocity"][:, 1])
 
         depths = mesh.point_data["depth"][center_mask]
         values = mesh.point_data[field_name][center_mask] * cfg.scale_mapping.get(field_name, 1.0)
@@ -1054,7 +1064,7 @@ class PyVistaModelVisualizer:
         return depths[sort_idx], values[sort_idx]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _get_profile_deflection_and_sharpness(self, depths: np.ndarray, values: np.ndarray, reaction_depth: float) -> tuple[float, float]:
+    def _get_profile_data(self, depths: np.ndarray, values: np.ndarray, reaction_depth: float) -> tuple[float, float]:
         """"""
 
         def interpolate_depth_at_target(target):
@@ -1083,10 +1093,10 @@ class PyVistaModelVisualizer:
         if np.isnan(depth_at_X10) or np.isnan(depth_at_X90) or np.isnan(depth_at_X100):
             return np.nan, np.nan
 
-        deflection = reaction_depth - depth_at_X90
-        sharpness = depth_at_X90 - depth_at_X10
+        displacement = reaction_depth - depth_at_X90
+        width = depth_at_X90 - depth_at_X10
 
-        return deflection, sharpness
+        return displacement, width
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _is_diverging_cmap(self, cmap_name: str) -> bool:
@@ -1119,6 +1129,8 @@ class PyVistaModelVisualizer:
             "gist_heat",
             "pink",
             "bone",
+            "afmhot",
+            "copper",
             "Greys",
             "Purples",
             "Blues",
@@ -1146,7 +1158,7 @@ class PyVistaModelVisualizer:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _modify_diverging_cmap(self, cmap_name: str, central_color_hex: str, n_colors: int = 11) -> mcolors.Colormap | mcolors.ListedColormap:
         if not self._is_diverging_cmap(cmap_name):
-            print(f"'{cmap_name}' is not a recognized diverging colormap. Returning original.")
+            print(f" !! Warning: '{cmap_name}' is not a recognized diverging colormap!")
             return plt.get_cmap(cmap_name, n_colors)
 
         original_cmap = plt.get_cmap(cmap_name)
@@ -1159,7 +1171,7 @@ class PyVistaModelVisualizer:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _modify_sequential_cmap(self, cmap_name: str, end_color_hex: str, n_colors: int = 11) -> mcolors.Colormap | mcolors.ListedColormap:
         if not self._is_sequential_cmap(cmap_name):
-            print(f"'{cmap_name}' is not a recognized sequential colormap. Returning original.")
+            print(f" !! Warning: '{cmap_name}' is not a recognized sequential colormap!")
             return plt.get_cmap(cmap_name, n_colors)
 
         original_cmap = plt.get_cmap(cmap_name)
@@ -1170,6 +1182,8 @@ class PyVistaModelVisualizer:
             "gist_heat_r",
             "pink_r",
             "bone_r",
+            "afmhot_r",
+            "copper_r",
             "Purples",
             "BuPu",
             "Reds",
@@ -1272,10 +1286,10 @@ class PyVistaModelVisualizer:
                 if self.verbosity >= 1:
                     print(f" !! Expansion skipped: CLIM values not numeric: {clim_actual} ({e})")
 
-        modified_seq_target = ["stress_second_invariant", "X_field"]
+        modified_seq_target = ["stress_second_invariant", "X_field", "growth_rate", "reaction_rate_C0"]
 
         if self._is_diverging_cmap(cmap_choice):
-            central_color = "#FFFFFF" if cmap_choice in ["RdGy"] else "#E5E5E5"
+            central_color = "#FFFFFF" if cmap_choice in ["RdGy", "RdGy_r"] else "#E5E5E5"
             final_cmap = self._modify_diverging_cmap(cmap_choice, central_color, plot_config.n_colors)
         elif self._is_sequential_cmap(cmap_choice) and field_name in modified_seq_target:
             final_cmap = self._modify_sequential_cmap(cmap_choice, "#E5E5E5", plot_config.n_colors)

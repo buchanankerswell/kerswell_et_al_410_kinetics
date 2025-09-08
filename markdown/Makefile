@@ -6,34 +6,66 @@ FIGS := $(PROJECT_ROOT)/figs
 MARKDOWN := $(PROJECT_ROOT)/markdown
 
 # Manuscript
-TEMPLATE := $(MARKDOWN)/manuscript/eisvogel.tex
-INCLUDE_FILES_LUA := $(MARKDOWN)/manuscript/include-files.lua
-CSL := $(MARKDOWN)/manuscript/agu.csl
-BIB := $(MARKDOWN)/manuscript/main.bib
-DOC := $(MARKDOWN)/manuscript/manuscript
+MANUSCRIPT := $(MARKDOWN)/manuscript
+TEMPLATE := $(MANUSCRIPT)/eisvogel.tex
+INCLUDE_FILES_LUA := $(MANUSCRIPT)/include-files.lua
+CSL := $(MANUSCRIPT)/agu.csl
+BIB := $(MANUSCRIPT)/main.bib
+DOC := $(MANUSCRIPT)/manuscript
+PREV_DOC := $(MANUSCRIPT)/bak/manuscript-07-oct-2025
+DIFF_DOC := $(MANUSCRIPT)/diff
 
 # Cleanup targets
-CLEAN := rheological-parameters.md
+CLEAN := rheological-parameters.md $(DOC).tex $(DOC).pdf $(DIFF_DOC).tex $(DIFF_DOC).pdf
 DEEP_CLEAN :=
 
 # Targets
-.PHONY: all manuscript draw-figures write-tables clean deep-clean help
+.PHONY: all diff manuscript update-date draw-figures write-tables clean deep-clean help
 
 all: manuscript
 
-manuscript: $(DOC).pdf
+diff: $(DIFF_DOC).pdf
 
-$(DOC).pdf:
+$(DIFF_DOC).pdf: $(PREV_DOC).tex $(DOC).tex
 	@echo "    --------------------------------------------------"
-	@echo "    Rendering manuscript"
+	@echo "    Rendering manuscript diff pdf with citations"
 	@echo "    --------------------------------------------------"
+	@echo " -> Comparing $(shell basename $(PREV_DOC).tex) with $(shell basename $(DOC).tex)"
+	@latexdiff \
+		--flatten \
+		--math-markup=1 \
+		--type=CFONT \
+		--append-textcmd=caption \
+		--add-to-config PICTUREENV=longtable \
+		--graphics-markup=none \
+		$(PREV_DOC).tex $(DOC).tex > $(DIFF_DOC).tex
+	@echo " -> Compiling $(shell basename $(DIFF_DOC).tex) to PDF"
+	@pdflatex -interaction=nonstopmode -shell-escape -output-directory $(MANUSCRIPT) $(DIFF_DOC).tex
+	@pdflatex -interaction=nonstopmode -shell-escape -output-directory $(MANUSCRIPT) $(DIFF_DOC).tex
+	@rm -f $(DIFF_DOC).aux $(DIFF_DOC).log $(DIFF_DOC).toc
+
+manuscript: $(DOC).tex $(DOC).pdf
+
+$(DOC).pdf: update-date
+	@echo "    --------------------------------------------------"
+	@echo "    Rendering manuscript pdf"
+	@echo "    --------------------------------------------------"
+	@echo " -> Rendering $(shell basename $(DOC).md) with $(shell basename $(TEMPLATE)) template"
+	@pandoc "$(DOC).md" -o "$(DOC).pdf" --from markdown --template "$(TEMPLATE)" --syntax-highlighting=kate \
+		--bibliography=$(BIB) --csl=$(CSL) --filter=pandoc-crossref --citeproc --lua-filter=$(INCLUDE_FILES_LUA) \
+		--pdf-engine=pdflatex --pdf-engine-opt="-shell-escape" --pdf-engine-opt="-interaction=nonstopmode"
+
+$(DOC).tex: update-date
+	@echo "    --------------------------------------------------"
+	@echo "    Rendering manuscript tex"
+	@echo "    --------------------------------------------------"
+	@echo " -> Rendering $(shell basename $(DOC).md) with $(shell basename $(TEMPLATE)) template"
+	@pandoc "$(DOC).md" -s -o "$(DOC).tex" --from markdown --template "$(TEMPLATE)" --syntax-highlighting=kate \
+		--bibliography=$(BIB) --csl=$(CSL) --filter=pandoc-crossref --citeproc --lua-filter=$(INCLUDE_FILES_LUA)
+
+update-date:
 	@echo " -> Updating date in $(shell basename $(DOC).md)"
 	@sed -i '' -E "s/^date: \".*\"/date: \"$(shell date '+%d %B %Y')\"/" $(DOC).md
-	@echo " -> Rendering $(shell basename $(DOC).md) with $(shell basename $(TEMPLATE)) template"
-	@pandoc "$(DOC).md" -o "$(DOC).pdf" --from markdown --template "$(TEMPLATE)" --listings \
-		--bibliography=$(BIB) --csl=$(CSL) --filter=pandoc-crossref --citeproc \
-		--lua-filter=$(INCLUDE_FILES_LUA) --pdf-engine=pdflatex --pdf-engine-opt="-shell-escape" \
-		--pdf-engine-opt="-interaction=nonstopmode"
 
 draw-figures:
 	@$(MAKE) --no-print-directory -C $(R) visualize

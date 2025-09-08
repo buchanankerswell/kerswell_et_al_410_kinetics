@@ -280,7 +280,7 @@ namespace aspect
           // Compute reaction rates at each evaluation point
           // Inter-grain: dX/dt = (6.7 / d) * growth_rate * (1 - X)
           // Intra-grain: dX/dt = 2sqrt(D) * growth_rate * (1 - X)
-          //   where growth_rate = kT * C_OH^r * exp(-H_a + PV_a/RT) * (1 - exp(ΔG/RT))
+          //   where growth_rate = kT * C_OH^r * exp(-H_a + PV_a/RT) * (1 - exp(dG/RT))
           if (reaction_rate_out != nullptr)
             {
               // Gas constant
@@ -598,10 +598,10 @@ namespace aspect
     ASPECT_REGISTER_MATERIAL_MODEL(
       PhaseTransitionKinetics,
       "phase transition kinetics",
-      "Models a phase transition using reaction kinetics that follow the equation: dX/dt = Q * exp(-Ea/RT) * ΔG * (1 - X), where Q is a "
-      "user-defined kinetic prefactor, exp(-Ea/RT) is an Arrhenius temperature dependence, and ΔG is the thermodynamic driving force "
+      "Models a phase transition using reaction kinetics that follow the equation: dX/dt = Q * exp(-Ea/RT) * dG * (1 - X), where Q is a "
+      "user-defined kinetic prefactor, exp(-Ea/RT) is an Arrhenius temperature dependence, and dG is the thermodynamic driving force "
       "calculated from internally-consistent thermodynamic data. The thermodynamic driving force is computed as "
-      "ΔG = ΔG₀ + (P - P_adiabatic)ΔV - (T - T_adiabatic)ΔS, where all thermodynamic parameters are read from a user-specified ASCII data "
+      "dG = dG0 + (P - P_adiabatic)dV - (T - T_adiabatic)dS, where all thermodynamic parameters are read from a user-specified ASCII data "
       "file. Requires at least one compositional field representing the reacting phase.")
   } // namespace MaterialModel
 } // namespace aspect

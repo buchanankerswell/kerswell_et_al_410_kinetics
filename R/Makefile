@@ -26,7 +26,7 @@ DEEP_CLEAN :=
 
 all: visualize
 
-visualize: adiabat 2d-box-models 2d-shell-models misc
+visualize: adiabat misc
 
 adiabat: $(R)/adiabat/main.R
 	@for model in $(PERPLEX_MODELS); do \
@@ -57,9 +57,9 @@ adiabat: $(R)/adiabat/main.R
 		fi \
 	done
 
-misc: $(R)/misc/main.R $(R)/simulation/deflection.R
+misc: $(R)/misc/main.R $(R)/simulation/ptz.R
 	@Rscript $(R)/misc/main.R $(DEPTH_AVERAGE_PATHS) $(FIGS) $(FIGS)
-	@Rscript $(R)/simulation/deflection.R $(PYTHON)/simulation/data $(FIGS)
+	@Rscript $(R)/simulation/ptz.R $(PYTHON)/simulation/data $(FIGS)
 
 manuscript: $(R)/manuscript/main.R
 	@Rscript $(R)/manuscript/main.R $(R)/manuscript/data/rheological-parameters.csv $(MARKDOWN)/manuscript/rheological-parameters.md

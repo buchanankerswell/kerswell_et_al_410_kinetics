@@ -102,8 +102,8 @@ visualize_adiabatic_profile <- function(profile_path, out_path) {
       scales = "free_x",
       labeller = labeller(variable = custom_labeller, .default = label_parsed)
     ) +
-    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.15)) +
-    scale_y_reverse(expand = expansion(mult = 0.15)) +
+    scale_x_continuous(breaks = pretty_breaks(n = 4), guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
+    scale_y_reverse(expand = expansion(mult = 0.10)) +
     labs(x = NULL, y = bquote("Depth (" * km %*% 10^3 * ")")) +
     theme_bw(base_size = 36) +
     profile_theme() +
@@ -130,7 +130,7 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
 
   df_profile <-
     read_burnman_profile(profile_path) |>
-    filter(pressure >= 10e9 & pressure <= 16e9) |>
+    filter(pressure >= 10e9 & pressure <= 18e9) |>
     mutate(
       pressure = pressure / 1e9,
       molar_internal_energy_a = molar_internal_energy_a / 1e3,
@@ -204,7 +204,7 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
       scales = "free_x",
       labeller = labeller(property = custom_labeller, .default = label_parsed)
     ) +
-    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.15)) +
+    scale_x_continuous(breaks = pretty_breaks(n = 4), guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
     scale_y_reverse() +
     scale_color_brewer(palette = "Set1") +
     labs(x = NULL, y = "Pressure (GPa)", color = NULL) +
@@ -228,7 +228,7 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
       scales = "free_x",
       labeller = labeller(property = custom_labeller_delta, .default = label_parsed)
     ) +
-    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.15)) +
+    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
     scale_y_reverse() +
     scale_color_manual(values = c("(wad - ol)" = "black")) +
     labs(x = NULL, y = bquote("Pressure (GPa)"), color = NULL) +
@@ -249,7 +249,7 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
     out_path,
     plot = p,
     width = 15,
-    height = 13,
+    height = 12,
     dpi = 300,
     bg = "white"
   )
@@ -263,7 +263,7 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
 
   df <-
     read_burnman_profile(profile_path) |>
-    filter(pressure >= 10e9, pressure <= 16e9) |>
+    filter(pressure >= 10e9, pressure <= 18e9) |>
     select(-c(
       molar_internal_energy_a,
       molar_internal_energy_b,
@@ -378,7 +378,7 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
       scales = "free_x",
       labeller = labeller(property = custom_labeller, .default = label_parsed)
     ) +
-    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.15)) +
+    scale_x_continuous(breaks = pretty_breaks(n = 4), guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
     scale_y_reverse() +
     scale_color_brewer(palette = "Set1") +
     labs(x = NULL, y = "Pressure (GPa)", color = NULL) +
@@ -402,7 +402,7 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
       scales = "free_x",
       labeller = labeller(property = custom_labeller_delta, .default = label_parsed)
     ) +
-    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.15)) +
+    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
     scale_y_reverse() +
     scale_color_manual(values = c("(wad - ol)" = "black")) +
     labs(x = NULL, y = bquote("Pressure (GPa)"), color = NULL) +
