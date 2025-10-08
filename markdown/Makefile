@@ -16,7 +16,7 @@ PREV_DOC := $(MANUSCRIPT)/bak/manuscript-07-oct-2025
 DIFF_DOC := $(MANUSCRIPT)/diff
 
 # Cleanup targets
-CLEAN := rheological-parameters.md $(DOC).tex $(DOC).pdf $(DIFF_DOC).tex $(DIFF_DOC).pdf
+CLEAN := $(DOC).tex $(DOC).pdf $(DIFF_DOC).tex $(DIFF_DOC).pdf
 DEEP_CLEAN :=
 
 # Targets

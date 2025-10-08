@@ -1,0 +1,16 @@
+subsection Geometry model
+  set Model name = box
+
+  subsection Box
+    set X extent      = 900e3
+    set Y extent      = 600e3
+    set X repetitions = 3
+    set Y repetitions = 2
+  end
+end
+
+subsection Mesh refinement
+  set Initial adaptive refinement        = 0
+  set Initial global refinement          = 6
+  set Time steps between mesh refinement = 0
+end

@@ -29,23 +29,24 @@ endif
 # ASPECT executable
 ASPECT_EXEC := $(PROJECT_ROOT)/aspect/build/aspect-release
 
-# Simulation data
-2D_BOX_DATA := \
-	$(SIMULATION)/data/forward-reaction-410-profile.txt \
-	$(SIMULATION)/data/reverse-reaction-410-profile.txt
-2D_SHELL_DATA := \
-	$(SIMULATION)/data/PYR-adiabatic-profile.txt \
-	$(SIMULATION)/data/PYR-material-table.txt \
-	$(SIMULATION)/data/forward-reaction-410-profile.txt \
-	$(SIMULATION)/data/reverse-reaction-410-profile.txt
+# Material parameters
+KINETIC_FACTOR := 3.0e0 7.0e0 1.6e1 3.7e1 8.7e1 2.0e2 4.7e2 1.1e3 2.6e3 6.0e3 1.4e4 3.3e4 7.8e4 1.8e5 4.3e5 1.0e6 2.4e6 5.6e6 1.3e7 3.0e7 7.0e7
 
-# Simulation configs
-2D_BOX_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm'))
-2D_SHELL_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_shell/configs -type f -name '*.prm'))
+# Templates prms
+MATERIAL_TEMPLATE := $(SIMULATION)/parts/template-material.prm
+PLUME_TEMPLATE := $(SIMULATION)/parts/template-plume.prm
+SLAB_TEMPLATE := $(SIMULATION)/parts/template-slab.prm
+
+# Generate prm files for each kinetic factor
+MATERIAL_PRMS := $(addprefix $(SIMULATION)/parts/material-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+PLUME_PRMS := $(addprefix $(SIMULATION)/configs/plume-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+
+# Simulation data
+DATA := $(SIMULATION)/data/reaction-410-profile.txt
 
 # Simulation plugins
-2D_BOX_PLUGINS := 2d_box/plugins/libphase-transition-kinetics.release.so
-2D_SHELL_PLUGINS :=
+PLUGINS := plugins/libphase-transition-kinetics.release.so
 
 # Cleanup targets
 CLEAN := \
@@ -53,30 +54,38 @@ CLEAN := \
 	$(SIMULATION)/**/plugins/Makefile \
 	$(SIMULATION)/**/plugins/CMakeCache.txt \
 	$(SIMULATION)/**/plugins/cmake_install.cmake \
-	$(SIMULATION)/**/plugins/.cache
+	$(SIMULATION)/**/plugins/.cache \
+	$(MATERIAL_PRMS) \
+	$(PLUME_PRMS) \
+	$(SLAB_PRMS)
 DEEP_CLEAN := \
 	$(SIMULATION)/**/configs/logs
 
 # Targets
-.PHONY: all 2d-box-models 2d-shell-models clean deep-clean help
+.PHONY: all 2d-box-models 2d-box-prms clean deep-clean help
 
-all: 2d-box-models 2d-shell-models
+# Keep intermediate targets
+.PRECIOUS: $(SIMULATION)/configs/plume-%.prm $(SIMULATION)/configs/slab-%.prm
 
-2d-shell-models: $(ASPECT_EXEC) $(2D_SHELL_PLUGINS) $(2D_SHELL_DATA) $(2D_SHELL_CONFIGS:.prm=.run)
+all: 2d-box-models
 
-2d-box-models: $(ASPECT_EXEC) $(2D_BOX_PLUGINS) $(2D_BOX_DATA) $(2D_BOX_CONFIGS:.prm=.run)
+2d-box-models: 2d-box-plume-models 2d-box-slab-models
+
+2d-box-plume-models: $(ASPECT_EXEC) $(PLUGINS) $(DATA) $(MATERIAL_PRMS) $(PLUME_PRMS:.prm=.run)
+
+2d-box-slab-models: $(ASPECT_EXEC) $(PLUGINS) $(DATA) $(MATERIAL_PRMS) $(SLAB_PRMS:.prm=.run)
 
 %.run: %.prm
 	@ROOT_DIR=$(SIMULATION); \
 	PRM=$<; \
 	RUN_OUT=$@; \
-	MODEL_TYPE=$$(echo $$PRM | cut -d/ -f1); \
-	MODEL_DIR=$$(basename $$PRM .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
+	MODEL_TYPE=$$(echo $$PRM | sed "s|^$$ROOT_DIR/||" | cut -d/ -f1); \
+	MODEL_DIR=$$(basename $$PRM .prm | sed -E 's/-/_/g'); \
 	PRM_DIR="$$ROOT_DIR/$$MODEL_TYPE/configs"; \
 	RESULTS_DIR="$$ROOT_DIR/$$MODEL_TYPE/results"; \
 	JOB_NAME=$$(echo $* | tr '/_' '-'); \
 	LOG_OUT="$$RESULTS_DIR/$$MODEL_DIR/aspect.$$JOB_NAME.out"; \
-	if [ -f "$$ROOT_DIR/$$RUN_OUT" ]; then \
+	if [ -f "$$RUN_OUT" ]; then \
 		echo " -- $$RUN_OUT found!"; \
 	else \
 		if [ "$(OS_ID)" = "rocky" ]; then \
@@ -88,22 +97,34 @@ all: 2d-box-models 2d-shell-models
 			       --time=$(TIME) \
 			       --mail-user=$(MAIL_ADDRESS) \
 			       --mail-type=$(MAIL_TYPE) \
-			       $(RUN_ASPECT) $(ASPECT_EXEC) "$$ROOT_DIR/$$PRM"; \
+			       $(RUN_ASPECT) $(ASPECT_EXEC) "$$PRM"; \
 		else \
 			mkdir -p $$(dirname "$$LOG_OUT"); \
-			$(RUN_ASPECT) $(NTASKS) $(ASPECT_EXEC) "$$ROOT_DIR/$$PRM" \
+			$(RUN_ASPECT) $(NTASKS) $(ASPECT_EXEC) "$$PRM" \
 			2>&1 | tee -a "$$LOG_OUT"; \
 		fi \
 	fi
 
-$(2D_BOX_PLUGINS):
+$(SIMULATION)/parts/material-%.prm: $(MATERIAL_TEMPLATE)
+	@mkdir -p $(dir $@)
+	@sed 's/{kinetic-factor}/'"$*"'/g' $< > $@
+
+$(SIMULATION)/configs/plume-%.prm: $(PLUME_TEMPLATE)
+	@mkdir -p $(dir $@)
+	@sed 's/{kinetic-factor}/'"$*"'/g' $< > $@
+
+$(SIMULATION)/configs/slab-%.prm: $(SLAB_TEMPLATE)
+	@mkdir -p $(dir $@)
+	@sed 's/{kinetic-factor}/'"$*"'/g' $< > $@
+
+$(PLUGINS):
 	@if [ "$(OS_ID)" = "rocky" ]; then \
 		module load $(GCC) $(OPENMPI) $(OPENBLAS) $(CMAKE); \
-		cd $(SIMULATION)/2d_box/plugins; \
+		cd $(SIMULATION)/plugins; \
 		cmake . -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D Aspect_DIR=$(dir $(ASPECT_EXEC)) -D CMAKE_CXX_COMPILER=mpicxx -W no-dev; \
 		make; \
 	else \
-		cd $(SIMULATION)/2d_box/plugins; \
+		cd $(SIMULATION)/plugins; \
 		cmake . -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D Aspect_DIR=$(dir $(ASPECT_EXEC)) -W no-dev; \
 		make; \
 	fi
@@ -163,9 +184,10 @@ help:
 	@echo "    --------------------------------------------------"
 	@echo "    Available targets:"
 	@echo "    --------------------------------------------------"
-	@echo "    2d-shell-models  Run ASPECT shell models"
-	@echo "    2d-box-models    Run ASPECT box models"
-	@echo "    clean            Cleanup unnecessary files and directories (safe)"
-	@echo "    deep-clean       Deep clean figures and results (use with caution!)"
-	@echo "    help             Show this help message"
+	@echo "    2d-box-models        Run ASPECT 2d box models"
+	@echo "    2d-box-plume-models  Run ASPECT 2d box plume models"
+	@echo "    2d-box-slab-models   Run ASPECT 2d box slab models"
+	@echo "    clean                Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean           Deep clean figures and results (use with caution!)"
+	@echo "    help                 Show this help message"
 

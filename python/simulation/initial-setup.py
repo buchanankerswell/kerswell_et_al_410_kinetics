@@ -11,7 +11,7 @@ import numpy as np
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def parse_arguments() -> Namespace:
-    """Parse command line arguments."""
+    """"""
     parser = ArgumentParser(description="Visualize simulation results.")
     parser.add_argument("--out-fig-dir", type=str, help="Output figure directory")
 
@@ -19,108 +19,110 @@ def parse_arguments() -> Namespace:
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def draw_anomaly(
-    model_type,
-    ax,
-    X,
-    Y,
-    T_anomaly,
-    cmap_modified,
-    n_colors,
-    x_extent,
-    y_extent,
-    phase_transition_depth,
-    text_offset,
-    border_offset,
-    arrow_offset,
-    n_arrows,
-    x_velocity,
-    y_velocity,
-    velocity_factor,
-    arrow_head_width,
-    arrow_head_length,
-    bc_labels: dict,
-    show_axes: bool,
-):
+def compute_thermal_anomaly(X, Y, x_start, y_start, x_end, y_end, w, dT, alpha):
     """"""
-    levels = np.linspace(-500, 500, n_colors + 1)
-    contour = ax.contourf(X, Y, T_anomaly, cmap=cmap_modified, levels=levels, vmin=-500, vmax=500)
+    x_start = x_start
+    y_start = y_start
+    x_end = x_end
+    y_end = y_end
+    w = w
+    alpha = alpha
 
-    # phase transition
-    ax.hlines(y=phase_transition_depth, xmin=0, xmax=x_extent, color="black", linewidth=0.5)
-    ax.text(x_extent / 2, phase_transition_depth - text_offset, "Olivine", va="bottom", ha="center")
-    ax.text(x_extent / 2, phase_transition_depth + text_offset, "Wadsleyite", va="top", ha="center")
+    dx = x_end - x_start
+    dy = y_end - y_start
+    L = np.sqrt(dx**2 + dy**2)
 
-    # velocity boundary conditions (arrows)
-    x_positions_top = np.linspace(arrow_offset * 2, x_extent - (arrow_offset * 2), n_arrows)
-    y_positions_right = np.linspace(0 + (3 * arrow_offset), y_extent - arrow_offset, n_arrows)
-    x_positions_bottom = np.linspace(arrow_offset * 2, x_extent - (arrow_offset * 2), n_arrows)
-    y_positions_left = np.linspace(0 + (3 * arrow_offset), y_extent - arrow_offset, n_arrows)
+    x_shifted = X - x_start
+    y_shifted = Y - y_start
 
-    if model_type == "slab":
-        for x in x_positions_top:
-            ax.arrow(
-                x,
-                0,
-                x_velocity * velocity_factor,
-                y_velocity * velocity_factor,
-                head_width=arrow_head_width,
-                head_length=arrow_head_length,
-                color="black",
-            )
-    if model_type == "slab":
-        for y in y_positions_right:
-            ax.arrow(x_extent - 10, y, x_velocity * velocity_factor, 0, head_width=arrow_head_width, head_length=arrow_head_length, color="black")
-    if model_type == "slab":
-        for x in x_positions_bottom:
-            ax.arrow(
-                x,
-                y_extent,
-                x_velocity * velocity_factor,
-                0,
-                head_width=arrow_head_width,
-                head_length=arrow_head_length,
-                color="black",
-            )
-    else:
-        for x in x_positions_bottom:
-            ax.arrow(
-                x,
-                y_extent,
-                x_velocity * velocity_factor,
-                y_velocity * velocity_factor,
-                head_width=arrow_head_width,
-                head_length=arrow_head_length,
-                color="black",
-            )
-    if model_type == "slab":
-        for y in y_positions_left:
-            ax.arrow(0, y, x_velocity * velocity_factor, 0, head_width=arrow_head_width, head_length=arrow_head_length, color="black")
+    perp_dist = x_shifted * (-dy) + y_shifted * dx
+    parallel_dist = x_shifted * dx + y_shifted * dy
 
-    # boundary condition labels
-    ax.text(x_extent / 2, 0 - text_offset, bc_labels["top"], va="bottom", ha="center")
-    ax.text(x_extent + text_offset, y_extent / 2, bc_labels["right"], va="center", ha="left", rotation=270)
-    ax.text(-text_offset, y_extent / 2, bc_labels["left"], va="center", ha="right", rotation=90)
-    ax.text(x_extent / 2, y_extent + text_offset, bc_labels["bottom"], va="top", ha="center")
+    gaussian_term = np.exp(-(perp_dist**2) / (2 * w**2 * L**2))
+    tanh1 = 1 + np.tanh((parallel_dist / L) / alpha)
+    tanh2 = 1 + np.tanh((L - parallel_dist / L) / alpha)
 
-    # formatting
-    ax.set_xlim(-border_offset, x_extent + border_offset)
-    ax.set_ylim(-border_offset, y_extent + border_offset)
-    ax.invert_yaxis()
+    T = dT * gaussian_term * 0.25 * tanh1 * tanh2
+
+    return T
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def draw_initial_conditions(ax, X, Y, T, cmap, x_extent, y_extent, phase_depth, bc_labels, title, text_offset=25):
+    """"""
+    levels = np.linspace(-500, 500, 14)
+    contour = ax.contourf(X, Y, T, levels=levels, cmap=cmap)
+
+    ax.axhline(y=phase_depth, color="black", linestyle="--", linewidth=1.5, zorder=5)
+
+    ax.set_xlim(0, x_extent)
+    ax.set_ylim(0, y_extent)
     ax.set_aspect("equal")
-    ax.set_xlabel("Distance (km)")
-    ax.set_ylabel("Depth (km)")
 
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
+    ax.text(
+        x_extent - text_offset if "Slab" in title else x_extent / 2,
+        y_extent - text_offset,
+        bc_labels["top1"],
+        ha="right" if "Slab" in title else "center",
+        va="top",
+        fontsize=12
+    )
 
-    if not show_axes:
-        ax.set_xlabel(None)
-        ax.set_ylabel(None)
+    ax.text(
+        text_offset if "Slab" in title else x_extent / 2,
+        y_extent - text_offset,
+        bc_labels["top2"],
+        ha="left" if "Slab" in title else "center",
+        va="top",
+        fontsize=12
+    )
+
+    ax.text(
+        x_extent / 2 if "Slab" in title else text_offset,
+        text_offset,
+        bc_labels["bottom1"],
+        ha="center" if "Slab" in title else "left",
+        va="bottom",
+        fontsize=12
+    )
+
+    ax.text(
+        x_extent / 2 if "Slab" in title else x_extent - text_offset,
+        text_offset,
+        bc_labels["bottom2"],
+        ha="center" if "Slab" in title else "right",
+        va="bottom",
+        fontsize=12
+    )
+
+    ax.text(
+        text_offset,
+        y_extent / 2,
+        bc_labels["left"],
+        ha="left",
+        va="center",
+        rotation=90,
+        fontsize=12
+    )
+
+    ax.text(
+        x_extent - text_offset,
+        y_extent / 2,
+        bc_labels["right"],
+        ha="right",
+        va="center",
+        rotation=90,
+        fontsize=12
+    )
+
+    if "Slab" in title:
         ax.set_xticks([])
-        ax.set_yticks([])
-        ax.spines["bottom"].set_visible(False)
-        ax.spines["left"].set_visible(False)
+
+    if "Slab" not in title:
+        ax.set_xlabel("X (km)")
+
+    ax.set_ylabel("Z (km)")
+    ax.set_title(title, fontsize=14)
 
     return contour
 
@@ -144,140 +146,110 @@ def main():
 
     print(f" -> {out_path.name}")
 
-    plot_width: float = 5.0
-    plot_height: float = 7.0
-    n_colors: float = 13
-    central_color_hex: str = "#E6E6E6"
+    plot_width = 4.5
+    plot_height = 6.5
+    n_colors = 13
+    central_color_hex = "#E6E6E6"
 
-    x_extent: float = 396
-    y_extent: float = 264
-    phase_transition_depth: float = 132
+    x_extent = 900
+    y_extent = 600
+    phase_transition_depth = 470
 
-    anomaly_center_slab: tuple[float, float] = (118, 0)
-    anomaly_sigma_slab: float = 15
-    anomaly_amplitude_slab: float = -500
-    x_velocity_slab: float = 0.5
-    y_velocity_slab: float = 1.5
+    nx, ny = 900, 600
+    x = np.linspace(0, x_extent, nx)
+    y = np.linspace(0, y_extent, ny)
+    X, Y = np.meshgrid(x, y)
 
-    anomaly_center_plume: tuple[float, float] = (x_extent / 2, y_extent)
-    anomaly_sigma_plume: float = 15
-    anomaly_amplitude_plume: float = 500
-    x_velocity_plume: float = 0
-    y_velocity_plume: float = -1.5
-
-    text_offset: float = 10
-    border_offset: float = 40
-    n_arrows: float = 7
-    arrow_offset: float = 10
-    arrow_head_width: float = 10
-    arrow_head_length: float = 5
-    velocity_factor: float = 10
-
-    rcParams = {
-        "figure.dpi": 300,
-        "savefig.bbox": "tight",
-        "axes.facecolor": "1.0",
-        "legend.frameon": False,
-        "legend.facecolor": "0.9",
-        "legend.loc": "upper left",
-        "legend.fontsize": "small",
-        "figure.autolayout": True,
-        "font.size": 12,
+    slab_params = {
+        "x_start": 350,
+        "y_start": 630,
+        "x_end": 450,
+        "y_end": 500,
+        "w": 15,
+        "dT": -500,
+        "alpha": 5,
+        "dx": 100,
+        "dy": -130,
+        "L": np.sqrt(100**2 + 130**2),
+        "v": 0.05,
     }
 
-    nx, ny = 300, 200
-    x, y = np.linspace(0, x_extent, nx), np.linspace(y_extent, 0, ny)
-    X, Y = np.meshgrid(x, y)
-    x0_slab, y0_slab = anomaly_center_slab
-    x0_plume, y0_plume = anomaly_center_plume
-    T_anomaly_slab = anomaly_amplitude_slab * np.exp(-(((Y - y0_slab) ** 2 + (X - x0_slab) ** 2) / (2 * anomaly_sigma_slab**2)))
-    T_anomaly_plume = anomaly_amplitude_plume * np.exp(-(((Y - y0_plume) ** 2 + (X - x0_plume) ** 2) / (2 * anomaly_sigma_plume**2)))
+    plume_params = {
+        "x_start": 450,
+        "y_start": -30,
+        "x_end": 450,
+        "y_end": 450,
+        "w": 15,
+        "dT": 500,
+        "alpha": 5,
+        "dx": 0,
+        "dy": 450,
+        "L": np.sqrt(0**2 + 450**2),
+        "v": 0.05,
+    }
 
+    T_slab = compute_thermal_anomaly(X, Y, **{k: slab_params[k] for k in ["x_start", "y_start", "x_end", "y_end", "w", "dT", "alpha"]})
+    T_plume = compute_thermal_anomaly(X, Y, **{k: plume_params[k] for k in ["x_start", "y_start", "x_end", "y_end", "w", "dT", "alpha"]})
+
+    n_colors = 13
+    central_color_hex = "#E6E6E6"
     original_cmap = plt.get_cmap("seismic")
     cmap_colors = original_cmap(np.linspace(0, 1, n_colors))
     center_idx = n_colors // 2
     cmap_colors[center_idx] = mcolors.to_rgba(central_color_hex)
     cmap_modified = mcolors.ListedColormap(cmap_colors)
 
+    bc_slab = {
+        "top1": "$v_x$=$f(x)$, $v_y$=$f(x)$",
+        "top2": "Fixed $T$",
+        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
+        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
+        "bottom1": "$\\sigma_{yy}$ = $\\bar{P}$, $v_x$=0",
+        "bottom2": None,
+    }
+
+    bc_plume = {
+        "top1": "$\\sigma_{yy}$ = $\\bar{P}$, $v_x$=0",
+        "top2": None,
+        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
+        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
+        "bottom1": "Fixed $T$",
+        "bottom2": "$v_x$=$f(x)$, $v_y$=$f(x)$",
+    }
+
+    plt.rcParams.update(
+        {
+            "figure.dpi": 300,
+            "savefig.bbox": "tight",
+            "axes.facecolor": "0.9",
+            "legend.frameon": False,
+            "legend.facecolor": "0.9",
+            "legend.loc": "upper left",
+            "legend.fontsize": "small",
+            "figure.autolayout": True,
+            "font.size": 14,
+        }
+    )
+
     fig = plt.figure(figsize=(plot_width, plot_height), constrained_layout=True)
-    plt.rcParams.update(rcParams)
     gs = fig.add_gridspec(3, 1, height_ratios=[1, 1, 0.05])
 
     ax_slab = fig.add_subplot(gs[0, 0])
     ax_plume = fig.add_subplot(gs[1, 0])
 
-    # Define different BC labels for slabs vs plumes
-    bc_slab = {
-        "top": "Prescribed inflow",
-        "right": "$\\sigma_{xy}$ = 0",
-        "left": "$\\sigma_{xy}$ = 0",
-        "bottom": "$\\sigma_{yy}$ = $\\bar{P}$",
-    }
-
-    bc_plume = {
-        "top": "$\\sigma_{yy}$ = $\\bar{P}$",
-        "right": "$\\sigma_{xy}$ = 0",
-        "left": "$\\sigma_{xy}$ = 0",
-        "bottom": "Prescribed inflow",
-    }
-
-    # Draw slab anomaly
-    contour_slab = draw_anomaly(
-        "slab",
-        ax_slab,
-        X,
-        Y,
-        T_anomaly_slab,
-        cmap_modified,
-        n_colors,
-        x_extent,
-        y_extent,
-        phase_transition_depth,
-        text_offset,
-        border_offset,
-        arrow_offset,
-        n_arrows,
-        x_velocity_slab,
-        y_velocity_slab,
-        velocity_factor,
-        arrow_head_width,
-        arrow_head_length,
-        bc_slab,
-        False,
+    contour_slab = draw_initial_conditions(
+        ax_slab, X, Y, T_slab, cmap_modified, x_extent, y_extent, phase_transition_depth, bc_slab, "Slab Setup"
     )
 
-    # Draw plume anomaly
-    _ = draw_anomaly(
-        "plume",
-        ax_plume,
-        X,
-        Y,
-        T_anomaly_plume,
-        cmap_modified,
-        n_colors,
-        x_extent,
-        y_extent,
-        phase_transition_depth,
-        text_offset,
-        border_offset,
-        arrow_offset,
-        n_arrows,
-        x_velocity_plume,
-        y_velocity_plume,
-        velocity_factor,
-        arrow_head_width,
-        arrow_head_length,
-        bc_plume,
-        True,
+    _ = draw_initial_conditions(
+        ax_plume, X, Y, T_plume, cmap_modified, x_extent, y_extent, phase_transition_depth, bc_plume, "Plume Setup"
     )
 
-    # Shared colorbar
     ticks = [-500, -250, 0, 250, 500]
-    cax = fig.add_axes([0.34, 0.43, 0.4, 0.015])  # pyright: ignore
+    cax = fig.add_axes([0.30, 0.0, 0.5, 0.02])  # pyright: ignore
     cbar = fig.colorbar(contour_slab, cax=cax, ticks=ticks, orientation="horizontal")
-    cbar.set_label("Thermal Anomaly (K)", fontsize="11")
+    cbar.set_label("Thermal Anomaly (K)")
     cbar.ax.tick_params(labelsize=10)
-    cbar.ax.xaxis.set_label_position("top")
 
     plt.savefig(out_path, dpi=300, bbox_inches="tight", pad_inches=0.05)
 

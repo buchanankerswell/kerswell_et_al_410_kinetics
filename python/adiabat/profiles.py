@@ -98,9 +98,7 @@ class AdiabaticProfile:
         """"""
         if self._pressures is None:
             bounds = self.material.bounds[0]
-            self._pressures = np.linspace(
-                bounds[0], bounds[1], self.out_profile_resolution
-            )
+            self._pressures = np.linspace(bounds[0], bounds[1], self.out_profile_resolution)
 
         return self._pressures
 
@@ -164,9 +162,7 @@ class AdiabaticProfile:
 
             return self._material.S - S
 
-        self._material.set_state(
-            self._material.bounds[0][0], self.potential_temperature
-        )
+        self._material.set_state(self._material.bounds[0][0], self.potential_temperature)
         entropy = self._material.molar_entropy
 
         T_guess: float = self.potential_temperature
@@ -181,11 +177,7 @@ class AdiabaticProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_material_properties(self) -> dict[str, np.ndarray]:
         """Evaluate material properties along the isentrope."""
-        if (
-            self._material is None
-            or self._pressures is None
-            or self._temperatures is None
-        ):
+        if self._material is None or self._pressures is None or self._temperatures is None:
             raise ValueError("Pressure and temperature arrays are not generated!")
 
         properties = [
@@ -223,11 +215,7 @@ class AdiabaticProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_velocity_derivatives(self) -> dict[str, np.ndarray]:
         """Evaluate seismic velocity derivatives with respect to temperature."""
-        if (
-            self._material is None
-            or self._pressures is None
-            or self._temperatures is None
-        ):
+        if self._material is None or self._pressures is None or self._temperatures is None:
             raise ValueError("Pressure and temperature arrays are not generated.")
 
         dT = 0.1
@@ -304,9 +292,7 @@ class AdiabaticProfile:
                 x_val = float(x) if isinstance(x, np.ndarray) else x
                 return 4.0 * np.pi * constants.G * rho_at_radius(x_val) * x_val * x_val
 
-            gravity = np.ravel(
-                odeint(poisson_equation, self.surface_gravity * radii[0] ** 2, radii)
-            )
+            gravity = np.ravel(odeint(poisson_equation, self.surface_gravity * radii[0] ** 2, radii))
             gravity = gravity / radii**2
 
         return depths, gravity
@@ -681,42 +667,26 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_density(self) -> np.ndarray:
         """"""
-        density_a = self.material_a.evaluate(
-            ["density"], self.pressures, self.temperatures
-        )
-        density_b = self.material_b.evaluate(
-            ["density"], self.pressures, self.temperatures
-        )
+        density_a = self.material_a.evaluate(["density"], self.pressures, self.temperatures)
+        density_b = self.material_b.evaluate(["density"], self.pressures, self.temperatures)
 
         return np.stack([density_a, density_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_thermal_expansivity(self) -> np.ndarray:
         """"""
-        thermal_expansivity_a = self.material_a.evaluate(
-            ["thermal_expansivity"], self.pressures, self.temperatures
-        )
-        thermal_expansivity_b = self.material_b.evaluate(
-            ["thermal_expansivity"], self.pressures, self.temperatures
-        )
+        thermal_expansivity_a = self.material_a.evaluate(["thermal_expansivity"], self.pressures, self.temperatures)
+        thermal_expansivity_b = self.material_b.evaluate(["thermal_expansivity"], self.pressures, self.temperatures)
 
         return np.stack([thermal_expansivity_a, thermal_expansivity_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_specific_heat(self) -> np.ndarray:
         """"""
-        molar_mass_a = self.material_a.evaluate(
-            ["molar_mass"], self.pressures, self.temperatures
-        )
-        molar_mass_b = self.material_b.evaluate(
-            ["molar_mass"], self.pressures, self.temperatures
-        )
-        molar_heat_capacity_a = self.material_a.evaluate(
-            ["molar_heat_capacity_p"], self.pressures, self.temperatures
-        )
-        molar_heat_capacity_b = self.material_b.evaluate(
-            ["molar_heat_capacity_p"], self.pressures, self.temperatures
-        )
+        molar_mass_a = self.material_a.evaluate(["molar_mass"], self.pressures, self.temperatures)
+        molar_mass_b = self.material_b.evaluate(["molar_mass"], self.pressures, self.temperatures)
+        molar_heat_capacity_a = self.material_a.evaluate(["molar_heat_capacity_p"], self.pressures, self.temperatures)
+        molar_heat_capacity_b = self.material_b.evaluate(["molar_heat_capacity_p"], self.pressures, self.temperatures)
         specific_heat_a = molar_heat_capacity_a / molar_mass_a
         specific_heat_b = molar_heat_capacity_b / molar_mass_b
 
@@ -725,24 +695,16 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_compressibility(self) -> np.ndarray:
         """"""
-        compressibility_a = self.material_a.evaluate(
-            ["isentropic_compressibility_reuss"], self.pressures, self.temperatures
-        )
-        compressibility_b = self.material_b.evaluate(
-            ["isentropic_compressibility_reuss"], self.pressures, self.temperatures
-        )
+        compressibility_a = self.material_a.evaluate(["isentropic_compressibility_reuss"], self.pressures, self.temperatures)
+        compressibility_b = self.material_b.evaluate(["isentropic_compressibility_reuss"], self.pressures, self.temperatures)
 
         return np.stack([compressibility_a, compressibility_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_pressure_wave_velocity(self) -> np.ndarray:
         """"""
-        pressure_wave_velocity_a = self.material_a.evaluate(
-            ["p_wave_velocity"], self.pressures, self.temperatures
-        )
-        pressure_wave_velocity_b = self.material_b.evaluate(
-            ["p_wave_velocity"], self.pressures, self.temperatures
-        )
+        pressure_wave_velocity_a = self.material_a.evaluate(["p_wave_velocity"], self.pressures, self.temperatures)
+        pressure_wave_velocity_b = self.material_b.evaluate(["p_wave_velocity"], self.pressures, self.temperatures)
 
         return np.stack([pressure_wave_velocity_a, pressure_wave_velocity_b])
 
@@ -752,16 +714,24 @@ class DrivingForceProfile:
         dT = 0.1
 
         Vp_low_a = self.material_a.evaluate(
-            ["p_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+            ["p_wave_velocity"],
+            self.pressures,
+            self.temperatures - dT / 2,
         )
         Vp_low_b = self.material_b.evaluate(
-            ["p_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+            ["p_wave_velocity"],
+            self.pressures,
+            self.temperatures - dT / 2,
         )
         Vp_high_a = self.material_a.evaluate(
-            ["p_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+            ["p_wave_velocity"],
+            self.pressures,
+            self.temperatures + dT / 2,
         )
         Vp_high_b = self.material_b.evaluate(
-            ["p_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+            ["p_wave_velocity"],
+            self.pressures,
+            self.temperatures + dT / 2,
         )
 
         dVp_dT_a = (Vp_high_a - Vp_low_a) / dT
@@ -772,12 +742,8 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_shear_wave_velocity(self) -> np.ndarray:
         """"""
-        shear_wave_velocity_a = self.material_a.evaluate(
-            ["shear_wave_velocity"], self.pressures, self.temperatures
-        )
-        shear_wave_velocity_b = self.material_b.evaluate(
-            ["shear_wave_velocity"], self.pressures, self.temperatures
-        )
+        shear_wave_velocity_a = self.material_a.evaluate(["shear_wave_velocity"], self.pressures, self.temperatures)
+        shear_wave_velocity_b = self.material_b.evaluate(["shear_wave_velocity"], self.pressures, self.temperatures)
 
         return np.stack([shear_wave_velocity_a, shear_wave_velocity_b])
 
@@ -787,16 +753,24 @@ class DrivingForceProfile:
         dT = 0.1
 
         Vs_low_a = self.material_a.evaluate(
-            ["shear_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+            ["shear_wave_velocity"],
+            self.pressures,
+            self.temperatures - dT / 2,
         )
         Vs_low_b = self.material_b.evaluate(
-            ["shear_wave_velocity"], self.pressures, self.temperatures - dT / 2,
+            ["shear_wave_velocity"],
+            self.pressures,
+            self.temperatures - dT / 2,
         )
         Vs_high_a = self.material_a.evaluate(
-            ["shear_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+            ["shear_wave_velocity"],
+            self.pressures,
+            self.temperatures + dT / 2,
         )
         Vs_high_b = self.material_b.evaluate(
-            ["shear_wave_velocity"], self.pressures, self.temperatures + dT / 2,
+            ["shear_wave_velocity"],
+            self.pressures,
+            self.temperatures + dT / 2,
         )
 
         dVs_dT_a = (Vs_high_a - Vs_low_a) / dT
@@ -807,48 +781,32 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_internal_energy(self) -> np.ndarray:
         """"""
-        internal_energy_a = self.material_a.evaluate(
-            ["molar_internal_energy"], self.pressures, self.temperatures
-        )
-        internal_energy_b = self.material_b.evaluate(
-            ["molar_internal_energy"], self.pressures, self.temperatures
-        )
+        internal_energy_a = self.material_a.evaluate(["molar_internal_energy"], self.pressures, self.temperatures)
+        internal_energy_b = self.material_b.evaluate(["molar_internal_energy"], self.pressures, self.temperatures)
 
         return np.stack([internal_energy_a, internal_energy_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_gibbs(self) -> np.ndarray:
         """"""
-        gibbs_a = self.material_a.evaluate(
-            ["molar_gibbs"], self.pressures, self.temperatures
-        )
-        gibbs_b = self.material_b.evaluate(
-            ["molar_gibbs"], self.pressures, self.temperatures
-        )
+        gibbs_a = self.material_a.evaluate(["molar_gibbs"], self.pressures, self.temperatures)
+        gibbs_b = self.material_b.evaluate(["molar_gibbs"], self.pressures, self.temperatures)
 
         return np.stack([gibbs_a, gibbs_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_entropy(self) -> np.ndarray:
         """"""
-        entropy_a = self.material_a.evaluate(
-            ["molar_entropy"], self.pressures, self.temperatures
-        )
-        entropy_b = self.material_b.evaluate(
-            ["molar_entropy"], self.pressures, self.temperatures
-        )
+        entropy_a = self.material_a.evaluate(["molar_entropy"], self.pressures, self.temperatures)
+        entropy_b = self.material_b.evaluate(["molar_entropy"], self.pressures, self.temperatures)
 
         return np.stack([entropy_a, entropy_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_volume(self) -> np.ndarray:
         """"""
-        volume_a = self.material_a.evaluate(
-            ["molar_volume"], self.pressures, self.temperatures
-        )
-        volume_b = self.material_b.evaluate(
-            ["molar_volume"], self.pressures, self.temperatures
-        )
+        volume_a = self.material_a.evaluate(["molar_volume"], self.pressures, self.temperatures)
+        volume_b = self.material_b.evaluate(["molar_volume"], self.pressures, self.temperatures)
 
         return np.stack([volume_a, volume_b])
 
@@ -1060,9 +1018,7 @@ class DrivingForceProfile:
         n_contours: int = 100,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """"""
-        (depths, _, delta_gibbs, delta_entropy, delta_volume) = self._mask_arrays(
-            depth_lims
-        )
+        (depths, _, delta_gibbs, delta_entropy, delta_volume) = self._mask_arrays(depth_lims)
 
         dP = np.linspace(contour_lims[0], contour_lims[1], n_contours)
         dT = 0
@@ -1088,9 +1044,7 @@ class DrivingForceProfile:
         n_contours: int = 100,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """"""
-        (depths, _, delta_gibbs, delta_entropy, delta_volume) = self._mask_arrays(
-            depth_lims
-        )
+        (depths, _, delta_gibbs, delta_entropy, delta_volume) = self._mask_arrays(depth_lims)
 
         dT = np.linspace(contour_lims[0], contour_lims[1], n_contours)
         dP = 0
@@ -1133,11 +1087,7 @@ class DrivingForceProfile:
 
         dP_grid, dT_grid = np.meshgrid(dP, dT)
 
-        driving_force_grid = (
-            delta_gibbs_target
-            + dP_grid * delta_volume_target
-            - dT_grid * delta_entropy_target
-        )
+        driving_force_grid = delta_gibbs_target + dP_grid * delta_volume_target - dT_grid * delta_entropy_target
 
         vmax = max(np.abs(np.nanmin(driving_force_grid)), np.nanmax(driving_force_grid))
         levels = np.linspace(-vmax, vmax, 31)
@@ -1186,20 +1136,15 @@ class DrivingForceProfile:
         n_contours: int = 100,
     ) -> None:
         """"""
-        out_path = (
-            self.out_fig_dir
-            / f"driving-force-contours-{target_depth / 1e3:.0f}km-{self.material_a.name}-{self.material_b.name}.png"
-        )
+        out_path = self.out_fig_dir / f"driving-force-contours-{target_depth / 1e3:.0f}km-{self.material_a.name}-{self.material_b.name}.png"
 
         self._plot_exists(out_path)
 
-        dP_grid, dT_grid, driving_force_grid, levels = (
-            self._get_driving_force_grid_at_target_depth(
-                target_depth=target_depth,
-                contour_lims_P=contour_lims_P,
-                contour_lims_T=contour_lims_T,
-                n_contours=n_contours,
-            )
+        dP_grid, dT_grid, driving_force_grid, levels = self._get_driving_force_grid_at_target_depth(
+            target_depth=target_depth,
+            contour_lims_P=contour_lims_P,
+            contour_lims_T=contour_lims_T,
+            n_contours=n_contours,
         )
 
         self._set_rc_params()
@@ -1257,16 +1202,11 @@ class DrivingForceProfile:
         n_contours: int = 5,
     ) -> None:
         """"""
-        out_path = (
-            self.out_fig_dir
-            / f"driving-force-contours-lines-{self.material_a.name}-{self.material_b.name}.png"
-        )
+        out_path = self.out_fig_dir / f"driving-force-contours-lines-{self.material_a.name}-{self.material_b.name}.png"
 
         self._plot_exists(out_path)
 
-        (depths, _, delta_gibbs, delta_entropy, delta_volume) = self._mask_arrays(
-            depth_lims
-        )
+        (depths, _, delta_gibbs, delta_entropy, delta_volume) = self._mask_arrays(depth_lims)
 
         self._set_rc_params()
         plt.rcParams.update({"legend.loc": "lower right"})
@@ -1282,9 +1222,7 @@ class DrivingForceProfile:
         for dP in np.linspace(contour_lims_P[0], contour_lims_P[1], n_contours):
             color = cmap_P(norm_P(dP / 1e9))
             driving_force = delta_gibbs + dP * delta_volume - 0 * delta_entropy
-            axes[0].plot(
-                driving_force / 1e3, depths / 1e3, color=color, label=f"{dP/1e9:.1f}"
-            )
+            axes[0].plot(driving_force / 1e3, depths / 1e3, color=color, label=f"{dP/1e9:.1f}")
 
         axes[0].set_xlabel("Driving Force [kJ/mol]")
         axes[0].set_ylabel("Depth [km]")
@@ -1305,9 +1243,7 @@ class DrivingForceProfile:
         for dT in np.linspace(contour_lims_T[0], contour_lims_T[1], n_contours):
             color = cmap_T(norm_T(dT))
             driving_force = delta_gibbs + 0 * delta_volume - dT * delta_entropy
-            axes[1].plot(
-                driving_force / 1e3, depths / 1e3, color=color, label=f"{dT:.0f}"
-            )
+            axes[1].plot(driving_force / 1e3, depths / 1e3, color=color, label=f"{dT:.0f}")
 
         axes[1].set_xlabel("Driving Force [kJ/mol]")
         axes[1].set_title("$\\hat{P}$ = 0 GPa")
@@ -1342,27 +1278,20 @@ class DrivingForceProfile:
         n_contours: int = 100,
     ) -> None:
         """"""
-        out_path = (
-            self.out_fig_dir
-            / f"driving-force-contours-fill-{self.material_a.name}-{self.material_b.name}.png"
-        )
+        out_path = self.out_fig_dir / f"driving-force-contours-fill-{self.material_a.name}-{self.material_b.name}.png"
 
         self._plot_exists(out_path)
 
-        depths_grid_P, dP_grid, driving_force_grid_P, levels_P = (
-            self._get_driving_force_grid_fixed_dT(
-                depth_lims=depth_lims,
-                contour_lims=contour_lims_P,
-                n_contours=n_contours,
-            )
+        depths_grid_P, dP_grid, driving_force_grid_P, levels_P = self._get_driving_force_grid_fixed_dT(
+            depth_lims=depth_lims,
+            contour_lims=contour_lims_P,
+            n_contours=n_contours,
         )
 
-        depths_grid_T, dT_grid, driving_force_grid_T, levels_T = (
-            self._get_driving_force_grid_fixed_dP(
-                depth_lims=depth_lims,
-                contour_lims=contour_lims_T,
-                n_contours=n_contours,
-            )
+        depths_grid_T, dT_grid, driving_force_grid_T, levels_T = self._get_driving_force_grid_fixed_dP(
+            depth_lims=depth_lims,
+            contour_lims=contour_lims_T,
+            n_contours=n_contours,
         )
 
         ymin = depths_grid_P.min() / 1e3
@@ -1470,6 +1399,7 @@ class DrivingForceProfile:
         plt.tight_layout()
         fig.savefig(out_path)
 
+
 #######################################################
 ## .3. Parse Arguments                           !!! ##
 #######################################################
@@ -1478,9 +1408,7 @@ def parse_arguments() -> Namespace:
     parser = ArgumentParser(description="Generate an isentropic adiabat using BurnMan")
 
     # Required arguments
-    parser.add_argument(
-        "--model-id", type=str, required=True, help="ID of the Perple_X model"
-    )
+    parser.add_argument("--model-id", type=str, required=True, help="ID of the Perple_X model")
     parser.add_argument(
         "--out-dir",
         type=str,

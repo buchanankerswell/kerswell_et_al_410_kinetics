@@ -12,22 +12,25 @@ SIMULATION := $(PROJECT_ROOT)/simulation
 BASH := $(PROJECT_ROOT)/bash
 FIGS := $(PROJECT_ROOT)/figs
 
+# Remote sim dir
+SIMULATION_BARKLA := /users/kersweb/scratch/kerswell_et_al_dynp/simulation
+
 # Perplex models
 PERPLEX_MODELS := $(shell find $(PERPLEX) -type f -name '*.dat' -exec basename {} .dat \;)
 
-# Simulations
-2D_BOX_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm'))
-2D_BOX_TIMESTEPS_SYNC := 100
-2D_BOX_TIMESTEPS_MESH := 100
-# 2D_BOX_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 5 100)
-# 2D_BOX_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 5 100)
-2D_BOX_TIMESTEPS_PROFILE := $(2D_BOX_TIMESTEPS_MESH)
-2D_BOX_TIMESTEPS_TOPOGRAPHY := $(2D_BOX_TIMESTEPS_SYNC)
-2D_SHELL_CONFIGS := $(patsubst $(SIMULATION)/%,%,$(shell find $(SIMULATION)/2d_shell/configs -type f -name '*.prm'))
-2D_SHELL_TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 2 100)
-2D_SHELL_TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 50)
-2D_SHELL_TIMESTEPS_PROFILE := $(2D_SHELL_TIMESTEPS_MESH)
-2D_SHELL_TIMESTEPS_TOPOGRAPHY := $(2D_SHELL_TIMESTEPS_SYNC)
+# Material parameters
+KINETIC_FACTOR := 3.0e0 7.0e0 1.6e1 3.7e1 8.7e1 2.0e2 4.7e2 1.1e3 2.6e3 6.0e3 1.4e4 3.3e4 7.8e4 1.8e5 4.3e5 1.0e6 2.4e6 5.6e6 1.3e7 3.0e7 7.0e7
+
+# Generate prm files for each kinetic factor
+PLUME_PRMS := $(addprefix $(SIMULATION)/configs/plume-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+PRMS := $(PLUME_PRMS) $(SLAB_PRMS)
+
+# Timesteps
+TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 100)
+TIMESTEPS_SYNC := $(TIMESTEPS_MESH)
+TIMESTEPS_PROFILE := $(TIMESTEPS_MESH)
+TIMESTEPS_TOPOGRAPHY := $(TIMESTEPS_MESH)
 
 # Script paths
 MAIN_ADIABAT := $(PYTHON)/adiabat/main.py
@@ -39,17 +42,17 @@ CLEAN := $(PYTHON)/**/__pycache__
 DEEP_CLEAN := $(PYTHON)/*/data
 
 # Targets
-.PHONY: all visualize 2d-box-models 2d-shell-models adiabat clean deep-clean help
+.PHONY: all visualize sync-barkla compositions initial-setup 2d-box-models adiabat clean deep-clean help
 
 all: 2d-box-models
 
 visualize: initial-setup 2d-box-models compositions
 
 sync-barkla:
-	@source $(BASH)/simulation/sync-barkla2.sh "$(2D_BOX_CONFIGS)" "$(2D_BOX_TIMESTEPS_SYNC)"
+	@source $(BASH)/simulation/sync-barkla2.sh "$(PRMS)" "$(TIMESTEPS_SYNC)" "$(SIMULATION)" "$(SIMULATION_BARKLA)"
 
 compositions:
-	@(cd $(BASH)/simulation && ./make-compositions.sh)
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0100" "3.0e0" "4.7e2" "7.0e7")
 
 initial-setup: $(INITIAL_SETUP)
 	@$(CONDA_PYTHON_PYVISTA) -u $(INITIAL_SETUP) --out-fig-dir $(FIGS)
@@ -57,48 +60,23 @@ initial-setup: $(INITIAL_SETUP)
 2d-box-models: $(MAIN_SIMULATION)
 	@MODEL_IDS=""; \
 	IN_DIRS=""; \
-	for prm in $(2D_BOX_CONFIGS); do \
+	for prm in $(PRMS); do \
 		MODEL_DIR=$$(basename $$prm .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
-		IN_DIR=$(SIMULATION)/2d_box/results/$$MODEL_DIR; \
+		IN_DIR=$(SIMULATION)/results/$$MODEL_DIR; \
 		MODEL_IDS="$$MODEL_IDS $$MODEL_DIR"; \
 		IN_DIRS="$$IN_DIRS $$IN_DIR"; \
 	done; \
-	TSTEPS_MESH="$(2D_BOX_TIMESTEPS_MESH)"; \
-	TSTEPS_PROFILE="$(2D_BOX_TIMESTEPS_PROFILE)"; \
-	TSTEPS_TOPOGRAPHY="$(2D_BOX_TIMESTEPS_TOPOGRAPHY)"; \
-	OUT_FIG_DIR=$(FIGS)/simulation/2d_box; \
-	VIS_TYPE=2d_box; \
+	TSTEPS_MESH="$(TIMESTEPS_MESH)"; \
+	TSTEPS_PROFILE="$(TIMESTEPS_PROFILE)"; \
+	TSTEPS_TOPOGRAPHY="$(TIMESTEPS_TOPOGRAPHY)"; \
+	OUT_FIG_DIR=$(FIGS)/simulation; \
 	$(CONDA_PYTHON_PYVISTA) -u $(MAIN_SIMULATION) \
 	    --model-ids $$MODEL_IDS \
 	    --timesteps-mesh $$TSTEPS_MESH \
 	    --timesteps-profile $$TSTEPS_PROFILE \
 	    --timesteps-topography $$TSTEPS_TOPOGRAPHY \
 	    --in-dirs $$IN_DIRS \
-	    --out-fig-dir $$OUT_FIG_DIR \
-	    --visualization-type $$VIS_TYPE
-
-2d-shell-models: $(MAIN_SIMULATION)
-	@MODEL_IDS=""; \
-	IN_DIRS=""; \
-	for prm in $(2D_SHELL_CONFIGS); do \
-		MODEL_DIR=$$(basename $$prm .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
-		IN_DIR=$(SIMULATION)/2d_shell/results/$$MODEL_DIR; \
-		MODEL_IDS="$$MODEL_IDS $$MODEL_DIR"; \
-		IN_DIRS="$$IN_DIRS $$IN_DIR"; \
-	done; \
-	TSTEPS_MESH="$(2D_SHELL_TIMESTEPS_MESH)"; \
-	TSTEPS_PROFILE="$(2D_SHELL_TIMESTEPS_PROFILE)"; \
-	TSTEPS_TOPOGRAPHY="$(2D_SHELL_TIMESTEPS_TOPOGRAPHY)"; \
-	OUT_FIG_DIR=$(FIGS)/simulation/2d_shell; \
-	VIS_TYPE=2d_shell; \
-	$(CONDA_PYTHON_PYVISTA) -u $(MAIN_SIMULATION) \
-	    --model-ids $$MODEL_IDS \
-	    --timesteps-mesh $$TSTEPS_MESH \
-	    --timesteps-profile $$TSTEPS_PROFILE \
-	    --timesteps-topography $$TSTEPS_TOPOGRAPHY \
-	    --in-dirs $$IN_DIRS \
-	    --out-fig-dir $$OUT_FIG_DIR \
-	    --visualization-type $$VIS_TYPE
+	    --out-fig-dir $$OUT_FIG_DIR
 
 adiabat: $(MAIN_ADIABAT)
 	@for model in $(PERPLEX_MODELS); do \
@@ -155,10 +133,12 @@ help:
 	@echo "    --------------------------------------------------"
 	@echo "    Available targets:"
 	@echo "    --------------------------------------------------"
-	@echo "    visualize        Visualize all results"
-	@echo "    2d-shell-models  Visualize ASPECT shell models"
-	@echo "    2d-box-models    Visualize ASPECT box models"
-	@echo "    adiabat          Generate adiabatic profiles using BurnMan"
-	@echo "    clean            Cleanup unnecessary files and directories (safe)"
-	@echo "    deep-clean       Deep clean figures and results (use with caution!)"
-	@echo "    help             Show this help message"
+	@echo "    visualize      Visualize all results"
+	@echo "    2d-box-models  Visualize ASPECT box models"
+	@echo "    compositions   Compose individual simulation plots"
+	@echo "    initial-setup  Visualize initial numerical setup"
+	@echo "    sync-barkla    Fetch simulation results from barkla"
+	@echo "    adiabat        Generate adiabatic material profiles using BurnMan"
+	@echo "    clean          Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean     Deep clean figures and results (use with caution!)"
+	@echo "    help           Show this help message"

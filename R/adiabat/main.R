@@ -45,41 +45,22 @@ main <- function() {
     dir.create(out_dir, recursive = TRUE)
   }
 
-  in_adiabatic_profile <-
-    file.path(in_dir, paste0(model_id, "-adiabatic-profile.txt"))
-  in_material_table <-
-    file.path(in_dir, paste0(model_id, "-material-table.txt"))
-  in_driving_force_profile <-
-    file.path(in_dir, "forward-reaction-410-profile.txt")
-  in_phase_transition_profile <-
-    file.path(in_dir, "forward-reaction-410-profile.txt")
+  in_adiabatic_profile <- file.path(in_dir, paste0(model_id, "-adiabatic-profile.txt"))
+  in_material_table <- file.path(in_dir, paste0(model_id, "-material-table.txt"))
+  in_reaction_data <- file.path(in_dir, "reaction-410-profile.txt")
 
-  out_adiabatic_profile <-
-    file.path(out_dir, paste0(model_id, "-adiabatic-profile.png"))
-  out_material_table <-
-    file.path(out_dir, paste0(model_id, "-material-table.png"))
-  out_driving_force_profile <-
-    file.path(out_dir, "phase-transition-kinetics-profile.png")
-  out_phase_transition_profile <-
-    file.path(out_dir, "material-property-profiles.png")
+  out_material_table <- file.path(out_dir, paste0(model_id, "-material-table.png"))
+  out_material_profile <- file.path(out_dir, "material-property-profile.png")
+  out_thermodynamic_profile <- file.path(out_dir, "thermodynamic-property-profile.png")
 
   missing <- c()
-  if (!file.exists(in_adiabatic_profile)) {
-    missing <- c(missing, in_adiabatic_profile)
-  }
-  if (!file.exists(in_material_table)) {
-    missing <- c(missing, in_material_table)
-  }
-  if (!file.exists(in_driving_force_profile)) {
-    missing <- c(missing, in_driving_force_profile)
-  }
+  if (!file.exists(in_material_table)) missing <- c(missing, in_material_table)
+  if (!file.exists(in_reaction_data)) missing <- c(missing, in_reaction_data)
 
   if (length(missing) > 0) {
     cat("    --------------------------------------------------\n")
     cat(" !! Warning: the following input files do not exist:\n")
-    for (f in missing) {
-      cat(" -- ", f, "\n", sep = "")
-    }
+    for (f in missing) cat(" -- ", f, "\n", sep = "")
     return(invisible(NULL))
   }
 
@@ -88,23 +69,9 @@ main <- function() {
 
   tryCatch(
     {
-      visualize_adiabatic_profile(
-        in_adiabatic_profile,
-        out_adiabatic_profile
-      )
-      visualize_material_table(
-        in_adiabatic_profile,
-        in_material_table,
-        out_material_table
-      )
-      visualize_driving_force_profile(
-        in_driving_force_profile,
-        out_driving_force_profile
-      )
-      visualize_phase_transition_profile(
-        in_phase_transition_profile,
-        out_phase_transition_profile
-      )
+      visualize_material_table(in_adiabatic_profile, in_material_table, out_material_table)
+      visualize_material_profile(in_reaction_data, out_material_profile)
+      visualize_thermodynamic_profile(in_reaction_data, out_thermodynamic_profile)
     },
     error = function(e) {
       cat("    --------------------------------------------------\n")

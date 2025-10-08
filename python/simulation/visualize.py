@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import pyvista as pv
 from PIL import Image
+from scipy.signal import savgol_filter
 from scipy.spatial import ConvexHull
 
 __import__("vtk")
@@ -27,8 +28,8 @@ class PyVistaModelConfig:
     """Holds all configuration for PyVista visualizations."""
 
     draw_mesh_plots: bool = True
-    draw_centerline_profile_plots: bool = False
-    draw_topography_plots: bool = False
+    draw_depth_profile_plots: bool = True
+    draw_topography_plots: bool = True
 
     # Mappings
     file_mapping: dict[str, str] = field(default_factory=dict)
@@ -69,8 +70,6 @@ class PyVistaModelConfig:
         default_factory=lambda: [
             "differential_stress",
             "nonadiabatic_density",
-            "Vp_Vs_ratio",
-            "rate_ratio",
         ]
     )
 
@@ -82,40 +81,42 @@ class PyVistaModelConfig:
     plotter_lighting: str = "none"
     edge_opacity: float = 0.3
     title_font_size: int = 60
-    title_position: tuple[float, float] = field(default_factory=lambda: (0.39, 0.40))
+    title_position: tuple[float, float] = field(default_factory=lambda: (0.39, 0.90))
     cbar_vertical: bool = False
     cbar_title_font_size: int = 115
     cbar_label_font_size: int = 80
     cbar_width: float = 0.4
     cbar_n_labels: int = 3
-    cbar_position: list[float] = field(default_factory=lambda: [0.3, 0.5])
+    cbar_position: list[float] = field(default_factory=lambda: [0.30, 0.05])
     rotation_init: float = 0
     rotation_coeff: float = 0
-    camera_center_zoom: bool = False
+    camera_center_zoom: bool = True
     camera_full_view: bool = True
     camera_y_shift_factor: float = -0.045
     camera_zoom_factor: float = 1.9
     screenshot_dpi: tuple[int, int] = field(default_factory=lambda: (330, 330))
-    depth_contour_depths_km: list[int] = field(default_factory=lambda: [0, 125, 410, 660, 2890])
-    depth_contour_line_widths: list[int] = field(default_factory=lambda: [6, 3, 3, 3, 6])
-    depth_contour_tolerance_km: float = 15
+    depth_contour_depths_km: list[int] = field(default_factory=lambda: [])
+    depth_contour_line_widths: list[int] = field(default_factory=lambda: [3])
+    depth_contour_tolerance_km: float = 1
     velocity_glyph_factor: float = 7e5
     stress_glyph_factor: float = 1e-3
     glyph_line_width: float = 1
     scale_bar_enabled: bool = True
     scale_bar_color: str = "black"
     scale_bar_thickness: float = 25
-    scale_bar_length_fraction: float = 0.25
+    scale_bar_length_fraction: float = 0.222
     scale_bar_position: tuple = (0.05, 0.08)
     scale_bar_font_size_factor: float = 1.0
 
-    topography_plot_width: float = 6.5
-    topography_plot_height: float = 7.5
+    topography_plot_width: float = 7.0
+    topography_plot_height: float = 5.5
 
-    centerline_profile_plot_width: float = 6.5
-    centerline_profile_plot_height: float = 7.5
-    centerline_reaction_depth: float = 132e3
-    centerline_profile_plot_rcParams: dict[str, Any] = field(
+    depth_profile_plot_width: float = 7.0
+    depth_profile_plot_height: float = 5.5
+    depth_profile_offset: float = 150e3
+    depth_profile_surface_depth: float = 280e3
+    depth_profile_reaction_depth: float = 410e3
+    depth_profile_plot_rcParams: dict[str, Any] = field(
         default_factory=lambda: {
             "figure.dpi": 300,
             "savefig.bbox": "tight",
@@ -156,22 +157,14 @@ class PyVistaModelConfig:
                 "thermal_expansivity": "thermal-expansivity",
                 "compressibility": "compressibility",
                 "viscosity": "viscosity",
-                "v_r": "velocity-rad",
-                "v_phi": "velocity-phi",
                 "principal_stress_1": "sigma-one",
                 "principal_stress_2": "sigma-two",
                 "differential_stress": "sigma-delta",
                 "seismic_Vp": "vp",
                 "seismic_Vs": "vs",
-                "Vp_anomaly": "vp-anomaly",
-                "Vs_anomaly": "vs-anomaly",
-                "Vp_Vs_ratio": "vp-vs-ratio",
-                "preexponential": "preexponential",
                 "arrhenius": "arrhenius",
                 "thermodynamic": "thermodynamic",
-                "growth_rate": "growth-rate",
                 "reaction_rate_C0": "reaction-rate",
-                "rate_ratio": "rate-ratio",
             }
         if not self.cmap_mapping:
             self.cmap_mapping = {
@@ -191,8 +184,6 @@ class PyVistaModelConfig:
                 "compressibility": "gist_heat_r",
                 "viscosity": "viridis_r",
                 "velocity": "BrBG",
-                "v_r": "BrBG",
-                "v_phi": "BrBG",
                 "stress_xx": "BuPu",
                 "stress_yy": "BuPu",
                 "shear_stress_xx": "PiYG",
@@ -205,57 +196,43 @@ class PyVistaModelConfig:
                 "strain_rate": "BuPu_r",
                 "seismic_Vp": "copper_r",
                 "seismic_Vs": "copper_r",
-                "Vp_anomaly": "seismic",
-                "Vs_anomaly": "seismic",
-                "Vp_Vs_ratio": "seismic",
-                "preexponential": "bone_r",
                 "arrhenius": "bone_r",
-                "thermodynamic": "RdGy_r",
-                "growth_rate": "gist_heat_r",
-                "reaction_rate_C0": "pink_r",
-                "rate_ratio": "Blues",
+                "thermodynamic": "YlGn",
+                "reaction_rate_C0": "RdGy_r",
             }
         if not self.clim_mapping:
             self.clim_mapping = {
-                "T": (273, 3773),
-                "adiabatic_temperature": (273, 3773),
-                "nonadiabatic_temperature": (-1405, 1405),
-                "p": (-0.5, 136.5),
-                "adiabatic_pressure": (-0.5, 136.5),
-                "nonadiabatic_pressure": (-1.85, 1.85),
+                "T": "auto",
+                "adiabatic_temperature": "auto",
+                "nonadiabatic_temperature": "auto",
+                "p": "auto",
+                "adiabatic_pressure": "auto",
+                "nonadiabatic_pressure": "auto",
                 "X_field": (0.0, 1.0),
-                "density": (3.0, 5.8),
-                "adiabatic_density": (3.0, 5.8),
-                "nonadiabatic_density": (-0.29, 0.29),
-                "adiabatic_density_derivative": (0, 12),
-                "specific_heat": (1.15, 1.33),
-                "thermal_expansivity": (1.10, 4.32),
-                "compressibility": (1.50e-12, 5.35e-11),
-                "viscosity": (18.5, 25),
-                "velocity": (-20, 20),
-                "v_r": (-20, 20),
-                "v_phi": (-20, 20),
-                "stress_xx": (0, 136.5),
-                "stress_yy": (0, 136.5),
-                "shear_stress_xx": (-1.58, 1.58),
-                "shear_stress_xy": (-1.58, 1.58),
-                "shear_stress_yy": (-1.58, 1.58),
-                "principal_stress_1": (-1.0, 1.0),
-                "principal_stress_2": (-1.0, 1.0),
-                "differential_stress": (0, 2.0),
-                "stress_second_invariant": (0, 1.1),
-                "strain_rate": (-19.1, -12.0),
-                "seismic_Vp": (0, 10),
-                "seismic_Vs": (0, 10),
-                "Vp_anomaly": (-1, 1),
-                "Vs_anomaly": (-1, 1),
-                "Vp_Vs_ratio": (-4.5, 4.5),
-                "preexponential": (0, 1e2),
-                "arrhenius": (0, 1e2),
-                "thermodynamic": (-1, 1),
-                "growth_rate": (0, 1e2),
-                "reaction_rate_C0": (0, 1e2),
-                "rate_ratio": (0, 150),
+                "density": "auto",
+                "adiabatic_density": "auto",
+                "nonadiabatic_density": "auto",
+                "adiabatic_density_derivative": "auto",
+                "specific_heat": "auto",
+                "thermal_expansivity": "auto",
+                "compressibility": "auto",
+                "viscosity": "auto",
+                "velocity": "auto",
+                "stress_xx": "auto",
+                "stress_yy": "auto",
+                "shear_stress_xx": "auto",
+                "shear_stress_xy": "auto",
+                "shear_stress_yy": "auto",
+                "principal_stress_1": "auto",
+                "principal_stress_2": "auto",
+                "differential_stress": "auto",
+                "stress_second_invariant": "auto",
+                "strain_rate": "auto",
+                "seismic_Vp": "auto",
+                "seismic_Vs": "auto",
+                "arrhenius": "auto",
+                "thermodynamic": "auto",
+                "reaction_rate_C0": "auto",
             }
         if not self.bar_mapping:
             self.bar_mapping = {
@@ -263,8 +240,8 @@ class PyVistaModelConfig:
                 "adiabatic_temperature": "$\\bar{T}$ (K)",
                 "nonadiabatic_temperature": "$\\hat{T}$ (K)",
                 "p": "$P$ (GPa)",
-                "adiabatic_pressure": "$\\bar{P}$ (GPa)",
-                "nonadiabatic_pressure": "$\\hat{P}$ (GPa)",
+                "adiabatic_pressure": "$\\bar{P}$ (MPa)",
+                "nonadiabatic_pressure": "$\\hat{P}$ (MPa)",
                 "X_field": "X",
                 "density": "$\\rho$ (g/cm$^3$)",
                 "adiabatic_density": "$\\bar{\\rho}$ (g/cm$^3$)",
@@ -275,8 +252,6 @@ class PyVistaModelConfig:
                 "compressibility": "$\\beta_S$ (1/Pa)",
                 "viscosity": "Log $\\eta$ (Pa s)",
                 "velocity": "$\\vec{u}$ (cm/yr)",
-                "v_r": "$\\vec{u}_r$ (cm/yr)",
-                "v_phi": "$\\vec{u}_{\\phi}$ (cm/yr)",
                 "stress_xx": "$\\sigma_{xx}$ (GPa)",
                 "stress_yy": "$\\sigma_{yy}$ (GPa)",
                 "shear_stress_xx": "$\\sigma^{\\prime}_{xx}$ (GPa)",
@@ -289,15 +264,9 @@ class PyVistaModelConfig:
                 "strain_rate": "Log $\\dot{\\epsilon}_{II}$ (1/s)",
                 "seismic_Vp": "$V_p$ (km/s)",
                 "seismic_Vs": "$V_s$ (km/s)",
-                "Vp_anomaly": "$\\hat{V}_p$ (%)",
-                "Vs_anomaly": "$\\hat{V}_s$ (%)",
-                "Vp_Vs_ratio": "$V_p$/$V_s$",
-                "preexponential": "Preexponential term (m/s)",
-                "arrhenius": "Arrhenius term",
+                "arrhenius": "Log Arrhenius term",
                 "thermodynamic": "Thermodynamic term",
-                "growth_rate": "$\\dot{x}$ (cm/Ma)",
-                "reaction_rate_C0": "$\\dot{X} (1/Ma)$",
-                "rate_ratio": "$\\dot{X}\\colon\\dot{\\epsilon}_{II}$",
+                "reaction_rate_C0": "Log $\\dot{X}$ (1/Ma)",
             }
         if not self.fmt_mapping:
             self.fmt_mapping = {
@@ -306,7 +275,7 @@ class PyVistaModelConfig:
                 "nonadiabatic_temperature": "%.0f",
                 "p": "%.0f",
                 "adiabatic_pressure": "%.0f",
-                "nonadiabatic_pressure": "%.1f",
+                "nonadiabatic_pressure": "%.0f",
                 "X_field": "%.1f",
                 "density": "%.1f",
                 "adiabatic_density": "%.1f",
@@ -316,9 +285,7 @@ class PyVistaModelConfig:
                 "thermal_expansivity": "%.1f",
                 "compressibility": "%.1e",
                 "viscosity": "%.0f",
-                "velocity": "%.0f",
-                "v_r": "%.0f",
-                "v_phi": "%.0f",
+                "velocity": "%.1f",
                 "stress_xx": "%.0f",
                 "stress_yy": "%.0f",
                 "shear_stress_xx": "%.1f",
@@ -332,15 +299,9 @@ class PyVistaModelConfig:
                 "strain_rate": "%.1f",
                 "seismic_Vp": "%.1f",
                 "seismic_Vs": "%.1f",
-                "Vp_anomaly": "%.0f",
-                "Vs_anomaly": "%.0f",
-                "Vp_Vs_ratio": "%.0f",
-                "preexponential": "%0.1e",
-                "arrhenius": "%0.1e",
+                "arrhenius": "%.1f",
                 "thermodynamic": "%.1f",
-                "growth_rate": "%.1f",
-                "reaction_rate_C0": "%.1f",
-                "rate_ratio": "%.0f",
+                "reaction_rate_C0": "%.2f",
             }
         if not self.scale_mapping:
             self.scale_mapping = {
@@ -348,8 +309,8 @@ class PyVistaModelConfig:
                 "adiabatic_temperature": 1,
                 "nonadiabatic_temperature": 1,
                 "p": 1e-9,
-                "adiabatic_pressure": 1e-9,
-                "nonadiabatic_pressure": 1e-9,
+                "adiabatic_pressure": 1e-6,
+                "nonadiabatic_pressure": 1e-6,
                 "X_field": 1,
                 "density": 1e-3,
                 "adiabatic_density": 1e-3,
@@ -360,8 +321,6 @@ class PyVistaModelConfig:
                 "compressibility": 1,
                 "viscosity": 1,
                 "velocity": 1e2,
-                "v_r": 1e2,
-                "v_phi": 1e2,
                 "stress_xx": 1e-9,
                 "stress_yy": 1e-9,
                 "shear_stress_xx": 1e-9,
@@ -374,21 +333,15 @@ class PyVistaModelConfig:
                 "strain_rate": 3.154e13,
                 "seismic_Vp": 1e-3,
                 "seismic_Vs": 1e-3,
-                "Vp_anomaly": 1,
-                "Vs_anomaly": 1,
-                "Vp_Vs_ratio": 1,
-                "preexponential": 1,
                 "arrhenius": 1,
                 "thermodynamic": 1,
-                "growth_rate": 3.154e9,
                 "reaction_rate_C0": 3.154e13,
-                "rate_ratio": 1,
             }
         if not self.velocity_mapping:
             self.velocity_mapping = {
                 "T": False,
                 "adiabatic_temperature": False,
-                "nonadiabatic_temperature": False,
+                "nonadiabatic_temperature": True,
                 "p": False,
                 "nonadiabatic_pressure": False,
                 "X_field": False,
@@ -409,22 +362,14 @@ class PyVistaModelConfig:
                 "thermal_expansivity": False,
                 "compressibility": False,
                 "viscosity": False,
-                "v_r": False,
-                "v_phi": False,
                 "principal_stress_1": False,
                 "principal_stress_2": False,
                 "differential_stress": False,
                 "seismic_Vp": False,
                 "seismic_Vs": False,
-                "Vp_anomaly": False,
-                "Vs_anomaly": False,
-                "Vp_Vs_ratio": False,
-                "preexponential": False,
                 "arrhenius": False,
                 "thermodynamic": False,
-                "growth_rate": False,
                 "reaction_rate_C0": False,
-                "rate_ratio": False,
             }
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -446,9 +391,6 @@ class PyVistaModelVisualizer:
     verbosity: int = 0
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # def __post_init__(self):
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def draw(self):
         """Main loop to process all models and generate visualizations."""
         warnings.filterwarnings("ignore", category=RuntimeWarning, module="pyvista")
@@ -456,9 +398,9 @@ class PyVistaModelVisualizer:
         cfg = self.plot_config
         model_out_data = self._get_ordered_pvtu_files()
 
-        centerline_data = {}
-        reaction_depth = cfg.centerline_reaction_depth
-        centerline_profile_data = []
+        depth_profile_cache = {}
+        depth_profile_summary = []
+        reaction_depth = cfg.depth_profile_reaction_depth
 
         for model_id, (pvtu_files, timesteps) in model_out_data.items():
             print("    --------------------------------------------------")
@@ -479,7 +421,7 @@ class PyVistaModelVisualizer:
                     continue
 
                 try:
-                    mesh = pv.read(pvtu_path)
+                    mesh = pv.UnstructuredGrid(pvtu_path)
                     if mesh is None:
                         if self.verbosity >= 1:
                             print(f" !! Warning: pyvista.read returned None for pvtu_file:\n" f"    {pvtu_path.name}")
@@ -488,8 +430,6 @@ class PyVistaModelVisualizer:
                     if self.verbosity >= 1:
                         print(f" !! Warning: failed to read mesh pvtu_file {pvtu_path.name}:\n" f" !! Error message: {e}")
                     continue
-
-                self._rotate_mesh(mesh, tstep)
 
                 for field_name in cfg.file_mapping.keys():
                     self._prepare_mesh(mesh, field_name)
@@ -504,70 +444,61 @@ class PyVistaModelVisualizer:
                         out_path = out_fig_dir_mesh / f"{model_id.replace('_', '-')}-{field_id}-{str(tstep).zfill(4)}.png"
                         self.draw_mesh(mesh.copy(), field_name, cmap, clim, out_path)
 
-                    if cfg.draw_centerline_profile_plots and (tstep in self.tsteps_profile or tstep in self.tsteps_topography):
-                        centerline_data.setdefault(model_id, {}).setdefault(tstep, {})
-                        centerline_data[model_id][tstep]["time_myr"] = time_myr
+                    if cfg.draw_depth_profile_plots and (tstep in self.tsteps_profile or tstep in self.tsteps_topography):
+                        depth_profile_cache.setdefault(model_id, {}).setdefault(tstep, {})
+                        depth_profile_cache[model_id][tstep]["time_myr"] = time_myr
+                        depth_profile_cache[model_id][tstep].setdefault("fields", {})
 
-                        depths, values = self._get_centerline_profile(mesh.copy(), field_name)
+                        if "X_field" not in mesh.point_data:
+                            continue
 
-                        centerline_data[model_id][tstep].setdefault("fields", {})
-                        centerline_data[model_id][tstep]["fields"][field_name] = {"depths": depths, "values": values, "clim": clim}
+                        displacement, width, x_pos = self._get_widest_profile(mesh.copy(), "X_field", reaction_depth, 100, cfg.depth_profile_offset)
+                        depth_profile_cache[model_id][tstep]["displacement"] = displacement
+                        depth_profile_cache[model_id][tstep]["width"] = width
+                        depth_profile_cache[model_id][tstep]["profile_x"] = x_pos
 
-                        if field_name == "X_field":
-                            displacement, width = self._get_profile_data(depths, values, reaction_depth)
-                            centerline_data[model_id][tstep]["displacement"] = displacement
-                            centerline_data[model_id][tstep]["width"] = width
+                        if field_name in mesh.point_data:
+                            depths, values = self._get_profile_at_x(mesh.copy(), field_name, x_pos)
+                            depth_profile_cache[model_id][tstep]["fields"][field_name] = {"depths": depths, "values": values, "clim": clim}
 
-                        elif field_name == "reaction_rate_C0":
-                            max_reaction_rate = np.nanmax(values)
-                            centerline_data[model_id][tstep]["max_reaction_rate"] = max_reaction_rate
+                            if field_name in ["reaction_rate_C0", "velocity"]:
+                                key = "max_reaction_rate" if field_name == "reaction_rate_C0" else "max_velocity"
+                                depth_profile_cache[model_id][tstep][key] = np.nanmax(values)
 
-                        elif field_name == "velocity":
-                            max_velocity = np.nanmax(values)
-                            centerline_data[model_id][tstep]["max_velocity"] = max_velocity
+                        if all(k in depth_profile_cache[model_id][tstep] for k in ["displacement", "max_reaction_rate", "max_velocity"]):
+                            depth_profile_summary.append(
+                                {
+                                    "model_id": model_id,
+                                    "timestep": tstep,
+                                    "time_myr": time_myr,
+                                    "displacement": depth_profile_cache[model_id][tstep]["displacement"],
+                                    "width": depth_profile_cache[model_id][tstep]["width"],
+                                    "max_velocity": depth_profile_cache[model_id][tstep]["max_velocity"],
+                                    "max_reaction_rate": depth_profile_cache[model_id][tstep]["max_reaction_rate"],
+                                    "profile_x": depth_profile_cache[model_id][tstep]["profile_x"],
+                                }
+                            )
 
-                        elif field_name == "strain_rate":
-                            max_strain_rate = np.nanmax(values)
-                            centerline_data[model_id][tstep]["max_strain_rate"] = max_strain_rate
-
-                    if (
-                        "displacement" in centerline_data[model_id][tstep]
-                        and "max_reaction_rate" in centerline_data[model_id][tstep]
-                        and "max_velocity" in centerline_data[model_id][tstep]
-                    ):
-                        centerline_profile_data.append(
-                            {
-                                "model_id": model_id,
-                                "timestep": tstep,
-                                "time_myr": time_myr,
-                                "displacement": centerline_data[model_id][tstep]["displacement"],
-                                "width": centerline_data[model_id][tstep]["width"],
-                                "max_velocity": centerline_data[model_id][tstep]["max_velocity"],
-                                "max_strain_rate": centerline_data[model_id][tstep]["max_strain_rate"],
-                                "max_reaction_rate": centerline_data[model_id][tstep]["max_reaction_rate"],
-                            }
-                        )
-
-        if centerline_profile_data:
+        if depth_profile_summary:
             try:
-                df = pd.DataFrame(centerline_profile_data)
-                csv_path = Path("simulation") / "data" / "centerline-profile-data.csv"
+                df = pd.DataFrame(depth_profile_summary)
+                csv_path = Path("simulation") / "data" / "depth-profile-data.csv"
                 csv_path.parent.mkdir(parents=True, exist_ok=True)
                 df.to_csv(csv_path, index=False)
             except Exception as e:
                 print(f"\n !! Error: Failed to write CSV file with pandas: {e}")
 
-        if cfg.draw_centerline_profile_plots:
+        if cfg.draw_depth_profile_plots and depth_profile_cache:
             print("    --------------------------------------------------")
-            print("    Drawing displacements ...")
+            print("    Drawing 410 displacements")
             print("    --------------------------------------------------")
 
             for model_type in ["plume", "slab"]:
-                selected_models = [m for m in centerline_data.keys() if model_type in m]
+                selected_models = [m for m in depth_profile_cache.keys() if model_type in m]
                 selected_models = sorted(selected_models, key=self._extract_sort_key)
 
-                displacement_group = {}
-                for model_id, tsteps in centerline_data.items():
+                displacement_data_grouped = {}
+                for model_id, tsteps in depth_profile_cache.items():
                     if model_id in selected_models:
                         times = []
                         defs = []
@@ -579,7 +510,7 @@ class PyVistaModelVisualizer:
                                     times.append(data["time_myr"])
                                     defs.append(data["displacement"])
                         if times and defs:
-                            displacement_group[model_id] = {
+                            displacement_data_grouped[model_id] = {
                                 "time_myr": np.array(times, dtype=np.float32),
                                 "displacement": np.array(defs, dtype=np.float32),
                             }
@@ -587,19 +518,19 @@ class PyVistaModelVisualizer:
                 out_fig_dir_displacement = cfg.default_fig_dir / "topography"
                 out_fig_dir_displacement.mkdir(parents=True, exist_ok=True)
                 out_path = out_fig_dir_displacement / f"{model_type}-displacement.png"
-                self.draw_displacement(displacement_group, out_path)
+                self.draw_displacement(displacement_data_grouped, model_type, out_path)
 
-        if cfg.draw_centerline_profile_plots:
+        if cfg.draw_depth_profile_plots and depth_profile_cache:
             print("    --------------------------------------------------")
-            print("    Drawing widths ...")
+            print("    Drawing 410 widths")
             print("    --------------------------------------------------")
 
             for model_type in ["plume", "slab"]:
-                selected_models = [m for m in centerline_data.keys() if model_type in m]
+                selected_models = [m for m in depth_profile_cache.keys() if model_type in m]
                 selected_models = sorted(selected_models, key=self._extract_sort_key)
 
-                width_group = {}
-                for model_id, tsteps in centerline_data.items():
+                width_data_grouped = {}
+                for model_id, tsteps in depth_profile_cache.items():
                     if model_id in selected_models:
                         times = []
                         defs = []
@@ -611,7 +542,7 @@ class PyVistaModelVisualizer:
                                     times.append(data["time_myr"])
                                     defs.append(data["width"])
                         if times and defs:
-                            width_group[model_id] = {
+                            width_data_grouped[model_id] = {
                                 "time_myr": np.array(times, dtype=np.float32),
                                 "width": np.array(defs, dtype=np.float32),
                             }
@@ -619,44 +550,43 @@ class PyVistaModelVisualizer:
                 out_fig_dir_width = cfg.default_fig_dir / "topography"
                 out_fig_dir_width.mkdir(parents=True, exist_ok=True)
                 out_path = out_fig_dir_width / f"{model_type}-width.png"
-                self.draw_width(width_group, out_path)
+                self.draw_width(width_data_grouped, model_type, out_path)
 
-        if cfg.draw_centerline_profile_plots:
+        if cfg.draw_depth_profile_plots and depth_profile_cache:
             print("    --------------------------------------------------")
-            print("    Drawing centerline profiles ...")
+            print("    Drawing depth profiles")
             print("    --------------------------------------------------")
 
             for model_type in ["plume", "slab"]:
-                selected_models = [m for m in centerline_data.keys() if model_type in m]
+                selected_models = [m for m in depth_profile_cache.keys() if model_type in m]
                 selected_models = sorted(selected_models, key=self._extract_sort_key)
 
                 all_fields = set()
                 for m in selected_models:
-                    for tstep in centerline_data[m].keys():
+                    for tstep in depth_profile_cache[m].keys():
                         if tstep in self.tsteps_profile:
-                            all_fields.update(centerline_data[m][tstep].get("fields", {}).keys())
+                            all_fields.update(depth_profile_cache[m][tstep].get("fields", {}).keys())
 
                 for field_name in sorted(all_fields):
-                    # Collect all timesteps for this field across models
                     all_timesteps = sorted(
-                        {t for m in selected_models for t in centerline_data[m] if field_name in centerline_data[m][t].get("fields", {})}
+                        {t for m in selected_models for t in depth_profile_cache[m] if field_name in depth_profile_cache[m][t].get("fields", {})}
                     )
 
                     for tstep in all_timesteps:
                         if tstep in self.tsteps_profile:
-                            profile_group = {}
+                            profile_data_grouped = {}
 
                             time_myr = 0
                             for model_id in selected_models:
-                                if tstep not in centerline_data[model_id]:
+                                if tstep not in depth_profile_cache[model_id]:
                                     continue
-                                field_data = centerline_data[model_id][tstep].get("fields", {}).get(field_name)
+                                field_data = depth_profile_cache[model_id][tstep].get("fields", {}).get(field_name)
                                 if not field_data:
                                     continue
-                                profile_group[model_id] = field_data
-                                time_myr = centerline_data[model_id][tstep]["time_myr"]
+                                profile_data_grouped[model_id] = field_data
+                                time_myr = depth_profile_cache[model_id][tstep]["time_myr"]
 
-                            if not profile_group:
+                            if not profile_data_grouped:
                                 continue
 
                             out_fig_dir_profiles = cfg.default_fig_dir / "profiles"
@@ -664,14 +594,14 @@ class PyVistaModelVisualizer:
 
                             field_id = cfg.file_mapping.get(field_name, field_name.replace("_", "-"))
                             type_id = f"{model_type}"
-                            out_path = out_fig_dir_profiles / f"{type_id}-{field_id}-centerline-{str(tstep).zfill(4)}.png"
+                            out_path = out_fig_dir_profiles / f"{type_id}-{field_id}-depth-profile-{str(tstep).zfill(4)}.png"
 
-                            self.draw_profile(profile_group, field_name, out_path, reaction_depth)
+                            self.draw_depth_profile(profile_data_grouped, field_name, model_type, out_path, reaction_depth)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def draw_mesh(
         self,
-        mesh: pv.DataSet,
+        mesh: pv.UnstructuredGrid,
         field_name: str,
         cmap: mcolors.Colormap | mcolors.ListedColormap,
         clim: tuple[float, float],
@@ -777,8 +707,18 @@ class PyVistaModelVisualizer:
             print(f"PIL failed to resave {out_path} with new DPI: {e}")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def draw_profile(self, profile_group: dict[str, dict], field_name: str, out_path: Path, reaction_depth: float) -> None:
-        """Draw depth profile plots for given models at a timestep for a specific field."""
+    def draw_depth_profile(
+        self,
+        profile_data_grouped: dict[str, dict],
+        field_name: str,
+        model_type: str,
+        out_path: Path,
+        reaction_depth: float,
+        y_offset: float = 150e3,
+        depth_points: int = 200,
+        smoothing_range: float = 2e3,
+    ) -> None:
+        """"""
         if out_path.exists():
             print(f" -- Found plot: {out_path.name}!")
             return
@@ -787,46 +727,69 @@ class PyVistaModelVisualizer:
 
         cfg = self.plot_config
 
-        plt.rcParams.update(cfg.centerline_profile_plot_rcParams)
-        fig, ax = plt.subplots(figsize=(cfg.centerline_profile_plot_width, cfg.centerline_profile_plot_height))
+        plt.rcParams.update(cfg.depth_profile_plot_rcParams)
+        fig, ax = plt.subplots(figsize=(cfg.depth_profile_plot_width, cfg.depth_profile_plot_height))
 
-        all_clim_lows = []
-        all_clim_highs = []
-        for data in profile_group.values():
-            if data:
-                all_clim_lows.append(data["clim"][0])
-                all_clim_highs.append(data["clim"][1])
-        if all_clim_lows and all_clim_highs:
-            clim = (min(all_clim_lows), max(all_clim_highs))
-        else:
-            clim = (0, 1)
-
+        all_clim_lows = [data["clim"][0] for data in profile_data_grouped.values() if data]
+        all_clim_highs = [data["clim"][1] for data in profile_data_grouped.values() if data]
+        clim = (min(all_clim_lows), max(all_clim_highs)) if all_clim_lows else (0, 1)
         cmap = plt.get_cmap("tab20")
-        for i, (model_id, data) in enumerate(profile_group.items()):
+
+        x_range = clim[1] - clim[0]
+        expand = x_range * 0.05
+        new_xlim = (clim[0] - expand, clim[1] + expand)
+
+        ymin = max(cfg.depth_profile_surface_depth, reaction_depth - y_offset)
+        ymax = reaction_depth + y_offset
+
+        for i, (model_id, data) in enumerate(profile_data_grouped.items()):
             if not data:
                 continue
 
-            depths = data["depths"]
-            values = data["values"]
+            depths = np.array(data["depths"], dtype=float)
+            values = np.array(data["values"], dtype=float)
+
+            sort_idx = np.argsort(depths)
+            depths = depths[sort_idx]
+            values = values[sort_idx]
+
+            unique_depths, indices = np.unique(depths, return_inverse=True)
+            values_agg = np.array([values[indices == j].mean() for j in range(len(unique_depths))])
+
+            depth_grid = np.linspace(unique_depths.min(), unique_depths.max(), depth_points)
+            values_interp = np.interp(depth_grid, unique_depths, values_agg)
+
+            dz = np.median(np.diff(depth_grid))
+            window_pts = int(np.ceil(smoothing_range / dz))
+            if window_pts % 2 == 0:
+                window_pts += 1
+
+            window_pts = min(window_pts, len(values_interp) if len(values_interp) % 2 == 1 else len(values_interp) - 1)
+            window_pts = max(3, window_pts)
+
+            values_smooth = savgol_filter(values_interp, window_length=window_pts, polyorder=2)
+
             label = model_id.replace("_", "-")
             color = cmap(i % 20)
-            ax.plot(values, depths / 1e3, label=label, color=color)
+            ax.plot(values_smooth, depth_grid / 1e3, label=label, color=color)
 
         ax.set_xlabel(cfg.bar_mapping.get(field_name, field_name))
         ax.set_ylabel("Depth (km)")
+        ax.set_xlim(new_xlim)
+        ax.set_ylim(ymin / 1e3, ymax / 1e3)
         ax.invert_yaxis()
-        ax.set_xlim(clim)
         ax.grid(True, which="both", linewidth=0.5, color="#999999")
         ax.tick_params(axis="both", which="both", length=0)
         ax.axhline(reaction_depth / 1e3, color="black", linestyle="--", linewidth=1, zorder=1)
-        ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
+        ax.legend(fontsize="small", loc="center left", bbox_to_anchor=(1.02, 0.5), ncol=1)
+        plt.title(f"410 {model_type.title()}")
         plt.tight_layout()
-        plt.savefig(out_path, dpi=cfg.centerline_profile_plot_rcParams.get("figure.dpi", 300))
+        plt.savefig(out_path, dpi=cfg.depth_profile_plot_rcParams.get("figure.dpi", 300))
         plt.close(fig)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def draw_displacement(self, displacement_group: dict[str, dict], out_path: Path) -> None:
-        """Plot displacement vs. time for all models on one plot using displacement_group data."""
+    def draw_displacement(self, displacement_data_grouped: dict[str, dict], model_type: str, out_path: Path) -> None:
+        """"""
         if out_path.exists():
             print(f" -- Found plot: {out_path.name}!")
             return
@@ -835,14 +798,14 @@ class PyVistaModelVisualizer:
 
         cfg = self.plot_config
 
-        all_models = sorted(displacement_group.keys(), key=self._extract_sort_key)
+        all_models = sorted(displacement_data_grouped.keys(), key=self._extract_sort_key)
 
-        plt.rcParams.update(cfg.centerline_profile_plot_rcParams)
+        plt.rcParams.update(cfg.depth_profile_plot_rcParams)
         fig, ax = plt.subplots(figsize=(cfg.topography_plot_width, cfg.topography_plot_height))
         cmap = plt.get_cmap("tab20")
 
         for i, model_id in enumerate(all_models):
-            data = displacement_group[model_id]
+            data = displacement_data_grouped[model_id]
             times = data["time_myr"]
             displacements = data["displacement"]
 
@@ -852,17 +815,17 @@ class PyVistaModelVisualizer:
                 ax.plot(times, displacements / 1e3, label=label, color=color)
 
         ax.set_xlabel("Time (Ma)")
-        ax.set_ylabel("Distance from Equil. Reaction (km)")
+        ax.set_ylabel("Displacement (km)")
         ax.grid(True, which="both", linewidth=0.5, color="#999999")
-        ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
-        plt.title("displacement of the 410km discontinuity")
+        ax.legend(fontsize="small", loc="center left", bbox_to_anchor=(1.02, 0.5), ncol=1)
+        plt.title(f"410 {model_type.title()}")
         plt.tight_layout()
-        plt.savefig(out_path, dpi=cfg.centerline_profile_plot_rcParams.get("figure.dpi", 300))
+        plt.savefig(out_path, dpi=cfg.depth_profile_plot_rcParams.get("figure.dpi", 300))
         plt.close(fig)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def draw_width(self, width_group: dict[str, dict], out_path: Path) -> None:
-        """Plot width vs. time for all models on one plot using width_group data."""
+    def draw_width(self, width_data_grouped: dict[str, dict], model_type: str, out_path: Path) -> None:
+        """"""
         if out_path.exists():
             print(f" -- Found plot: {out_path.name}!")
             return
@@ -871,14 +834,14 @@ class PyVistaModelVisualizer:
 
         cfg = self.plot_config
 
-        all_models = sorted(width_group.keys(), key=self._extract_sort_key)
+        all_models = sorted(width_data_grouped.keys(), key=self._extract_sort_key)
 
-        plt.rcParams.update(cfg.centerline_profile_plot_rcParams)
+        plt.rcParams.update(cfg.depth_profile_plot_rcParams)
         fig, ax = plt.subplots(figsize=(cfg.topography_plot_width, cfg.topography_plot_height))
         cmap = plt.get_cmap("tab20")
 
         for i, model_id in enumerate(all_models):
-            data = width_group[model_id]
+            data = width_data_grouped[model_id]
             times = data["time_myr"]
             widths = data["width"]
 
@@ -888,12 +851,12 @@ class PyVistaModelVisualizer:
                 ax.plot(times, widths / 1e3, label=label, color=color)
 
         ax.set_xlabel("Time (Ma)")
-        ax.set_ylabel("Phase Transition Zone Width (km)")
+        ax.set_ylabel("Width (km)")
         ax.grid(True, which="both", linewidth=0.5, color="#999999")
-        ax.legend(fontsize="small", loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
-        plt.title("width of the 410km discontinuity")
+        ax.legend(fontsize="small", loc="center left", bbox_to_anchor=(1.02, 0.5), ncol=1)
+        plt.title(f"410 {model_type.title()}")
         plt.tight_layout()
-        plt.savefig(out_path, dpi=cfg.centerline_profile_plot_rcParams.get("figure.dpi", 300))
+        plt.savefig(out_path, dpi=cfg.depth_profile_plot_rcParams.get("figure.dpi", 300))
         plt.close(fig)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -989,28 +952,8 @@ class PyVistaModelVisualizer:
                 if self.verbosity >= 1:
                     print(" !! Warning: cannot calculate 'nonadiabatic_density': missing density components.")
 
-        elif field_name == "Vp_Vs_ratio":
-            if "seismic_Vp" in mesh.point_data and "seismic_Vs" in mesh.point_data:
-                if field_name not in mesh.point_data:
-                    vp_anom = mesh["seismic_Vp"]
-                    vs_anom = mesh["seismic_Vs"]
-                    mesh[field_name] = np.divide(vp_anom, vs_anom, out=np.zeros_like(vp_anom), where=vs_anom != 0)
-            else:
-                if self.verbosity >= 1:
-                    print(" !! Warning: cannot calculate 'Vp_Vs_ratio': missing Vp/Vs data.")
-
-        elif field_name == "rate_ratio":
-            if "reaction_rate_C0" in mesh.point_data and "strain_rate" in mesh.point_data:
-                if field_name not in mesh.point_data:
-                    reaction_rate = mesh["reaction_rate_C0"]
-                    strain_rate = mesh["strain_rate"]
-                    mesh[field_name] = np.divide(reaction_rate, strain_rate, out=np.zeros_like(reaction_rate), where=strain_rate != 0)
-            else:
-                if self.verbosity >= 1:
-                    print(" !! Warning: cannot calculate 'Vp_Vs_ratio': missing Vp/Vs data.")
-
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _check_mesh(self, mesh: pv.DataSet, field_name: str) -> bool:
+    def _check_mesh(self, mesh: pv.UnstructuredGrid, field_name: str) -> bool:
         """"""
         if field_name not in mesh.point_data and field_name not in self.plot_config.get_extra_fields():
             return False
@@ -1021,16 +964,7 @@ class PyVistaModelVisualizer:
         return True
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _rotate_mesh(self, mesh: pv.DataSet, tstep: int) -> None:
-        """"""
-        plot_config = self.plot_config
-
-        if plot_config.rotation_coeff != 0 and plot_config.rotation_init != 0:
-            rotation_angle = (int(tstep) * plot_config.rotation_coeff) + plot_config.rotation_init
-            mesh.rotate_z(rotation_angle, inplace=True)
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _get_mesh_time_myr(self, mesh: pv.DataSet, model_id: str, tstep: int) -> float:
+    def _get_mesh_time_myr(self, mesh: pv.UnstructuredGrid, model_id: str, tstep: int) -> float:
         """"""
         if mesh.field_data is not None and "TIME" in mesh.field_data:
             time_myr = mesh.field_data["TIME"][0] / 1e6
@@ -1041,27 +975,48 @@ class PyVistaModelVisualizer:
         return time_myr
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _get_centerline_profile(self, mesh: pv.DataSet, field_name: str) -> tuple[np.ndarray, np.ndarray]:
+    def _get_widest_profile(
+        self, mesh: pv.UnstructuredGrid, field_name: str, reaction_depth: float, n_samples: int = 100, x_offset: float = 0.0
+    ) -> tuple[float, float, float]:
         """"""
         cfg = self.plot_config
-
-        x_coords = mesh.points[:, 0]
-        x_center = 0.5 * (x_coords.min() + x_coords.max())
-        epsilon = (x_coords.max() - x_coords.min()) * 0.005
-        center_mask = np.abs(x_coords - x_center) < epsilon
-
-        if not np.any(center_mask):
-            print(" !! No centerline points found!")
-            return np.empty(0), np.empty(0)
 
         if (field_name == "velocity" or cfg.velocity_mapping.get(field_name, False)) and "velocity" in mesh.point_data:
             mesh["velocity"] = np.abs(mesh["velocity"][:, 1])
 
-        depths = mesh.point_data["depth"][center_mask]
-        values = mesh.point_data[field_name][center_mask] * cfg.scale_mapping.get(field_name, 1.0)
+        x_coords = mesh.points[:, 0]
+        x_min, x_max = x_coords.min(), x_coords.max()
 
-        sort_idx = np.argsort(depths)
-        return depths[sort_idx], values[sort_idx]
+        x_center = 0.5 * (x_min + x_max)
+        x_start = max(x_center - x_offset, x_min)
+        x_end = min(x_center + x_offset, x_max)
+        x_positions = np.linspace(x_start, x_end, n_samples)
+
+        best_width = -np.inf
+        best_displacement = np.nan
+        best_x = np.nan
+
+        for x in x_positions:
+            epsilon = (x_max - x_min) * 0.005
+            mask = np.abs(x_coords - x) < epsilon
+            if not np.any(mask):
+                continue
+
+            depths = mesh.point_data["depth"][mask]
+            values = mesh.point_data[field_name][mask]
+
+            sort_idx = np.argsort(depths)
+            depths = depths[sort_idx]
+            values = values[sort_idx]
+
+            displacement, width = self._get_profile_data(depths, values, reaction_depth)
+
+            if width > best_width:
+                best_width = width
+                best_displacement = displacement
+                best_x = x
+
+        return best_displacement, best_width, best_x
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _get_profile_data(self, depths: np.ndarray, values: np.ndarray, reaction_depth: float) -> tuple[float, float]:
@@ -1097,6 +1052,28 @@ class PyVistaModelVisualizer:
         width = depth_at_X90 - depth_at_X10
 
         return displacement, width
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _get_profile_at_x(self, mesh: pv.UnstructuredGrid, field_name: str, x_pos: float) -> tuple[np.ndarray, np.ndarray]:
+        """"""
+        cfg = self.plot_config
+
+        surface_depth = cfg.depth_profile_surface_depth
+
+        x_coords = mesh.points[:, 0]
+        epsilon = (x_coords.max() - x_coords.min()) * 0.005
+        mask = np.abs(x_coords - x_pos) < epsilon
+        if not np.any(mask):
+            return np.empty(0), np.empty(0)
+
+        if (field_name == "velocity" or cfg.velocity_mapping.get(field_name, False)) and "velocity" in mesh.point_data:
+            mesh["velocity"] = np.abs(mesh["velocity"][:, 1])
+
+        depths = mesh.point_data["depth"][mask] + surface_depth
+        values = mesh.point_data[field_name][mask] * cfg.scale_mapping.get(field_name, 1.0)
+
+        sort_idx = np.argsort(depths)
+        return depths[sort_idx], values[sort_idx]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _is_diverging_cmap(self, cmap_name: str) -> bool:
@@ -1203,7 +1180,7 @@ class PyVistaModelVisualizer:
     def _add_depth_contour(
         self,
         plotter: pv.Plotter,
-        mesh: pv.DataSet,
+        mesh: pv.UnstructuredGrid,
         depth_km: float,
         color: str = "black",
         alpha: float = 1.0,
@@ -1242,22 +1219,24 @@ class PyVistaModelVisualizer:
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _configure_cmap(
-        self, mesh: pv.DataSet, field_name: str, expansion: float = 0.0
+        self, mesh: pv.UnstructuredGrid, field_name: str, expansion: float = 0.0
     ) -> tuple[mcolors.Colormap | mcolors.ListedColormap, tuple[float, float]]:
         """"""
         plot_config = self.plot_config
 
         cmap_choice = plot_config.cmap_mapping.get(field_name, "viridis")
-
         current_scalars = mesh.point_data[field_name] * plot_config.scale_mapping.get(field_name, 1.0)
 
-        if field_name in ["viscosity", "strain_rate"]:
+        if field_name in ["viscosity", "strain_rate", "arrhenius"]:
             current_scalars = np.log10(np.abs(np.maximum(current_scalars, 1e-30)))
+        elif field_name == "reaction_rate_C0":
+            current_scalars = np.sign(current_scalars) * np.log10(1.0 + np.abs(current_scalars))
+            cmap_choice = plot_config.cmap_mapping.get(field_name, "seismic")
 
         mesh[f"{field_name}_viz"] = current_scalars
 
         clim_config = plot_config.clim_mapping.get(field_name, None)
-        if clim_config is None or clim_config == "auto":
+        if clim_config in (None, "auto"):
             finite_data = current_scalars[np.isfinite(current_scalars)]
             if finite_data.size > 0:
                 clim_min = np.min(finite_data)
@@ -1275,7 +1254,10 @@ class PyVistaModelVisualizer:
             if self.verbosity >= 1:
                 print(f" !! Warning: Using auto CLIM for '{field_name}': {clim_actual}")
         else:
-            clim_actual = (0, 1)
+            if isinstance(clim_config, (tuple, list)) and len(clim_config) == 2:
+                clim_actual = tuple(map(float, clim_config))
+            else:
+                clim_actual = (0, 1)
 
         if expansion != 0.0:
             try:
@@ -1286,7 +1268,7 @@ class PyVistaModelVisualizer:
                 if self.verbosity >= 1:
                     print(f" !! Expansion skipped: CLIM values not numeric: {clim_actual} ({e})")
 
-        modified_seq_target = ["stress_second_invariant", "X_field", "growth_rate", "reaction_rate_C0"]
+        modified_seq_target = ["stress_second_invariant", "X_field"]
 
         if self._is_diverging_cmap(cmap_choice):
             central_color = "#FFFFFF" if cmap_choice in ["RdGy", "RdGy_r"] else "#E5E5E5"
@@ -1356,12 +1338,7 @@ class PyVistaModelVisualizer:
         end_point = [start_point[0] + scale_length, start_point[1], 0]
 
         line = pv.Line(start_point, end_point)
-
-        plotter.add_mesh(
-            line,
-            color=self.plot_config.scale_bar_color,
-            line_width=self.plot_config.scale_bar_thickness,
-        )
+        plotter.add_mesh(line, color=self.plot_config.scale_bar_color, line_width=self.plot_config.scale_bar_thickness)
 
         text_pos = [
             (start_point[0] + end_point[0]) / 2,

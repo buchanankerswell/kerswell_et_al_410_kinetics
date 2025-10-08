@@ -20,13 +20,137 @@ get_script_dir <- function() {
 this_dir <- get_script_dir()
 
 source(file.path(this_dir, "utils.R"))
-source(file.path(this_dir, "statistics.R"))
-source(file.path(this_dir, "viscosity.R"))
-source(file.path(this_dir, "averages.R"))
 
 #######################################################
-## .1. Visualize All Simulation Plots            !!! ##
+## .1. Visualize displacement                      !!! ##
 #######################################################
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+visualize_displacement <- function(in_path, out_path) {
+  if (plot_exists(out_path)) {
+    return(invisible())
+  }
+
+  df <- read_displacements(in_path) |>
+    filter(timestep == 100) |>
+    mutate(model_id = str_replace_all(model_id, "_", "-"))
+  df_slab <- df |>
+    filter(str_detect(model_id, "slab")) %>%
+    mutate(model_id = str_replace_all(model_id, "slab-", "")) |>
+    mutate(model_id = str_replace_all(model_id, "-", " "))
+  df_plume <- df |>
+    filter(str_detect(model_id, "plume")) %>%
+    mutate(model_id = str_replace_all(model_id, "plume-", "")) |>
+    mutate(model_id = str_replace_all(model_id, "-", " ")) |>
+    mutate(width = abs(width))
+
+  width_range <- range(df_slab$width, df_plume$width)
+  displacement_range <- range(df_slab$displacement, df_plume$displacement)
+
+  p0 <- df_plume |>
+    ggplot(aes(x = displacement, y = width, fill = max_reaction_rate)) +
+    geom_point(size = 2.5, shape = 21, color = "black") +
+    scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
+    scale_fill_viridis_c(
+      name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
+      trans = "log10", option = "plasma",
+      breaks = c(1e-1, 1e1, 1e3, 1e5),
+      labels = label_log()
+    ) +
+    labs(x = "Displacement (km)", y = "Width (km)", title = "410 Plumes") +
+    theme_bw(base_size = 16) +
+    theme_2() +
+    theme(plot.tag.position = "topright", plot.tag = element_text(margin = margin(5, 10, 0, 0)))
+
+  p1 <- df_slab |>
+    ggplot(aes(x = displacement, y = width, fill = max_reaction_rate)) +
+    geom_point(size = 2.5, shape = 21, color = "black") +
+    scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
+    scale_fill_viridis_c(
+      name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
+      trans = "log10", option = "plasma",
+      breaks = c(1e-1, 1e1, 1e3),
+      labels = label_log()
+    ) +
+    labs(x = "Displacement (km)", y = NULL, title = "410 Slabs") +
+    theme_bw(base_size = 16) +
+    theme_2() +
+    theme(plot.tag.position = "topright", plot.tag = element_text(margin = margin(5, 10, 0, 0)))
+
+  p2 <- df_plume |>
+    ggplot(aes(x = max_reaction_rate, y = width, fill = max_reaction_rate)) +
+    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    scale_x_continuous(trans = "log10", labels = label_log()) +
+    scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
+    annotation_logticks(sides = "b", linewidth = 0.2) +
+    scale_fill_viridis_c(
+      name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
+      trans = "log10", option = "plasma",
+      breaks = c(1e-1, 1e1, 1e3, 1e5),
+      labels = label_log()
+    ) +
+    labs(x = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"), y = "Width (km)") +
+    theme_bw(base_size = 16) +
+    theme_2() +
+    theme(plot.tag.position = "topright", plot.tag = element_text(margin = margin(5, 10, 0, 0)))
+
+  p3 <- df_slab |>
+    ggplot(aes(x = max_reaction_rate, y = width, fill = max_reaction_rate)) +
+    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    scale_x_continuous(trans = "log10", labels = label_log()) +
+    scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
+    annotation_logticks(sides = "b", linewidth = 0.2) +
+    scale_fill_viridis_c(
+      name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
+      trans = "log10", option = "plasma",
+      breaks = c(1e-1, 1e1, 1e3),
+      labels = label_log()
+    ) +
+    labs(x = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"), y = NULL) +
+    theme_bw(base_size = 16) +
+    theme_2() +
+    theme(plot.tag.position = "topright", plot.tag = element_text(margin = margin(5, 10, 0, 0)))
+
+  p4 <- df_plume |>
+    ggplot(aes(x = max_reaction_rate, y = displacement, fill = max_reaction_rate)) +
+    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    scale_x_continuous(trans = "log10", labels = label_log()) +
+    scale_y_continuous(limits = displacement_range, expand = expansion(mult = c(0.1, 0.1))) +
+    annotation_logticks(sides = "b", linewidth = 0.2) +
+    scale_fill_viridis_c(
+      name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
+      trans = "log10", option = "plasma",
+      breaks = c(1e-1, 1e1, 1e3, 1e5),
+      labels = label_log()
+    ) +
+    labs(x = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"), y = "Displacement (km)") +
+    theme_bw(base_size = 16) +
+    theme_2() +
+    theme(plot.tag.position = "topright", plot.tag = element_text(margin = margin(5, 10, 0, 0)))
+
+  p5 <- df_slab |>
+    ggplot(aes(x = max_reaction_rate, y = displacement, fill = max_reaction_rate)) +
+    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    scale_x_continuous(trans = "log10", labels = label_log()) +
+    scale_y_continuous(limits = displacement_range, expand = expansion(mult = c(0.1, 0.1))) +
+    annotation_logticks(sides = "b", linewidth = 0.2) +
+    scale_fill_viridis_c(
+      name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
+      trans = "log10", option = "plasma",
+      breaks = c(1e-1, 1e1, 1e3),
+      labels = label_log()
+    ) +
+    labs(x = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"), y = NULL, ) +
+    theme_bw(base_size = 16) +
+    theme_2() +
+    theme(plot.tag.position = "topleft", plot.tag = element_text(margin = margin(5, 0, 0, 0)))
+
+  pp1 <- p0 / p2 / p4 + plot_annotation(tag_levels = "a") & theme(plot.title = element_text(size = 16, hjust = 0.5))
+  pp2 <- p1 / p3 / p5 + plot_annotation(tag_levels = list(c("d", "e", "f"))) & theme(plot.title = element_text(size = 16, hjust = 0.5))
+  p <- pp1 | pp2
+
+  ggsave(out_path, plot = p, width = 6.0, height = 8.6, dpi = 300, bg = "white")
+}
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 main <- function() {
   args <- commandArgs(trailingOnly = TRUE)
@@ -40,51 +164,10 @@ main <- function() {
 
   in_dir <- args[1]
   out_dir <- args[2]
-  prefix <-
-    str_replace_all(basename(in_dir), "_", "-") |>
-    str_replace("output-", "")
 
-  if (!dir.exists(out_dir)) {
-    dir.create(out_dir, recursive = TRUE)
-  }
-
-  in_stat <- file.path(in_dir, "statistics")
-  in_res <- file.path(in_dir, "stokes_residuals.txt")
-  in_davg <- file.path(in_dir, "depth_average.txt")
-
-  out_stats <- file.path(out_dir, paste0(prefix, "-statistics.png"))
-  out_viscosity <- file.path(out_dir, paste0(prefix, "-viscosity-profile.png"))
-  out_depth <- file.path(out_dir, paste0(prefix, "-depth-averages.png"))
-
-  missing <- c()
-  # if (!file.exists(in_stat)) missing <- c(missing, in_stat)
-  # if (!file.exists(in_res)) missing <- c(missing, in_res)
-  if (!file.exists(in_davg)) missing <- c(missing, in_davg)
-
-  if (length(missing) > 0) {
-    cat("    --------------------------------------------------\n")
-    cat(" !! Warning: the following input files do not exist:\n")
-    for (f in missing) {
-      cat(" -- ", f, "\n", sep = "")
-    }
-    return(invisible(NULL))
-  }
-
-  cat("    --------------------------------------------------\n")
-  cat("    Processing simulation: ", basename(in_dir), "\n", sep = "")
-  cat("    --------------------------------------------------\n")
-
-  tryCatch(
-    {
-      # visualize_statistics(in_stat, in_res, out_stats)
-      visualize_viscosity_profile(in_davg, out_viscosity)
-      visualize_depth_averages(in_davg, out_depth)
-    },
-    error = function(e) {
-      cat("    --------------------------------------------------\n")
-      cat(" !! Error: drawing issue: ", conditionMessage(e), "\n", sep = "")
-    }
-  )
+  in_displacement <- file.path(in_dir, "centerline-profile-data.csv")
+  out_comp <- file.path(out_dir, "ptz-comp.png")
+  visualize_displacement(in_displacement, out_comp)
 }
 
 if (

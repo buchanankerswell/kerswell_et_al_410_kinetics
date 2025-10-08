@@ -20,8 +20,8 @@ class ImageTiler:
     field1: str
     field2: str
     field3: str | None = None
-    fps: int = 10
     tags: str | None = None
+    fps: int = 10
     tag_size: int = 188
 
     tiles_dir: Path = field(init=False)

@@ -1,0 +1,17 @@
+# This cookbook illustrates the effect of growth kinetics on the olivine --> wadsleyite phase transition.
+# It features a simplified thermal plume, induced by warm material entering the model with a prescribed temperature.
+
+set Output directory = results/plume_{kinetic-factor}
+
+include parts/globals.prm
+include parts/solver.prm
+include parts/geometry.prm
+include parts/velocity-plume.prm
+include parts/composition.prm
+include parts/temperature-plume.prm
+include parts/heating.prm
+include parts/traction-plume.prm
+include parts/gravity.prm
+include parts/adiabat.prm
+include parts/material-{kinetic-factor}.prm
+include parts/postprocess.prm

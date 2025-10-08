@@ -10,9 +10,13 @@ MARKDOWN := $(PROJECT_ROOT)/markdown
 # Perplex models
 PERPLEX_MODELS := $(shell find $(PERPLEX) -type f -name '*.dat' -exec basename {} .dat \;)
 
-# Simulations
-2D_BOX_MODELS := $(shell find $(SIMULATION)/2d_box/configs -type f -name '*.prm' -exec basename {} .prm \;)
-2D_SHELL_MODELS := $(shell find $(SIMULATION)/2d_shell/configs -type f -name '*.prm' -exec basename {} .prm \;)
+# Material parameters
+KINETIC_FACTOR := 3.0e0 7.0e0 1.6e1 3.7e1 8.7e1 2.0e2 4.7e2 1.1e3 2.6e3 6.0e3 1.4e4 3.3e4 7.8e4 1.8e5 4.3e5 1.0e6 2.4e6 5.6e6 1.3e7 3.0e7 7.0e7
+
+# Generate prm files for each kinetic factor
+PLUME_PRMS := $(addprefix $(SIMULATION)/configs/plume-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+PRMS := $(PLUME_PRMS) $(SLAB_PRMS)
 
 # Filepaths
 DEPTH_AVERAGE_PATHS := $(shell find $(SIMULATION) -type f -path "*/results/*/depth_average.txt")
@@ -22,11 +26,11 @@ CLEAN :=
 DEEP_CLEAN :=
 
 # Targets
-.PHONY: all visualize adiabat 2d-box-models 2d-shell-models misc manuscript clean deep-clean help
+.PHONY: all visualize adiabat 2d-box-models manuscript clean deep-clean help
 
 all: visualize
 
-visualize: adiabat misc
+visualize: adiabat simulation
 
 adiabat: $(R)/adiabat/main.R
 	@for model in $(PERPLEX_MODELS); do \
@@ -35,34 +39,8 @@ adiabat: $(R)/adiabat/main.R
 		Rscript $(R)/adiabat/main.R $$model $$IN_DIR $$OUT_FIG_DIR; \
 	done
 
-2d-box-models: $(R)/simulation/main.R
-	@for model in $(2D_BOX_MODELS); do \
-		DIR_NAME=$$(echo $$model | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
-		IN_DIR=$(SIMULATION)/2d_box/results/$$DIR_NAME; \
-		OUT_FIG_DIR=$(FIGS)/simulation/2d_box/stats/$$DIR_NAME; \
-		VIS_TYPE=2d_box; \
-		if [ -d "$$IN_DIR" ]; then \
-			Rscript $(R)/simulation/main.R $$IN_DIR $$OUT_FIG_DIR; \
-		fi \
-	done
-
-2d-shell-models: $(R)/simulation/main.R
-	@for model in $(2D_SHELL_MODELS); do \
-		DIR_NAME=$$(echo $$model | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
-		IN_DIR=$(SIMULATION)/2d_shell/results/$$DIR_NAME; \
-		OUT_FIG_DIR=$(FIGS)/simulation/2d_box/stats/$$DIR_NAME; \
-		VIS_TYPE=2d_shell; \
-		if [ -d "$$IN_DIR" ]; then \
-			Rscript $(R)/simulation/main.R $$IN_DIR $$OUT_FIG_DIR; \
-		fi \
-	done
-
-misc: $(R)/misc/main.R $(R)/simulation/ptz.R
-	@Rscript $(R)/misc/main.R $(DEPTH_AVERAGE_PATHS) $(FIGS) $(FIGS)
-	@Rscript $(R)/simulation/ptz.R $(PYTHON)/simulation/data $(FIGS)
-
-manuscript: $(R)/manuscript/main.R
-	@Rscript $(R)/manuscript/main.R $(R)/manuscript/data/rheological-parameters.csv $(MARKDOWN)/manuscript/rheological-parameters.md
+simulation: $(R)/simulation/main.R
+	@Rscript $(R)/simulation/main.R $(PYTHON)/simulation/data $(FIGS)
 
 clean:
 	@for item in $(CLEAN); do \
@@ -106,11 +84,10 @@ help:
 	@echo "    --------------------------------------------------"
 	@echo "    Available targets:"
 	@echo "    --------------------------------------------------"
-	@echo "    visualize         Visualize all results"
-	@echo "    adiabat           Visualize adiabatic profiles"
-	@echo "    2d-box-models     Visualize ASPECT box model statistics"
-	@echo "    2d-shell-models   Visualize ASPECT shell model statistics"
-	@echo "    misc              Visualize miscelaneous plots"
-	@echo "    clean             Cleanup unnecessary files and directories (safe)"
-	@echo "    deep-clean        Deep clean figures and results (use with caution!)"
-	@echo "    help              Show this help message"
+	@echo "    visualize      Visualize all results"
+	@echo "    adiabat        Visualize adiabatic profiles"
+	@echo "    2d-box-models  Visualize ASPECT box model statistics"
+	@echo "    misc           Visualize miscelaneous plots"
+	@echo "    clean          Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean     Deep clean figures and results (use with caution!)"
+	@echo "    help           Show this help message"

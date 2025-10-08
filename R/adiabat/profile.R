@@ -22,114 +22,15 @@ this_dir <- get_script_dir()
 source(file.path(this_dir, "utils.R"))
 
 #######################################################
-## .1. Visualize Adiabatic Profile               !!! ##
+## .1. Visualize Material Profile                !!! ##
 #######################################################
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-visualize_adiabatic_profile <- function(profile_path, out_path) {
+visualize_thermodynamic_profile <- function(profile_path, out_path) {
   if (plot_exists(out_path)) {
     return(invisible())
   }
 
-  df_profile <-
-    read_burnman_profile(profile_path) |>
-    mutate(
-      pressure = pressure / 1e9,
-      density = density / 1e3,
-      thermal_expansivity = thermal_expansivity * 1e5,
-      compressibility = compressibility * 1e12,
-      specific_heat = specific_heat / 1e3
-    ) |>
-    select(-c(
-      pressure,
-      temperature,
-      gravity,
-      molar_gibbs,
-      molar_entropy,
-      molar_volume,
-      seismic_vp,
-      seismic_vs,
-      seismic_dvp_dt,
-      seismic_dvs_dt
-    )) |>
-    pivot_longer(
-      cols = -depth,
-      names_to = "variable",
-      values_to = "value"
-    )
-
-  variable_order <- c(
-    "density",
-    "gravity",
-    "thermal_expansivity",
-    "compressibility",
-    "specific_heat"
-  )
-
-  df_profile$variable <-
-    factor(df_profile$variable, levels = variable_order)
-
-  units <- c(
-    "pressure" = "GPa",
-    "temperature" = "K",
-    "density" = "g/cm^3",
-    "gravity" = "m/s^2",
-    "thermal_expansivity" = "K%*%10^-5",
-    "specific_heat" = "kJ/K~kg",
-    "compressibility" = "Pa%*%10^-12"
-  )
-
-  labs <- c(
-    "pressure" = "P",
-    "temperature" = "T",
-    "density" = "rho",
-    "gravity" = "g",
-    "thermal_expansivity" = "alpha",
-    "specific_heat" = "Cp",
-    "compressibility" = "beta"
-  )
-
-  custom_labeller <- function(variable) {
-    paste0(labs[variable], " * ' (' * ", units[variable], " * ')'")
-  }
-
-  p <-
-    df_profile |>
-    ggplot(aes(x = value, y = depth / 1e6)) +
-    geom_path(linewidth = 1.8) +
-    facet_wrap(
-      ~variable,
-      nrow = 1,
-      scales = "free_x",
-      labeller = labeller(variable = custom_labeller, .default = label_parsed)
-    ) +
-    scale_x_continuous(breaks = pretty_breaks(n = 4), guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
-    scale_y_reverse(expand = expansion(mult = 0.10)) +
-    labs(x = NULL, y = bquote("Depth (" * km %*% 10^3 * ")")) +
-    theme_bw(base_size = 36) +
-    profile_theme() +
-    theme(
-      strip.background = element_blank(),
-      strip.text = element_text(size = 32, face = "bold")
-    )
-
-  ggsave(
-    out_path,
-    plot = p,
-    width = 20,
-    height = 6.5,
-    dpi = 300,
-    bg = "white"
-  )
-}
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-visualize_driving_force_profile <- function(profile_path, out_path) {
-  if (plot_exists(out_path)) {
-    return(invisible())
-  }
-
-  df_profile <-
-    read_burnman_profile(profile_path) |>
+  df_profile <- read_burnman_profile(profile_path) |>
     filter(pressure >= 10e9 & pressure <= 18e9) |>
     mutate(
       pressure = pressure / 1e9,
@@ -188,15 +89,12 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
     paste0(labs_delta[variable], " * ' (' * ", units[variable], " * ')'")
   }
 
-  df_phase <-
-    filter(df_profile, type %in% c("a", "b")) |>
-    mutate(type = ifelse(type == "a", "ol", "wad"))
-  df_delta <-
-    filter(df_profile, type == "delta") |>
-    mutate(type = "(wad - ol)")
+  df_phase <- filter(df_profile, type %in% c("a", "b")) |>
+    mutate(type = ifelse(type == "a", "ol", "wd"))
+  df_delta <- filter(df_profile, type == "delta") |>
+    mutate(type = "(wd - ol)")
 
-  p0 <-
-    ggplot(df_phase, aes(x = value, y = pressure, color = type)) +
+  p0 <- ggplot(df_phase, aes(x = value, y = pressure, color = type)) +
     geom_path(linewidth = 1.8) +
     facet_wrap(
       ~property,
@@ -219,8 +117,7 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
       legend.text = element_text(size = 28)
     )
 
-  p1 <-
-    ggplot(df_delta, aes(x = value, y = pressure, color = type)) +
+  p1 <- ggplot(df_delta, aes(x = value, y = pressure, color = type)) +
     geom_path(linewidth = 1.8) +
     facet_wrap(
       ~property,
@@ -230,7 +127,7 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
     ) +
     scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
     scale_y_reverse() +
-    scale_color_manual(values = c("(wad - ol)" = "black")) +
+    scale_color_manual(values = c("(wd - ol)" = "black")) +
     labs(x = NULL, y = bquote("Pressure (GPa)"), color = NULL) +
     theme_bw(base_size = 36) +
     profile_theme() +
@@ -245,24 +142,16 @@ visualize_driving_force_profile <- function(profile_path, out_path) {
 
   p <- p0 / p1
 
-  ggsave(
-    out_path,
-    plot = p,
-    width = 15,
-    height = 12,
-    dpi = 300,
-    bg = "white"
-  )
+  ggsave(out_path, plot = p, width = 15, height = 12, dpi = 300, bg = "white")
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-visualize_phase_transition_profile <- function(profile_path, out_path) {
+visualize_material_profile <- function(profile_path, out_path) {
   if (plot_exists(out_path)) {
     return(invisible())
   }
 
-  df <-
-    read_burnman_profile(profile_path) |>
+  df <- read_burnman_profile(profile_path) |>
     filter(pressure >= 10e9, pressure <= 18e9) |>
     select(-c(
       molar_internal_energy_a,
@@ -304,7 +193,7 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
         grepl("compressibility", property) ~ value * 1e12,
         TRUE ~ value
       ),
-      type = recode(type, "a" = "ol", "b" = "wad")
+      type = recode(type, "a" = "ol", "b" = "wd")
     )
 
   df_delta <- df |>
@@ -324,7 +213,7 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
         property == "compressibility" ~ value * 1e12,
         TRUE ~ value
       ),
-      type = "(wad - ol)"
+      type = "(wd - ol)"
     )
 
   property_order <- c(
@@ -335,10 +224,8 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
     "specific_heat"
   )
 
-  df_phase$property <-
-    factor(df_phase$property, levels = property_order)
-  df_delta$property <-
-    factor(df_delta$property, levels = property_order)
+  df_phase$property <- factor(df_phase$property, levels = property_order)
+  df_delta$property <- factor(df_delta$property, levels = property_order)
 
   units <- c(
     "density" = "g/cm^3",
@@ -369,8 +256,7 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
     paste0(labs_delta[variable], " * ' (' * ", units[variable], " * ')'")
   }
 
-  p0 <-
-    ggplot(df_phase, aes(x = value, y = pressure, color = type)) +
+  p0 <- ggplot(df_phase, aes(x = value, y = pressure, color = type)) +
     geom_path(linewidth = 1.8) +
     facet_wrap(
       ~property,
@@ -393,39 +279,5 @@ visualize_phase_transition_profile <- function(profile_path, out_path) {
       legend.text = element_text(size = 28)
     )
 
-  p1 <-
-    ggplot(df_delta, aes(x = value, y = pressure, color = type)) +
-    geom_path(linewidth = 1.8) +
-    facet_wrap(
-      ~property,
-      nrow = 1,
-      scales = "free_x",
-      labeller = labeller(property = custom_labeller_delta, .default = label_parsed)
-    ) +
-    scale_x_continuous(n.breaks = 4, guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = 0.10)) +
-    scale_y_reverse() +
-    scale_color_manual(values = c("(wad - ol)" = "black")) +
-    labs(x = NULL, y = bquote("Pressure (GPa)"), color = NULL) +
-    theme_bw(base_size = 36) +
-    profile_theme() +
-    theme(
-      strip.background = element_blank(),
-      strip.text = element_text(size = 32, face = "bold"),
-      legend.position = "inside",
-      legend.direction = "vertical",
-      legend.position.inside = c(0.01, 0.90),
-      legend.text = element_text(size = 28)
-    )
-
-  p <- p0
-  # p <- p0 / p1
-
-  ggsave(
-    out_path,
-    plot = p,
-    width = 20,
-    height = 6.5,
-    dpi = 300,
-    bg = "white"
-  )
+  ggsave(out_path, plot = p0, width = 20, height = 6.5, dpi = 300, bg = "white")
 }

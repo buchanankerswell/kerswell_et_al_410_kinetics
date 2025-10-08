@@ -30,8 +30,7 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
     return(invisible())
   }
 
-  df_profile <-
-    read_burnman_profile(profile_path) |>
+  df_profile <- read_burnman_profile(profile_path) |>
     mutate(
       pressure = pressure / 1e9,
       density = density / 1e3,
@@ -41,18 +40,10 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
     select(-c(seismic_vp, seismic_vs)) |>
     filter(pressure >= 0 & pressure <= 25 & temperature >= 1553 & temperature <= 1923)
 
-  df_tables <-
-    read_material_table(table_path) |>
+  df_tables <- read_material_table(table_path) |>
     filter(pressure >= 0 & pressure <= 25 & temperature >= 1553 & temperature <= 1923)
 
   props <- c("entropy", "density")
-
-  # props <- c(
-  #   "density",
-  #   "thermal_expansivity",
-  #   "compressibility",
-  #   "specific_heat"
-  # )
 
   units <- c(
     "density" = "g/cm^3",
@@ -63,11 +54,11 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
   )
 
   labs <- c(
-    "density" = "rho",
-    "thermal_expansivity" = "alpha",
-    "compressibility" = "beta",
-    "specific_heat" = "Cp",
-    "entropy" = "S"
+    "density" = "bar(rho)",
+    "thermal_expansivity" = "bar(alpha)",
+    "compressibility" = "bar(beta)",
+    "specific_heat" = "bar(C[p])",
+    "entropy" = "bar(S)"
   )
 
   color_map <- c(
@@ -106,16 +97,8 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
   suppressWarnings({
     p1 <-
       ggplot() +
-      geom_raster(
-        data = df_tables,
-        aes(temperature, pressure, fill = get(props[1]))
-      ) +
-      geom_path(
-        data = df_profile,
-        aes(temperature, pressure),
-        color = "white",
-        linewidth = 1.4
-      ) +
+      geom_raster(data = df_tables, aes(temperature, pressure, fill = get(props[1]))) +
+      geom_path(data = df_profile, aes(temperature, pressure), color = "white", linewidth = 1.4) +
       geom_path(
         data = data.frame(
           x = c(1705, 1809, 1809, 1705, 1705),
@@ -132,31 +115,15 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
         breaks = scales::pretty_breaks(n = 4),
         na.value = "grey90"
       ) +
-      labs(
-        x = "Temperature (K)",
-        y = "Pressure (GPa)",
-        fill = custom_labeller(props[1])
-      ) +
+      labs(x = "Temperature (K)", y = "Pressure (GPa)", fill = custom_labeller(props[1])) +
       coord_cartesian(expand = FALSE) +
       theme_bw(base_size = 30) +
       table_theme()
-      # theme(
-      #   axis.title.x = element_blank(),
-      #   axis.text.x = element_blank()
-      # )
 
     p2 <-
       ggplot() +
-      geom_raster(
-        data = df_tables,
-        aes(temperature, pressure, fill = get(props[2]))
-      ) +
-      geom_path(
-        data = df_profile,
-        aes(temperature, pressure),
-        color = "white",
-        linewidth = 1.4
-      ) +
+      geom_raster(data = df_tables, aes(temperature, pressure, fill = get(props[2]))) +
+      geom_path(data = df_profile, aes(temperature, pressure), color = "white", linewidth = 1.4) +
       geom_path(
         data = data.frame(
           x = c(1705, 1809, 1809, 1705, 1705),
@@ -173,93 +140,14 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
         breaks = scales::pretty_breaks(n = 5),
         na.value = "grey90"
       ) +
-      labs(
-        x = "Temperature (K)",
-        y = "Pressure (GPa)",
-        fill = custom_labeller(props[2])
-      ) +
+      labs(x = "Temperature (K)", y = "Pressure (GPa)", fill = custom_labeller(props[2])) +
       coord_cartesian(expand = FALSE) +
       theme_bw(base_size = 30) +
       table_theme() +
-      theme(
-        # axis.title.x = element_blank(),
-        # axis.text.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.y = element_blank()
-      )
-
-    # p3 <-
-    #   ggplot() +
-    #   geom_raster(
-    #     data = df_tables,
-    #     aes(temperature, pressure, fill = get(props[3]))
-    #   ) +
-    #   geom_path(
-    #     data = df_profile,
-    #     aes(temperature, pressure),
-    #     color = "white",
-    #     linewidth = 1.4
-    #   ) +
-    #   scale_fill_viridis_c(
-    #     option = color_map[props[3]],
-    #     direction = color_direction[props[3]],
-    #     limits = color_lims[[props[3]]],
-    #     na.value = "grey90"
-    #   ) +
-    #   labs(
-    #     x = "Temperature [K]",
-    #     y = "Pressure [GPa]",
-    #     fill = custom_labeller(props[3])
-    #   ) +
-    #   coord_cartesian(expand = FALSE) +
-    #   theme_bw(base_size = 30) +
-    #   table_theme()
-    #
-    # p4 <-
-    #   ggplot() +
-    #   geom_raster(
-    #     data = df_tables,
-    #     aes(temperature, pressure, fill = get(props[4]))
-    #   ) +
-    #   geom_path(
-    #     data = df_profile,
-    #     aes(temperature, pressure),
-    #     color = "white",
-    #     linewidth = 1.4
-    #   ) +
-    #   scale_fill_viridis_c(
-    #     option = color_map[props[4]],
-    #     direction = color_direction[props[4]],
-    #     limits = color_lims[[props[4]]],
-    #     na.value = "grey90"
-    #   ) +
-    #   labs(
-    #     x = "Temperature [K]",
-    #     y = "Pressure [GPa]",
-    #     fill = custom_labeller(props[4])
-    #   ) +
-    #   coord_cartesian(expand = FALSE) +
-    #   theme_bw(base_size = 30) +
-    #   table_theme() +
-    #   theme(
-    #     axis.title.y = element_blank(),
-    #     axis.text.y = element_blank(),
-    #   )
-    #
-    # p <- (p1 + p2) / (p3 + p4) + plot_annotation(tag_levels = "a")
+      theme(axis.title.y = element_blank(), axis.text.y = element_blank())
 
     p <- p1 + p2 + plot_annotation(tag_levels = "a")
 
-    ggsave(
-      out_path,
-      plot = p,
-      width = 11,
-      height = 6,
-      # width = 13,
-      # height = 12,
-      dpi = 300,
-      bg = "white",
-      create.dir = TRUE
-    )
+    ggsave(out_path, plot = p, width = 11, height = 6, dpi = 300, bg = "white", create.dir = TRUE)
   })
 }
