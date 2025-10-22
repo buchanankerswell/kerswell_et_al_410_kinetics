@@ -27,7 +27,8 @@ SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(KINETI
 PRMS := $(PLUME_PRMS) $(SLAB_PRMS)
 
 # Timesteps
-TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 100)
+# TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 100)
+TIMESTEPS_MESH := 100
 TIMESTEPS_SYNC := $(TIMESTEPS_MESH)
 TIMESTEPS_PROFILE := $(TIMESTEPS_MESH)
 TIMESTEPS_TOPOGRAPHY := $(TIMESTEPS_MESH)
@@ -36,6 +37,7 @@ TIMESTEPS_TOPOGRAPHY := $(TIMESTEPS_MESH)
 MAIN_ADIABAT := $(PYTHON)/adiabat/main.py
 MAIN_SIMULATION := $(PYTHON)/simulation/main.py
 INITIAL_SETUP := $(PYTHON)/simulation/initial-setup.py
+WRITE_TABLE := $(PYTHON)/simulation/write-depth-profile-summary-table.py
 
 # Cleanup targets
 CLEAN := $(PYTHON)/**/__pycache__
@@ -50,6 +52,9 @@ visualize: initial-setup 2d-box-models compositions
 
 sync-barkla:
 	@source $(BASH)/simulation/sync-barkla2.sh "$(PRMS)" "$(TIMESTEPS_SYNC)" "$(SIMULATION)" "$(SIMULATION_BARKLA)"
+
+write-markdown-table:
+	@$(CONDA_PYTHON_PYVISTA) -u $(WRITE_TABLE) --in-dir $(PYTHON)/simulation/data
 
 compositions:
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0100" "3.0e0" "4.7e2" "7.0e7")

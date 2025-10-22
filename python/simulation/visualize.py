@@ -95,12 +95,13 @@ class PyVistaModelConfig:
     camera_y_shift_factor: float = -0.045
     camera_zoom_factor: float = 1.9
     screenshot_dpi: tuple[int, int] = field(default_factory=lambda: (330, 330))
+    vertical_profile_line_width: int = 6
     depth_contour_depths_km: list[int] = field(default_factory=lambda: [])
     depth_contour_line_widths: list[int] = field(default_factory=lambda: [3])
     depth_contour_tolerance_km: float = 1
-    velocity_glyph_factor: float = 7e5
+    velocity_glyph_factor: float = 18e5
     stress_glyph_factor: float = 1e-3
-    glyph_line_width: float = 1
+    glyph_line_width: float = 4
     scale_bar_enabled: bool = True
     scale_bar_color: str = "black"
     scale_bar_thickness: float = 25
@@ -113,7 +114,6 @@ class PyVistaModelConfig:
 
     depth_profile_plot_width: float = 7.0
     depth_profile_plot_height: float = 5.5
-    depth_profile_offset: float = 150e3
     depth_profile_surface_depth: float = 280e3
     depth_profile_reaction_depth: float = 410e3
     depth_profile_plot_rcParams: dict[str, Any] = field(
@@ -197,7 +197,7 @@ class PyVistaModelConfig:
                 "seismic_Vp": "copper_r",
                 "seismic_Vs": "copper_r",
                 "arrhenius": "bone_r",
-                "thermodynamic": "YlGn",
+                "thermodynamic": "pink_r",
                 "reaction_rate_C0": "RdGy_r",
             }
         if not self.clim_mapping:
@@ -439,10 +439,7 @@ class PyVistaModelVisualizer:
                     field_id = cfg.file_mapping.get(field_name, field_name.replace("_", "-"))
                     time_myr = self._get_mesh_time_myr(mesh, model_id, tstep)
                     cmap, clim = self._configure_cmap(mesh, field_name, 0.0)
-
-                    if cfg.draw_mesh_plots and tstep in self.tsteps_mesh:
-                        out_path = out_fig_dir_mesh / f"{model_id.replace('_', '-')}-{field_id}-{str(tstep).zfill(4)}.png"
-                        self.draw_mesh(mesh.copy(), field_name, cmap, clim, out_path)
+                    x_pos = np.nan
 
                     if cfg.draw_depth_profile_plots and (tstep in self.tsteps_profile or tstep in self.tsteps_topography):
                         depth_profile_cache.setdefault(model_id, {}).setdefault(tstep, {})
@@ -452,13 +449,13 @@ class PyVistaModelVisualizer:
                         if "X_field" not in mesh.point_data:
                             continue
 
-                        displacement, width, x_pos = self._get_widest_profile(mesh.copy(), "X_field", reaction_depth, 100, cfg.depth_profile_offset)
+                        displacement, width, x_pos = self._find_vertical_profile_for_410_structure(mesh.copy(), "X_field", reaction_depth)
                         depth_profile_cache[model_id][tstep]["displacement"] = displacement
                         depth_profile_cache[model_id][tstep]["width"] = width
                         depth_profile_cache[model_id][tstep]["profile_x"] = x_pos
 
                         if field_name in mesh.point_data:
-                            depths, values = self._get_profile_at_x(mesh.copy(), field_name, x_pos)
+                            depths, values = self._get_depth_profile_data_at_x_pos(mesh.copy(), field_name, x_pos)
                             depth_profile_cache[model_id][tstep]["fields"][field_name] = {"depths": depths, "values": values, "clim": clim}
 
                             if field_name in ["reaction_rate_C0", "velocity"]:
@@ -478,6 +475,15 @@ class PyVistaModelVisualizer:
                                     "profile_x": depth_profile_cache[model_id][tstep]["profile_x"],
                                 }
                             )
+
+                    if cfg.draw_mesh_plots and tstep in self.tsteps_mesh:
+                        if field_name == "X_field":
+                            draw_vertical_profile = True
+                        else:
+                            draw_vertical_profile = False
+
+                        out_path = out_fig_dir_mesh / f"{model_id.replace('_', '-')}-{field_id}-{str(tstep).zfill(4)}.png"
+                        self.draw_mesh(mesh.copy(), field_name, cmap, clim, x_pos, draw_vertical_profile, out_path)
 
         if depth_profile_summary:
             try:
@@ -605,6 +611,8 @@ class PyVistaModelVisualizer:
         field_name: str,
         cmap: mcolors.Colormap | mcolors.ListedColormap,
         clim: tuple[float, float],
+        x_pos: float,
+        draw_vertical_profile: bool,
         out_path: Path,
     ) -> None:
         """Visualizes a single field on the mesh using PyVista."""
@@ -690,6 +698,11 @@ class PyVistaModelVisualizer:
         if "depth" in mesh.point_data:
             for depth, width in zip(cfg.depth_contour_depths_km, cfg.depth_contour_line_widths):
                 self._add_depth_contour(plotter, mesh, depth, line_width=width, tolerance_km=cfg.depth_contour_tolerance_km)
+
+        if not np.isnan(x_pos) and draw_vertical_profile:
+            self._add_vertical_contour(
+                plotter, mesh, x_pos=x_pos, color="black", line_width=cfg.vertical_profile_line_width, tolerance_km=1.0, verbosity=self.verbosity
+            )
 
         gc.collect()
         plotter.screenshot(out_path)
@@ -975,61 +988,85 @@ class PyVistaModelVisualizer:
         return time_myr
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _get_widest_profile(
-        self, mesh: pv.UnstructuredGrid, field_name: str, reaction_depth: float, n_samples: int = 100, x_offset: float = 0.0
+    def _find_vertical_profile_for_410_structure(
+        self, mesh: pv.UnstructuredGrid, field_name: str, reaction_depth: float, x_offset: float = 50e3, width_threshold: float = 15e3
     ) -> tuple[float, float, float]:
         """"""
         cfg = self.plot_config
+
+        surface_depth = cfg.depth_profile_surface_depth
 
         if (field_name == "velocity" or cfg.velocity_mapping.get(field_name, False)) and "velocity" in mesh.point_data:
             mesh["velocity"] = np.abs(mesh["velocity"][:, 1])
 
         x_coords = mesh.points[:, 0]
         x_min, x_max = x_coords.min(), x_coords.max()
-
         x_center = 0.5 * (x_min + x_max)
         x_start = max(x_center - x_offset, x_min)
         x_end = min(x_center + x_offset, x_max)
-        x_positions = np.linspace(x_start, x_end, n_samples)
+        all_unique_x = np.unique(x_coords)
+        x_positions = all_unique_x[(all_unique_x >= x_start) & (all_unique_x <= x_end)]
 
-        best_width = -np.inf
-        best_displacement = np.nan
-        best_x = np.nan
+        results = []
 
         for x in x_positions:
-            epsilon = (x_max - x_min) * 0.005
-            mask = np.abs(x_coords - x) < epsilon
+            mask = x_coords == x
             if not np.any(mask):
                 continue
 
-            depths = mesh.point_data["depth"][mask]
+            depths = mesh.point_data["depth"][mask] + surface_depth
             values = mesh.point_data[field_name][mask]
 
             sort_idx = np.argsort(depths)
             depths = depths[sort_idx]
             values = values[sort_idx]
 
-            displacement, width = self._get_profile_data(depths, values, reaction_depth)
+            displacement, width = self._measure_phase_transition_displacement_and_width(depths, values, reaction_depth)
+            if np.isnan(displacement) or np.isnan(width):
+                continue
 
-            if width > best_width:
-                best_width = width
-                best_displacement = displacement
-                best_x = x
+            results.append((x, displacement, width))
+
+        if not results:
+            return np.nan, np.nan, np.nan
+
+        results = np.array(results)
+        x_vals, displacements, widths = results.T
+
+        if np.any(widths > width_threshold):
+            best_idx = np.nanargmax(widths)
+        else:
+            best_idx = np.nanargmax(np.abs(displacements))
+
+        best_x = x_vals[best_idx]
+        best_displacement = displacements[best_idx]
+        best_width = widths[best_idx]
 
         return best_displacement, best_width, best_x
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _get_profile_data(self, depths: np.ndarray, values: np.ndarray, reaction_depth: float) -> tuple[float, float]:
+    def _measure_phase_transition_displacement_and_width(self, depths: np.ndarray, values: np.ndarray, reaction_depth: float) -> tuple[float, float]:
         """"""
 
-        def interpolate_depth_at_target(target):
-            diffs = values - target
-            sign_change = np.where(np.diff(np.sign(diffs)) != 0)[0]
+        def get_first_crossing_index(target: float, start_index: int = 0) -> int:
+            """"""
+            if start_index >= len(values) - 1:
+                return -1
 
-            if not len(sign_change):
+            v = values[start_index:]
+            diffs = v - target
+
+            sign_change_indices = np.where(np.diff(np.sign(diffs)) != 0)[0]
+
+            if not sign_change_indices.any():
+                return -1
+
+            return sign_change_indices[0] + start_index
+
+        def interpolate_at_index(target: float, i: int) -> float:
+            """"""
+            if i < 0 or i >= len(values) - 1:
                 return np.nan
-
-            i = sign_change[np.argmin(np.abs(diffs[sign_change]))]
 
             x0, x1 = values[i], values[i + 1]
             z0, z1 = depths[i], depths[i + 1]
@@ -1040,12 +1077,25 @@ class PyVistaModelVisualizer:
             weight = (target - x0) / (x1 - x0)
             return float(z0 + weight * (z1 - z0))
 
-        epsilon = 1e-3
-        depth_at_X10 = interpolate_depth_at_target(0.1 - epsilon)
-        depth_at_X90 = interpolate_depth_at_target(0.9 - epsilon)
-        depth_at_X100 = interpolate_depth_at_target(1.0 - epsilon)
+        if len(depths) < 2:
+            return np.nan, np.nan
 
-        if np.isnan(depth_at_X10) or np.isnan(depth_at_X90) or np.isnan(depth_at_X100):
+        idx_10 = get_first_crossing_index(0.1, 0)
+        idx_90 = -1
+
+        if idx_10 != -1:
+            if values[idx_10 + 1] >= 1.0:
+                idx_90 = idx_10
+            else:
+                idx_90 = get_first_crossing_index(0.9, idx_10 + 1)
+
+        if idx_10 == -1 or idx_90 == -1:
+            return np.nan, np.nan
+
+        depth_at_X10 = interpolate_at_index(0.1, idx_10)
+        depth_at_X90 = interpolate_at_index(0.9, idx_90)
+
+        if np.isnan(depth_at_X10) or np.isnan(depth_at_X90):
             return np.nan, np.nan
 
         displacement = reaction_depth - depth_at_X90
@@ -1054,7 +1104,7 @@ class PyVistaModelVisualizer:
         return displacement, width
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _get_profile_at_x(self, mesh: pv.UnstructuredGrid, field_name: str, x_pos: float) -> tuple[np.ndarray, np.ndarray]:
+    def _get_depth_profile_data_at_x_pos(self, mesh: pv.UnstructuredGrid, field_name: str, x_pos: float) -> tuple[np.ndarray, np.ndarray]:
         """"""
         cfg = self.plot_config
 
@@ -1177,6 +1227,42 @@ class PyVistaModelVisualizer:
         return mcolors.ListedColormap(cmap_colors)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _add_vertical_contour(
+        self,
+        plotter: pv.Plotter,
+        mesh: pv.UnstructuredGrid,
+        x_pos: float,
+        color: str = "red",
+        alpha: float = 1.0,
+        line_width: int = 5,
+        tolerance_km: float = 2,
+        verbosity: int = 0,
+    ) -> None:
+        """Adds a vertical contour line (profile line) at a constant x-position."""
+
+        x_coords = mesh.points[:, 0]
+
+        mask = np.isclose(x_coords, x_pos, atol=tolerance_km * 1e3)
+        contour_points = mesh.points[mask]
+
+        if contour_points.shape[0] > 1:
+            y_coords = contour_points[:, 1]
+            z_coords = contour_points[:, 2] if contour_points.shape[1] > 2 else np.array([0])
+
+            if np.ptp(y_coords) >= np.ptp(z_coords):
+                sort_idx = np.argsort(y_coords)
+            else:
+                sort_idx = np.argsort(z_coords)
+
+            ordered_contour_points = contour_points[sort_idx]
+
+            polyline = pv.lines_from_points(ordered_contour_points, close=False)
+
+            plotter.add_mesh(polyline, color=color, line_width=line_width, opacity=alpha)
+        elif verbosity >= 1:
+            print(f" !! Warning: Fewer than 2 points found at x={x_pos / 1e3:.1f} km (tolerance={tolerance_km} m).\n -- Skipping X contour")
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _add_depth_contour(
         self,
         plotter: pv.Plotter,
@@ -1185,7 +1271,7 @@ class PyVistaModelVisualizer:
         color: str = "black",
         alpha: float = 1.0,
         line_width: int = 3,
-        tolerance_km: float = 15,
+        tolerance_km: float = 2,
         verbosity: int = 0,
     ) -> None:
         """Adds a depth contour line to the PyVista plotter."""

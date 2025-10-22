@@ -121,7 +121,7 @@ def draw_initial_conditions(ax, X, Y, T, cmap, x_extent, y_extent, phase_depth, 
     if "Slab" not in title:
         ax.set_xlabel("X (km)")
 
-    ax.set_ylabel("Z (km)")
+    ax.set_ylabel("Y (km)")
     ax.set_title(title, fontsize=14)
 
     return contour
@@ -139,6 +139,10 @@ def main():
         out_fig_dir.mkdir(parents=True, exist_ok=True)
 
     out_path = out_fig_dir / "initial-setup.png"
+
+    print("    --------------------------------------------------")
+    print("    Drawing initial setup")
+    print("    --------------------------------------------------")
 
     if out_path.exists():
         print(f" -- Found plot: {out_path.name}!")
@@ -200,21 +204,21 @@ def main():
     cmap_modified = mcolors.ListedColormap(cmap_colors)
 
     bc_slab = {
-        "top1": "$v_x$=$f(x)$, $v_y$=$f(x)$",
+        "top1": "$\\vec{u}_x$=$f(x)$, $\\vec{u}_y$=$f(x)$",
         "top2": "Fixed $T$",
-        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
-        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
-        "bottom1": "$\\sigma_{yy}$ = $\\bar{P}$, $v_x$=0",
+        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
+        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
+        "bottom1": "$\\sigma_{yy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
         "bottom2": None,
     }
 
     bc_plume = {
-        "top1": "$\\sigma_{yy}$ = $\\bar{P}$, $v_x$=0",
+        "top1": "$\\sigma_{yy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
         "top2": None,
-        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
-        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $v_x$=0",
+        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
+        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
         "bottom1": "Fixed $T$",
-        "bottom2": "$v_x$=$f(x)$, $v_y$=$f(x)$",
+        "bottom2": "$\\vec{u}_x$=0, $\\vec{u}_y$=$f(x)$",
     }
 
     plt.rcParams.update(

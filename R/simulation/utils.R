@@ -213,15 +213,15 @@ theme_2 <- function() {
     legend.position.inside = c(0.93, 0.85),
     legend.direction = "horizontal",
     legend.key.height = unit(0.6, "lines"),
-    legend.key.width = unit(1.1, "lines"),
+    legend.key.width = unit(1.2, "lines"),
     legend.ticks = element_line(color = "black", linewidth = 0.4),
     legend.ticks.length = unit(0.1, "lines"),
     legend.frame = element_rect(color = "black", linewidth = 0.4),
     legend.box.margin = margin(),
     legend.margin = margin(),
-    legend.title = element_text(hjust = 1, vjust = 0, size = 11, margin = margin(0, 0, 2, 0)),
+    legend.title = element_text(hjust = 1, vjust = 0, size = 12, margin = margin(0, 0, 2, 0)),
     legend.title.position = "top",
-    legend.text = element_text(size = 10, margin = margin(2, 0, 0, 0)),
+    legend.text = element_text(size = 11, margin = margin(2, 0, 0, 0)),
     legend.background = element_blank()
   )
 }

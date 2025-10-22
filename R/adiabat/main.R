@@ -65,7 +65,8 @@ main <- function() {
   }
 
   cat("    --------------------------------------------------\n")
-  cat("    Processing perplex model: ", basename(in_dir), "\n", sep = "")
+  cat("    Drawing reference material properties\n")
+  cat("    --------------------------------------------------\n")
 
   tryCatch(
     {

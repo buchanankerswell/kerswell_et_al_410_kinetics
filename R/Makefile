@@ -26,7 +26,7 @@ CLEAN :=
 DEEP_CLEAN :=
 
 # Targets
-.PHONY: all visualize adiabat 2d-box-models manuscript clean deep-clean help
+.PHONY: all visualize adiabat simulation clean deep-clean help
 
 all: visualize
 
@@ -86,8 +86,7 @@ help:
 	@echo "    --------------------------------------------------"
 	@echo "    visualize      Visualize all results"
 	@echo "    adiabat        Visualize adiabatic profiles"
-	@echo "    2d-box-models  Visualize ASPECT box model statistics"
-	@echo "    misc           Visualize miscelaneous plots"
+	@echo "    simulation     Visualize simulation results"
 	@echo "    clean          Cleanup unnecessary files and directories (safe)"
 	@echo "    deep-clean     Deep clean figures and results (use with caution!)"
 	@echo "    help           Show this help message"

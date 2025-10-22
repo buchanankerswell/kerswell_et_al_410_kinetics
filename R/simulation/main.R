@@ -30,6 +30,11 @@ visualize_displacement <- function(in_path, out_path) {
     return(invisible())
   }
 
+  if (!file.exists(in_path)) {
+    cat(" !! Missing data: ", basename(in_path), "\n", sep = "")
+    return(invisible())
+  }
+
   df <- read_displacements(in_path) |>
     filter(timestep == 100) |>
     mutate(model_id = str_replace_all(model_id, "_", "-"))
@@ -48,7 +53,7 @@ visualize_displacement <- function(in_path, out_path) {
 
   p0 <- df_plume |>
     ggplot(aes(x = displacement, y = width, fill = max_reaction_rate)) +
-    geom_point(size = 2.5, shape = 21, color = "black") +
+    geom_point(size = 3.0, shape = 21, color = "black") +
     scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
     scale_fill_viridis_c(
       name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
@@ -63,7 +68,7 @@ visualize_displacement <- function(in_path, out_path) {
 
   p1 <- df_slab |>
     ggplot(aes(x = displacement, y = width, fill = max_reaction_rate)) +
-    geom_point(size = 2.5, shape = 21, color = "black") +
+    geom_point(size = 3.0, shape = 21, color = "black") +
     scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
     scale_fill_viridis_c(
       name = bquote(dot(italic(X))["max"] * " (" * Ma^-1 * ")"),
@@ -78,7 +83,7 @@ visualize_displacement <- function(in_path, out_path) {
 
   p2 <- df_plume |>
     ggplot(aes(x = max_reaction_rate, y = width, fill = max_reaction_rate)) +
-    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    geom_point(size = 3.0, shape = 21, color = "black", show.legend = FALSE) +
     scale_x_continuous(trans = "log10", labels = label_log()) +
     scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -95,7 +100,7 @@ visualize_displacement <- function(in_path, out_path) {
 
   p3 <- df_slab |>
     ggplot(aes(x = max_reaction_rate, y = width, fill = max_reaction_rate)) +
-    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    geom_point(size = 3.0, shape = 21, color = "black", show.legend = FALSE) +
     scale_x_continuous(trans = "log10", labels = label_log()) +
     scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -112,7 +117,7 @@ visualize_displacement <- function(in_path, out_path) {
 
   p4 <- df_plume |>
     ggplot(aes(x = max_reaction_rate, y = displacement, fill = max_reaction_rate)) +
-    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    geom_point(size = 3.0, shape = 21, color = "black", show.legend = FALSE) +
     scale_x_continuous(trans = "log10", labels = label_log()) +
     scale_y_continuous(limits = displacement_range, expand = expansion(mult = c(0.1, 0.1))) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -129,7 +134,7 @@ visualize_displacement <- function(in_path, out_path) {
 
   p5 <- df_slab |>
     ggplot(aes(x = max_reaction_rate, y = displacement, fill = max_reaction_rate)) +
-    geom_point(size = 2.5, shape = 21, color = "black", show.legend = FALSE) +
+    geom_point(size = 3.0, shape = 21, color = "black", show.legend = FALSE) +
     scale_x_continuous(trans = "log10", labels = label_log()) +
     scale_y_continuous(limits = displacement_range, expand = expansion(mult = c(0.1, 0.1))) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -165,8 +170,13 @@ main <- function() {
   in_dir <- args[1]
   out_dir <- args[2]
 
-  in_displacement <- file.path(in_dir, "centerline-profile-data.csv")
-  out_comp <- file.path(out_dir, "ptz-comp.png")
+  in_displacement <- file.path(in_dir, "depth-profile-data.csv")
+  out_comp <- file.path(out_dir, "410-structure.png")
+
+  cat("    --------------------------------------------------\n")
+  cat("    Drawing depth profile summary\n")
+  cat("    --------------------------------------------------\n")
+
   visualize_displacement(in_displacement, out_comp)
 }
 
