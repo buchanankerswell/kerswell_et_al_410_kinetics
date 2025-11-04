@@ -1,7 +1,7 @@
 # This cookbook illustrates the effect of growth kinetics on the olivine --> wadsleyite phase transition.
 # It features a simplified thermal slab, induced by cold material entering the model with a prescribed temperature.
 
-set Output directory = results/slab_{kinetic-factor}
+set Output directory = results/slab_Z{z-factor}_B{b-factor}
 
 include parts/globals.prm
 include parts/solver.prm
@@ -13,5 +13,5 @@ include parts/heating.prm
 include parts/traction-slab.prm
 include parts/gravity.prm
 include parts/adiabat.prm
-include parts/material-{kinetic-factor}.prm
+include parts/material-Z{z-factor}-B{b-factor}.prm
 include parts/postprocess.prm

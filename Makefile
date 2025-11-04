@@ -7,7 +7,7 @@ SIMULATION := $(PROJECT_ROOT)/simulation
 MARKDOWN := $(PROJECT_ROOT)/markdown
 
 # Targets
-.PHONY: install uninstall 2d-box-models adiabat visualize environments clean deep-clean help
+.PHONY: install uninstall models adiabat visualize environments clean deep-clean help
 
 install:
 	@$(MAKE) --no-print-directory -C $(BASH)
@@ -15,14 +15,14 @@ install:
 uninstall:
 	@$(MAKE) --no-print-directory -C $(BASH) uninstall
 
-2d-box-models:
-	@$(MAKE) --no-print-directory -C $(SIMULATION) 2d-box-models
+models:
+	@$(MAKE) --no-print-directory -C $(SIMULATION) models
 
-2d-box-plume-models:
-	@$(MAKE) --no-print-directory -C $(SIMULATION) 2d-box-plume-models
+plume-models:
+	@$(MAKE) --no-print-directory -C $(SIMULATION) plume-models
 
-2d-box-slab-models:
-	@$(MAKE) --no-print-directory -C $(SIMULATION) 2d-box-slab-models
+slab-models:
+	@$(MAKE) --no-print-directory -C $(SIMULATION) slab-models
 
 adiabat:
 	@$(MAKE) --no-print-directory -C $(PYTHON) adiabat
@@ -77,14 +77,14 @@ help:
 	@echo "    --------------------------------------------------"
 	@echo "    Available targets:"
 	@echo "    --------------------------------------------------"
-	@echo "    install              Build deal.II and ASPECT"
-	@echo "    uninstall            Uninstall deal.II and ASPECT"
-	@echo "    2d-box-models        Run ASPECT 2d box models"
-	@echo "    2d-box-plume-models  Run ASPECT 2d box plume models"
-	@echo "    2d-box-slab-models   Run ASPECT 2d box slab models"
-	@echo "    adiabat              Generate adiabatic profiles for ASPECT models"
-	@echo "    visualize            Visualize all results"
-	@echo "    environments         Create Conda environments"
-	@echo "    clean                Cleanup unnecessary files and directories (safe)"
-	@echo "    deep-clean           Deep clean figures and results (use with caution!)"
-	@echo "    help                 Show this help message"
+	@echo "    install       Build deal.II and ASPECT"
+	@echo "    uninstall     Uninstall deal.II and ASPECT"
+	@echo "    models        Run ASPECT 2d box models"
+	@echo "    plume-models  Run ASPECT 2d box plume models"
+	@echo "    slab-models   Run ASPECT 2d box slab models"
+	@echo "    adiabat       Generate adiabatic profiles for ASPECT models"
+	@echo "    visualize     Visualize all results"
+	@echo "    environments  Create Conda environments"
+	@echo "    clean         Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean    Deep clean figures and results (use with caution!)"
+	@echo "    help          Show this help message"

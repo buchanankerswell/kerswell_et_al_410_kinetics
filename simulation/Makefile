@@ -30,7 +30,9 @@ endif
 ASPECT_EXEC := $(PROJECT_ROOT)/aspect/build/aspect-release
 
 # Material parameters
-KINETIC_FACTOR := 3.0e0 7.0e0 1.6e1 3.7e1 8.7e1 2.0e2 4.7e2 1.1e3 2.6e3 6.0e3 1.4e4 3.3e4 7.8e4 1.8e5 4.3e5 1.0e6 2.4e6 5.6e6 1.3e7 3.0e7 7.0e7
+Z_FACTOR := 3.0e0 7.0e0 1.6e1 3.7e1 8.7e1 2.0e2 4.7e2 1.1e3 2.6e3 6.0e3 1.4e4 3.3e4 7.8e4 1.8e5 4.3e5 1.0e6 2.4e6 5.6e6 1.3e7 3.0e7 7.0e7
+B_FACTOR := 2 4 6 8 10
+ZB_COMBO := $(foreach z, $(Z_FACTOR), $(foreach b, $(B_FACTOR), Z$(z)-B$(b)))
 
 # Templates prms
 MATERIAL_TEMPLATE := $(SIMULATION)/parts/template-material.prm
@@ -38,9 +40,9 @@ PLUME_TEMPLATE := $(SIMULATION)/parts/template-plume.prm
 SLAB_TEMPLATE := $(SIMULATION)/parts/template-slab.prm
 
 # Generate prm files for each kinetic factor
-MATERIAL_PRMS := $(addprefix $(SIMULATION)/parts/material-, $(addsuffix .prm, $(KINETIC_FACTOR)))
-PLUME_PRMS := $(addprefix $(SIMULATION)/configs/plume-, $(addsuffix .prm, $(KINETIC_FACTOR)))
-SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+MATERIAL_PRMS := $(addprefix $(SIMULATION)/parts/material-, $(addsuffix .prm, $(ZB_COMBO)))
+PLUME_PRMS := $(addprefix $(SIMULATION)/configs/plume-, $(addsuffix .prm, $(ZB_COMBO)))
+SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(ZB_COMBO)))
 
 # Simulation data
 DATA := $(SIMULATION)/data/reaction-410-profile.txt
@@ -62,29 +64,29 @@ DEEP_CLEAN := \
 	$(SIMULATION)/**/configs/logs
 
 # Targets
-.PHONY: all 2d-box-models 2d-box-prms clean deep-clean help
+.PHONY: all models prms clean deep-clean help
 
 # Keep intermediate targets
-.PRECIOUS: $(SIMULATION)/configs/plume-%.prm $(SIMULATION)/configs/slab-%.prm
+.PRECIOUS: $(MATERIAL_PRMS) $(PLUME_PRMS) $(SLAB_PRMS)
 
-all: 2d-box-models
+all: models
 
-2d-box-models: 2d-box-plume-models 2d-box-slab-models
+models: plume-models slab-models
 
-2d-box-plume-models: $(ASPECT_EXEC) $(PLUGINS) $(DATA) $(MATERIAL_PRMS) $(PLUME_PRMS:.prm=.run)
+plume-models: $(ASPECT_EXEC) $(PLUGINS) $(DATA) $(MATERIAL_PRMS) $(PLUME_PRMS:.prm=.run)
 
-2d-box-slab-models: $(ASPECT_EXEC) $(PLUGINS) $(DATA) $(MATERIAL_PRMS) $(SLAB_PRMS:.prm=.run)
+slab-models: $(ASPECT_EXEC) $(PLUGINS) $(DATA) $(MATERIAL_PRMS) $(SLAB_PRMS:.prm=.run)
 
 %.run: %.prm
 	@ROOT_DIR=$(SIMULATION); \
 	PRM=$<; \
 	RUN_OUT=$@; \
-	MODEL_TYPE=$$(echo $$PRM | sed "s|^$$ROOT_DIR/||" | cut -d/ -f1); \
-	MODEL_DIR=$$(basename $$PRM .prm | sed -E 's/-/_/g'); \
-	PRM_DIR="$$ROOT_DIR/$$MODEL_TYPE/configs"; \
-	RESULTS_DIR="$$ROOT_DIR/$$MODEL_TYPE/results"; \
-	JOB_NAME=$$(echo $* | tr '/_' '-'); \
-	LOG_OUT="$$RESULTS_DIR/$$MODEL_DIR/aspect.$$JOB_NAME.out"; \
+	PRM_BASENAME=$$(basename $$PRM .prm); \
+	MODEL_TYPE=$$(echo $$PRM_BASENAME | cut -d- -f1); \
+	MODEL_DIR=$$(echo $$PRM_BASENAME | sed -E 's/-/_/g'); \
+	RESULTS_DIR="$$ROOT_DIR/results"; \
+	JOB_NAME=$$(echo $$PRM_BASENAME | tr '/_' '-'); \
+	LOG_OUT="$$RESULTS_DIR/$$MODEL_DIR/$$JOB_NAME.out"; \
 	if [ -f "$$RUN_OUT" ]; then \
 		echo " -- $$RUN_OUT found!"; \
 	else \
@@ -105,17 +107,23 @@ all: 2d-box-models
 		fi \
 	fi
 
-$(SIMULATION)/parts/material-%.prm: $(MATERIAL_TEMPLATE)
+$(MATERIAL_PRMS): $(SIMULATION)/parts/material-%.prm: $(MATERIAL_TEMPLATE)
 	@mkdir -p $(dir $@)
-	@sed 's/{kinetic-factor}/'"$*"'/g' $< > $@
+	@z=$$(echo $* | cut -d- -f1 | sed 's/^Z//'); \
+	b=$$(echo $* | cut -d- -f2 | sed 's/^B//'); \
+	sed "s/{z-factor}/$$z/g; s/{b-factor}/$$b/g" $< > $@
 
-$(SIMULATION)/configs/plume-%.prm: $(PLUME_TEMPLATE)
+$(PLUME_PRMS): $(SIMULATION)/configs/plume-%.prm: $(PLUME_TEMPLATE)
 	@mkdir -p $(dir $@)
-	@sed 's/{kinetic-factor}/'"$*"'/g' $< > $@
+	@z=$$(echo $* | cut -d- -f1 | sed 's/^Z//'); \
+	b=$$(echo $* | cut -d- -f2 | sed 's/^B//'); \
+	sed "s/{z-factor}/$$z/g; s/{b-factor}/$$b/g" $< > $@
 
-$(SIMULATION)/configs/slab-%.prm: $(SLAB_TEMPLATE)
+$(SLAB_PRMS): $(SIMULATION)/configs/slab-%.prm: $(SLAB_TEMPLATE)
 	@mkdir -p $(dir $@)
-	@sed 's/{kinetic-factor}/'"$*"'/g' $< > $@
+	@z=$$(echo $* | cut -d- -f1 | sed 's/^Z//'); \
+	b=$$(echo $* | cut -d- -f2 | sed 's/^B//'); \
+	sed "s/{z-factor}/$$z/g; s/{b-factor}/$$b/g" $< > $@
 
 $(PLUGINS):
 	@if [ "$(OS_ID)" = "rocky" ]; then \
@@ -184,10 +192,9 @@ help:
 	@echo "    --------------------------------------------------"
 	@echo "    Available targets:"
 	@echo "    --------------------------------------------------"
-	@echo "    2d-box-models        Run ASPECT 2d box models"
-	@echo "    2d-box-plume-models  Run ASPECT 2d box plume models"
-	@echo "    2d-box-slab-models   Run ASPECT 2d box slab models"
-	@echo "    clean                Cleanup unnecessary files and directories (safe)"
-	@echo "    deep-clean           Deep clean figures and results (use with caution!)"
-	@echo "    help                 Show this help message"
-
+	@echo "    models        Run ASPECT 2d box models"
+	@echo "    plume-models  Run ASPECT 2d box plume models"
+	@echo "    slab-models   Run ASPECT 2d box slab models"
+	@echo "    clean         Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean    Deep clean figures and results (use with caution!)"
+	@echo "    help          Show this help message"

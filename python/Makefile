@@ -19,19 +19,21 @@ SIMULATION_BARKLA := /users/kersweb/scratch/kerswell_et_al_dynp/simulation
 PERPLEX_MODELS := $(shell find $(PERPLEX) -type f -name '*.dat' -exec basename {} .dat \;)
 
 # Material parameters
-KINETIC_FACTOR := 3.0e0 7.0e0 1.6e1 3.7e1 8.7e1 2.0e2 4.7e2 1.1e3 2.6e3 6.0e3 1.4e4 3.3e4 7.8e4 1.8e5 4.3e5 1.0e6 2.4e6 5.6e6 1.3e7 3.0e7 7.0e7
+Z_FACTOR := 3.0e0 7.0e0 1.6e1 3.7e1 8.7e1 2.0e2 4.7e2 1.1e3 2.6e3 6.0e3 1.4e4 3.3e4 7.8e4 1.8e5 4.3e5 1.0e6 2.4e6 5.6e6 1.3e7 3.0e7 7.0e7
+B_FACTOR := 2 4 6 8 10
+ZB_COMBO := $(foreach z, $(Z_FACTOR), $(foreach b, $(B_FACTOR), Z$(z)-B$(b)))
 
 # Generate prm files for each kinetic factor
-PLUME_PRMS := $(addprefix $(SIMULATION)/configs/plume-, $(addsuffix .prm, $(KINETIC_FACTOR)))
-SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(KINETIC_FACTOR)))
+PLUME_PRMS := $(addprefix $(SIMULATION)/configs/plume-, $(addsuffix .prm, $(ZB_COMBO)))
+SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(ZB_COMBO)))
 PRMS := $(PLUME_PRMS) $(SLAB_PRMS)
 
 # Timesteps
-# TIMESTEPS_MESH := $(shell seq -f "%03g" 0 10 100)
-TIMESTEPS_MESH := 100
-TIMESTEPS_SYNC := $(TIMESTEPS_MESH)
-TIMESTEPS_PROFILE := $(TIMESTEPS_MESH)
-TIMESTEPS_TOPOGRAPHY := $(TIMESTEPS_MESH)
+# TIMESTEPS_SYNC := $(shell seq -f "%03g" 0 10 1)
+TIMESTEPS_SYNC := 10
+TIMESTEPS_MESH := 10
+TIMESTEPS_PROFILE := 10
+TIMESTEPS_TOPOGRAPHY := 10
 
 # Script paths
 MAIN_ADIABAT := $(PYTHON)/adiabat/main.py
@@ -44,11 +46,11 @@ CLEAN := $(PYTHON)/**/__pycache__
 DEEP_CLEAN := $(PYTHON)/*/data
 
 # Targets
-.PHONY: all visualize sync-barkla compositions initial-setup 2d-box-models adiabat clean deep-clean help
+.PHONY: all visualize sync-barkla compositions initial-setup meshes adiabat clean deep-clean help
 
-all: 2d-box-models
+all: adiabat visualize write-markdown-table
 
-visualize: initial-setup 2d-box-models compositions
+visualize: initial-setup meshes compositions
 
 sync-barkla:
 	@source $(BASH)/simulation/sync-barkla2.sh "$(PRMS)" "$(TIMESTEPS_SYNC)" "$(SIMULATION)" "$(SIMULATION_BARKLA)"
@@ -57,12 +59,17 @@ write-markdown-table:
 	@$(CONDA_PYTHON_PYVISTA) -u $(WRITE_TABLE) --in-dir $(PYTHON)/simulation/data
 
 compositions:
-	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0100" "3.0e0" "4.7e2" "7.0e7")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B2" "Z4.7e2-B2" "Z7.0e7-B2")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B6" "Z4.7e2-B6" "Z7.0e7-B6")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B10" "Z4.7e2-B10" "Z7.0e7-B10")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B2" "Z3.0e0-B6" "Z3.0e0-B10")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z4.7e2-B2" "Z4.7e2-B6" "Z4.7e2-B10")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z7.0e7-B2" "Z7.0e7-B6" "Z7.0e7-B10")
 
 initial-setup: $(INITIAL_SETUP)
 	@$(CONDA_PYTHON_PYVISTA) -u $(INITIAL_SETUP) --out-fig-dir $(FIGS)
 
-2d-box-models: $(MAIN_SIMULATION)
+meshes: $(MAIN_SIMULATION)
 	@MODEL_IDS=""; \
 	IN_DIRS=""; \
 	for prm in $(PRMS); do \
@@ -138,12 +145,12 @@ help:
 	@echo "    --------------------------------------------------"
 	@echo "    Available targets:"
 	@echo "    --------------------------------------------------"
-	@echo "    visualize      Visualize all results"
-	@echo "    2d-box-models  Visualize ASPECT box models"
-	@echo "    compositions   Compose individual simulation plots"
-	@echo "    initial-setup  Visualize initial numerical setup"
-	@echo "    sync-barkla    Fetch simulation results from barkla"
-	@echo "    adiabat        Generate adiabatic material profiles using BurnMan"
-	@echo "    clean          Cleanup unnecessary files and directories (safe)"
-	@echo "    deep-clean     Deep clean figures and results (use with caution!)"
-	@echo "    help           Show this help message"
+	@echo "    visualize         Visualize all results"
+	@echo "    meshes            Visualize ASPECT models"
+	@echo "    compositions      Compose individual simulation plots"
+	@echo "    initial-setup     Visualize initial numerical setup"
+	@echo "    sync-barkla       Fetch simulation results from barkla"
+	@echo "    adiabat           Generate adiabatic material profiles using BurnMan"
+	@echo "    clean             Cleanup unnecessary files and directories (safe)"
+	@echo "    deep-clean        Deep clean figures and results (use with caution!)"
+	@echo "    help              Show this help message"

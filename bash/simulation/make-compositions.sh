@@ -3,124 +3,84 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # ===========================
-# Get args
+# Usage / args
 # ===========================
 if [ $# -ne 6 ]; then
-  echo "Usage: $0 <FIG_DIR> <OUT_DIR> <TIMESTEP> <SLOW_FACTOR> <MID_FACTOR> <FAST_FACTOR>"
+  echo "Usage: $0 <FIG_DIR> <OUT_DIR> <TIMESTEP> <ID1> <ID2> <ID3>"
   exit 1
 fi
 
 FIG_DIR="$1"
 OUT_DIR="$2"
 TIMESTEP="$3"
-SLOW_FACTOR="$4"
-MID_FACTOR="$5"
-FAST_FACTOR="$6"
-
+ID1="$4"
+ID2="$5"
+ID3="$6"
 Y_CROP=5
 
 mkdir -p "${OUT_DIR}"
+
+ID1_DIR=${ID1//-/_}
+ID2_DIR=${ID2//-/_}
+ID3_DIR=${ID3//-/_}
 
 echo "    --------------------------------------------------"
 echo "    Composing mesh plots"
 echo "    --------------------------------------------------"
 
-# Full set slow
-echo " -> [slab] full set slow"
-magick \
-  \( "${FIG_DIR}/slab_${SLOW_FACTOR}/tiles/slab-${SLOW_FACTOR}-temperature-nonadiabatic-pressure-nonadiabatic-density-nonadiabatic-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/slab_${SLOW_FACTOR}/tiles/slab-${SLOW_FACTOR}-arrhenius-thermodynamic-reaction-rate-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/slab_${SLOW_FACTOR}/tiles/slab-${SLOW_FACTOR}-X-field-vp-vs-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/slab-${SLOW_FACTOR}-full-set-composition-${TIMESTEP}.png"
+# ===========================
+# Helper function
+# ===========================
+compose_figures() {
+  local TYPE="$1"
+  local MODE="$2"
+  local SUFFIXES=("${!3}")
+  local OUT_NAME="$4"
+  local OUT_PATH="${OUT_DIR}/${OUT_NAME}-${TIMESTEP}.png"
 
-# Full set default
-echo " -> [slab] full set default"
-magick \
-  \( "${FIG_DIR}/slab_${MID_FACTOR}/tiles/slab-${MID_FACTOR}-temperature-nonadiabatic-pressure-nonadiabatic-density-nonadiabatic-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/slab_${MID_FACTOR}/tiles/slab-${MID_FACTOR}-arrhenius-thermodynamic-reaction-rate-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/slab_${MID_FACTOR}/tiles/slab-${MID_FACTOR}-X-field-vp-vs-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/slab-${MID_FACTOR}-full-set-composition-${TIMESTEP}.png"
+  if [[ -f "$OUT_PATH" ]]; then
+    echo " -- Found composition: $OUT_PATH"
+    return
+  fi
 
-# Full set fast
-echo " -> [slab] full set fast"
-magick \
-  \( "${FIG_DIR}/slab_${FAST_FACTOR}/tiles/slab-${FAST_FACTOR}-temperature-nonadiabatic-pressure-nonadiabatic-density-nonadiabatic-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/slab_${FAST_FACTOR}/tiles/slab-${FAST_FACTOR}-arrhenius-thermodynamic-reaction-rate-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/slab_${FAST_FACTOR}/tiles/slab-${FAST_FACTOR}-X-field-vp-vs-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/slab-${FAST_FACTOR}-full-set-composition-${TIMESTEP}.png"
+  echo " -> Drawing composition: ${OUT_DIR}/${OUT_NAME}-${TIMESTEP}.png"
 
-# Slow, default, fast set1
-echo " -> [slab] slow–fast set1"
-magick \
-  \( "${FIG_DIR}/slab_${SLOW_FACTOR}/tiles/slab-${SLOW_FACTOR}-temperature-nonadiabatic-reaction-rate-X-field-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/slab_${MID_FACTOR}/tiles/slab-${MID_FACTOR}-temperature-nonadiabatic-reaction-rate-X-field-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/slab_${FAST_FACTOR}/tiles/slab-${FAST_FACTOR}-temperature-nonadiabatic-reaction-rate-X-field-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/slab-${SLOW_FACTOR}-${MID_FACTOR}-${FAST_FACTOR}-set1-composition-${TIMESTEP}.png"
+  if [[ "$MODE" == "single" ]]; then
+    local ID="$5"
+    local ID_DIR="${ID//-/_}"
+    magick \
+      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[0]}-${TIMESTEP}-tagged-abc.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[1]}-${TIMESTEP}-tagged-def.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[2]}-${TIMESTEP}-tagged-ghi.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[3]}-${TIMESTEP}-tagged-jkl.png" -append "${OUT_PATH}"
 
-# Slow, default, fast set2
-echo " -> [slab] slow–fast set2"
-magick \
-  \( "${FIG_DIR}/slab_${SLOW_FACTOR}/tiles/slab-${SLOW_FACTOR}-temperature-nonadiabatic-density-nonadiabatic-vp-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/slab_${MID_FACTOR}/tiles/slab-${MID_FACTOR}-temperature-nonadiabatic-density-nonadiabatic-vp-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/slab_${FAST_FACTOR}/tiles/slab-${FAST_FACTOR}-temperature-nonadiabatic-density-nonadiabatic-vp-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/slab-${SLOW_FACTOR}-${MID_FACTOR}-${FAST_FACTOR}-set2-composition-${TIMESTEP}.png"
+  elif [[ "$MODE" == "triple" ]]; then
+    magick \
+      \( "${FIG_DIR}/${TYPE}_${ID1_DIR}/tiles/${TYPE}-${ID1}-${SUFFIXES[0]}-${TIMESTEP}-tagged-abc.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID2_DIR}/tiles/${TYPE}-${ID2}-${SUFFIXES[0]}-${TIMESTEP}-tagged-def.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      "${FIG_DIR}/${TYPE}_${ID3_DIR}/tiles/${TYPE}-${ID3}-${SUFFIXES[0]}-${TIMESTEP}-tagged-ghi.png" -append "${OUT_PATH}"
+  fi
+}
 
-# Full set slow
-echo " -> [plume] full set slow"
-magick \
-  \( "${FIG_DIR}/plume_${SLOW_FACTOR}/tiles/plume-${SLOW_FACTOR}-temperature-nonadiabatic-pressure-nonadiabatic-density-nonadiabatic-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/plume_${SLOW_FACTOR}/tiles/plume-${SLOW_FACTOR}-arrhenius-thermodynamic-reaction-rate-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/plume_${SLOW_FACTOR}/tiles/plume-${SLOW_FACTOR}-X-field-vp-vs-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/plume-${SLOW_FACTOR}-full-set-composition-${TIMESTEP}.png"
+FULL_SET=(
+  "temperature-nonadiabatic-pressure-nonadiabatic-density-nonadiabatic"
+  "arrhenius-thermodynamic-reaction-rate"
+  "X-field-vp-vs"
+  "viscosity-sigma-ii-strain-rate"
+)
+SET1=("temperature-nonadiabatic-reaction-rate-X-field")
+SET2=("temperature-nonadiabatic-density-nonadiabatic-vp")
 
-# Full set default
-echo " -> [plume] full set default"
-magick \
-  \( "${FIG_DIR}/plume_${MID_FACTOR}/tiles/plume-${MID_FACTOR}-temperature-nonadiabatic-pressure-nonadiabatic-density-nonadiabatic-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/plume_${MID_FACTOR}/tiles/plume-${MID_FACTOR}-arrhenius-thermodynamic-reaction-rate-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/plume_${MID_FACTOR}/tiles/plume-${MID_FACTOR}-X-field-vp-vs-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/plume-${MID_FACTOR}-full-set-composition-${TIMESTEP}.png"
+compose_figures "slab" "single" FULL_SET[@] "slab-${ID1}-full-set-composition" "$ID1"
+compose_figures "slab" "single" FULL_SET[@] "slab-${ID2}-full-set-composition" "$ID2"
+compose_figures "slab" "single" FULL_SET[@] "slab-${ID3}-full-set-composition" "$ID3"
 
-# Full set fast
-echo " -> [plume] full set fast"
-magick \
-  \( "${FIG_DIR}/plume_${FAST_FACTOR}/tiles/plume-${FAST_FACTOR}-temperature-nonadiabatic-pressure-nonadiabatic-density-nonadiabatic-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/plume_${FAST_FACTOR}/tiles/plume-${FAST_FACTOR}-arrhenius-thermodynamic-reaction-rate-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/plume_${FAST_FACTOR}/tiles/plume-${FAST_FACTOR}-X-field-vp-vs-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/plume-${FAST_FACTOR}-full-set-composition-${TIMESTEP}.png"
+compose_figures "slab" "triple" SET1[@] "slab-${ID1}-${ID2}-${ID3}-set1-composition"
+compose_figures "slab" "triple" SET2[@] "slab-${ID1}-${ID2}-${ID3}-set2-composition"
 
-# Slow, default, fast set1
-echo " -> [plume] slow–fast set1"
-magick \
-  \( "${FIG_DIR}/plume_${SLOW_FACTOR}/tiles/plume-${SLOW_FACTOR}-temperature-nonadiabatic-reaction-rate-X-field-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/plume_${MID_FACTOR}/tiles/plume-${MID_FACTOR}-temperature-nonadiabatic-reaction-rate-X-field-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/plume_${FAST_FACTOR}/tiles/plume-${FAST_FACTOR}-temperature-nonadiabatic-reaction-rate-X-field-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/plume-${SLOW_FACTOR}-${MID_FACTOR}-${FAST_FACTOR}-set1-composition-${TIMESTEP}.png"
+compose_figures "plume" "single" FULL_SET[@] "plume-${ID1}-full-set-composition" "$ID1"
+compose_figures "plume" "single" FULL_SET[@] "plume-${ID2}-full-set-composition" "$ID2"
+compose_figures "plume" "single" FULL_SET[@] "plume-${ID3}-full-set-composition" "$ID3"
 
-# Slow, default, fast set2
-echo " -> [plume] slow–fast set2"
-magick \
-  \( "${FIG_DIR}/plume_${SLOW_FACTOR}/tiles/plume-${SLOW_FACTOR}-temperature-nonadiabatic-density-nonadiabatic-vp-${TIMESTEP}-tagged-abc.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  \( "${FIG_DIR}/plume_${MID_FACTOR}/tiles/plume-${MID_FACTOR}-temperature-nonadiabatic-density-nonadiabatic-vp-${TIMESTEP}-tagged-def.png" \
-     -gravity south -chop "0x${Y_CROP}%" \) \
-  "${FIG_DIR}/plume_${FAST_FACTOR}/tiles/plume-${FAST_FACTOR}-temperature-nonadiabatic-density-nonadiabatic-vp-${TIMESTEP}-tagged-ghi.png" \
-  -append "${OUT_DIR}/plume-${SLOW_FACTOR}-${MID_FACTOR}-${FAST_FACTOR}-set2-composition-${TIMESTEP}.png"
+compose_figures "plume" "triple" SET1[@] "plume-${ID1}-${ID2}-${ID3}-set1-composition"
+compose_figures "plume" "triple" SET2[@] "plume-${ID1}-${ID2}-${ID3}-set2-composition"

@@ -240,27 +240,37 @@ namespace aspect
 
         /**
          * The kinetic factor '$Z$' that combines the site nucleation, kinetic prefactor, and water content terms: $(6.67 / d) A C_{OH}^n$
-         * $\frac{dX}{dt} = Z T \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         * $\frac{dX}{dt} = Z T \exp\left(-H_a + PV_a/RT\right) \left(1 - \exp\left(\DeltaG/RT\right)\right) \left(1 - X\right)$
          *
          * Units: 1/s K
          */
         double kinetic_factor;
 
         /**
-         * The activation enthalpy '$H_a$' used in the Arrhenius term $\exp(-H_a + PV_a/RT)$.
-         * $\frac{dX}{dt} = Z T \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         * The activation enthalpy '$H_a$' used in the Arrhenius term $\exp\left(-H_a + PV_a/RT\right)$.
+         * $\frac{dX}{dt} = Z T \exp\left(-H_a + PV_a/RT\right) \left(1 - \exp\left(\DeltaG/RT\right)\right) \left(1 - X\right)$
          *
          * Units: J/mol
          */
         double H_a;
 
         /**
-         * The activation volume '$V_a$' used in the Arrhenius term $\exp(-H_a + PV_a/RT)$.
-         * $\frac{dX}{dt} = Z T \exp(-H_a + PV_a/RT) (1 - \exp(\DeltaG/RT)) (1 - X)$
+         * The activation volume '$V_a$' used in the Arrhenius term $\exp\left(-H_a + PV_a/RT\right)$.
+         * $\frac{dX}{dt} = Z T \exp\left(-H_a + PV_a/RT\right) \left(1 - \exp\left(\DeltaG/RT\right)\right) \left(1 - X\right)$
          *
          * Units: m^3/mol
          */
         double V_a;
+
+        /**
+         * Use dynamic pressure correction for density.
+         */
+        bool use_dynamic_pressure_correction_for_density;
+
+        /**
+         * Use dynamic pressure correction for gibbs.
+         */
+        bool use_dynamic_pressure_correction_for_gibbs;
     };
 
 
@@ -279,8 +289,8 @@ namespace aspect
         std::vector<double> get_nth_output(const unsigned int idx) const override;
 
         /**
-         * Arrhenius term $\exp(-H_a + PV_a/RT)$ at the evaluation points passed to
-         * the instance of MaterialModel::Interface::evaluate() that fills
+         * Arrhenius term $\exp\left(-H_a + PV_a/RT\right)$ at the evaluation points
+         * passed to the instance of MaterialModel::Interface::evaluate() that fills
          * the current object.
          *
          * Units: none
@@ -295,6 +305,15 @@ namespace aspect
          * Units: J/mol
          */
         std::vector<double> thermodynamic;
+
+        /**
+         * Viscosity temperature-dependence term $\exp\left(-B \hat{T}/\bar{T}\right)$ at the
+         * evaluation points passed to the instance of MaterialModel::Interface::evaluate()
+         * that fills the current object.
+         *
+         * Units: none
+         */
+        std::vector<double> visc_temperature_dependence;
     };
   } // namespace MaterialModel
 } // namespace aspect

@@ -214,6 +214,9 @@ namespace aspect
 
               // Update viscosity
               out.viscosities[q] = eta_effective;
+
+              // Write viscosity temperature dependence
+              if (reaction_rate_out != nullptr) phase_transition_kinetics_out->visc_temperature_dependence[q] = visc_temperature_dependence;
             }
 
           // Clamp composition to valid range
@@ -260,7 +263,7 @@ namespace aspect
 
           // Calculate density
           const double temperature_correction_density = (T - T_ref) * alpha;
-          const double pressure_correction_density = (P - P_ref) * beta;
+          const double pressure_correction_density = use_dynamic_pressure_correction_for_density ? (P - P_ref) * beta : 0.0;
           const double density_factor = (1.0 - temperature_correction_density) * (1.0 + pressure_correction_density);
           const double final_rho = rho * density_factor;
 
@@ -298,7 +301,9 @@ namespace aspect
               phase_transition_kinetics_out->arrhenius[q] = arrhenius;
 
               // Calculate Gibbs for forward reaction (J/mol)
-              const double gibbs_forward = dG + (P - P_ref) * dV - (T - T_ref) * dS;
+              const double temperature_correction_gibbs = (T - T_ref) * dS;
+              const double pressure_correction_gibbs = use_dynamic_pressure_correction_for_gibbs ? (P - P_ref) * dV : 0.0;
+              const double gibbs_forward = dG + pressure_correction_gibbs - temperature_correction_gibbs;
 
               // Lambda function for computing reaction rates
               auto compute_rate = [&](double gibbs, double saturation, bool write_thermo) -> double
@@ -398,6 +403,8 @@ namespace aspect
                             Patterns::Double(0.0),
                             "The activation volume 'V_a' used in the Arrhenius term: exp(-H_a + PV_a/RT). "
                             "Units: m^3/mol");
+          prm.declare_entry("Use dynamic pressure correction for density", "true", Patterns::Bool(), "Use dynamic pressure correction for density.");
+          prm.declare_entry("Use dynamic pressure correction for gibbs", "false", Patterns::Bool(), "Use dynamic pressure correction for gibbs.");
         }
         prm.leave_subsection();
       }
@@ -433,6 +440,8 @@ namespace aspect
           kinetic_factor = prm.get_double("Kinetic factor");
           H_a = prm.get_double("Activation enthalpy");
           V_a = prm.get_double("Activation volume");
+          use_dynamic_pressure_correction_for_density = prm.get_bool("Use dynamic pressure correction for density");
+          use_dynamic_pressure_correction_for_gibbs = prm.get_bool("Use dynamic pressure correction for gibbs");
         }
         prm.leave_subsection();
       }
@@ -500,6 +509,7 @@ namespace aspect
         std::vector<std::string> names;
         names.emplace_back("arrhenius");
         names.emplace_back("thermodynamic");
+        names.emplace_back("visc_temperature_dependence");
         return names;
       }
     }
@@ -509,6 +519,7 @@ namespace aspect
       : NamedAdditionalMaterialOutputs<dim>(make_additional_output_names())
       , arrhenius(n_points, numbers::signaling_nan<double>())
       , thermodynamic(n_points, numbers::signaling_nan<double>())
+      , visc_temperature_dependence(n_points, numbers::signaling_nan<double>())
     {}
 
 
@@ -524,6 +535,8 @@ namespace aspect
             return arrhenius;
           case 1:
             return thermodynamic;
+          case 2:
+            return visc_temperature_dependence;
           default:
             AssertThrow(false, ExcInternalError());
         }

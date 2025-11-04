@@ -26,6 +26,9 @@ def main():
         "nonadiabatic_temperature",
         "nonadiabatic_pressure",
         "nonadiabatic_density",
+        "viscosity",
+        "stress_second_invariant",
+        "strain_rate",
         "velocity",
         "seismic_Vp",
         "seismic_Vs",
@@ -53,6 +56,7 @@ def main():
         "set7": {"tags": "abc", "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
         "set8": {"tags": "def", "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
         "set9": {"tags": "ghi", "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
+        "set10": {"tags": "jkl", "fields": ["viscosity", "stress_second_invariant", "strain_rate"]},
     }
 
     print("    --------------------------------------------------")

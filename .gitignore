@@ -7,8 +7,7 @@ bash/install/log*.log
 perplex/**/*-table.txt
 perplex/**/*-profile.txt
 simulation/configs
-simulation/parts/material-plume-*e*prm
-simulation/parts/material-slab-*e*prm
+simulation/parts/material-*.prm
 simulation/results
 simulation/*/output*
 simulation/results/*/statistics
