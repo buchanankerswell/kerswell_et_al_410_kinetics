@@ -2,9 +2,9 @@
 set -eo pipefail
 IFS=$'\n\t'
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Get args
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if [ $# -ne 6 ]; then
   echo "Usage: $0 <DEALII_VERSION> <TRILINOS_VERSION> <GCC> <OPENMPI> <OPENBLAS> <CMAKE>"
   exit 1
@@ -17,9 +17,9 @@ OPENMPI=$4
 OPENBLAS=$5
 CMAKE=$6
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Environment setup
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo "============================================="
 echo "  Setting environment variables ..."
 
@@ -36,9 +36,9 @@ echo "  OPENMPI:          $OPENMPI"
 echo "  OPENBLAS:         $OPENBLAS"
 echo "  CMAKE:            $CMAKE"
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Skip if already built
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if [ -d "$DEALII_DIR/deal.II-$DEALII_VERSION" ]; then
     echo "  ==========================================="
     echo "  deal.II-$DEALII_VERSION found at:"
@@ -46,9 +46,9 @@ if [ -d "$DEALII_DIR/deal.II-$DEALII_VERSION" ]; then
     exit 0
 fi
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Load modules
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo "  ==========================================="
 echo "  Loading openmpi and openblas modules ..."
 
@@ -63,9 +63,9 @@ export FF=mpif77
 # Ensure GCC runtime libs are first in search path
 export LD_LIBRARY_PATH=$GCCDIR/lib64:$LD_LIBRARY_PATH
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Clone candi
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo "  ==========================================="
 if [ -d "candi" ]; then
     echo "  Found candi directory! Pulling latest changes ..."
@@ -87,9 +87,9 @@ BLAS_DIR=$OPENBLAS_DIR
 TRILINOS_CONFOPTS="-D TPL_BLAS_LIBRARIES=$OPENBLAS_LIBDIR/libopenblas.so -D TPL_LAPACK_LIBRARIES=$OPENBLAS_LIBDIR/libopenblas.so"
 EOF
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Install dependencies
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo "  ==========================================="
 echo "  Installing deal.II and its dependencies ..."
 ./candi.sh --prefix="$DEALII_DIR" -j "$NPROC" -y

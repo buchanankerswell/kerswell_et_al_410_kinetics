@@ -1,7 +1,7 @@
 subsection Material model
-  set Model name = phase transition kinetics
+  set Model name = reaction kinetics
 
-  subsection Phase transition kinetics
+  subsection Reaction kinetics
     set Kinetic factor                              = {z-factor}
     set Activation enthalpy                         = 274e3
     set Activation volume                           = 3.3e-6

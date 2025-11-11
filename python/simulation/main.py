@@ -47,16 +47,16 @@ def main():
     visualizer.draw()
 
     tile_sets = {
-        "set0": {"tags": "abc", "fields": ["nonadiabatic_temperature", "nonadiabatic_pressure", "nonadiabatic_density"]},
-        "set1": {"tags": "def", "fields": ["arrhenius", "thermodynamic", "reaction_rate_C0", ]},
-        "set3": {"tags": "ghi", "fields": ["X_field", "seismic_Vp", "seismic_Vs", ]},
-        "set4": {"tags": "abc", "fields": ["nonadiabatic_temperature", "reaction_rate_C0", "X_field"]},
-        "set5": {"tags": "def", "fields": ["nonadiabatic_temperature", "reaction_rate_C0", "X_field"]},
-        "set6": {"tags": "ghi", "fields": ["nonadiabatic_temperature", "reaction_rate_C0", "X_field"]},
-        "set7": {"tags": "abc", "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
-        "set8": {"tags": "def", "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
-        "set9": {"tags": "ghi", "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
-        "set10": {"tags": "jkl", "fields": ["viscosity", "stress_second_invariant", "strain_rate"]},
+        "set0": {"tags": None, "fields": ["nonadiabatic_temperature", "nonadiabatic_pressure", "nonadiabatic_density"]},
+        "set1": {"tags": None, "fields": ["arrhenius", "thermodynamic", "reaction_rate_C0", ]},
+        "set3": {"tags": None, "fields": ["X_field", "seismic_Vp", "seismic_Vs", ]},
+        "set4": {"tags": None, "fields": ["nonadiabatic_temperature", "reaction_rate_C0", "X_field"]},
+        "set5": {"tags": None, "fields": ["nonadiabatic_temperature", "reaction_rate_C0", "X_field"]},
+        "set6": {"tags": None, "fields": ["nonadiabatic_temperature", "reaction_rate_C0", "X_field"]},
+        "set7": {"tags": None, "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
+        "set8": {"tags": None, "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
+        "set9": {"tags": None, "fields": ["nonadiabatic_temperature", "nonadiabatic_density", "seismic_Vp"]},
+        "set10": {"tags": None, "fields": ["viscosity", "stress_second_invariant", "strain_rate"]},
     }
 
     print("    --------------------------------------------------")

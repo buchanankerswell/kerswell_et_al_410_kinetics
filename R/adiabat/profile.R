@@ -107,7 +107,7 @@ visualize_thermodynamic_profile <- function(profile_path, out_path) {
     scale_color_brewer(palette = "Set1") +
     labs(x = NULL, y = "Pressure (GPa)", color = NULL) +
     theme_bw(base_size = 36) +
-    profile_theme() +
+    theme_profile() +
     theme(
       strip.background = element_blank(),
       strip.text = element_text(size = 32, face = "bold"),
@@ -130,7 +130,7 @@ visualize_thermodynamic_profile <- function(profile_path, out_path) {
     scale_color_manual(values = c("(wd - ol)" = "black")) +
     labs(x = NULL, y = bquote("Pressure (GPa)"), color = NULL) +
     theme_bw(base_size = 36) +
-    profile_theme() +
+    theme_profile() +
     theme(
       strip.background = element_blank(),
       strip.text = element_text(size = 32, face = "bold"),
@@ -269,7 +269,7 @@ visualize_material_profile <- function(profile_path, out_path) {
     scale_color_brewer(palette = "Set1") +
     labs(x = NULL, y = "Pressure (GPa)", color = NULL) +
     theme_bw(base_size = 36) +
-    profile_theme() +
+    theme_profile() +
     theme(
       strip.background = element_blank(),
       strip.text = element_text(size = 32, face = "bold"),

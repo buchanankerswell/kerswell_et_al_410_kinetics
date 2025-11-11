@@ -1,0 +1,847 @@
+%%
+% Copyright (c) 2017 - 2024, Pascal Wagler;
+% Copyright (c) 2014 - 2024, John MacFarlane
+%
+% All rights reserved.
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions
+% are met:
+%
+% - Redistributions of source code must retain the above copyright
+% notice, this list of conditions and the following disclaimer.
+%
+% - Redistributions in binary form must reproduce the above copyright
+% notice, this list of conditions and the following disclaimer in the
+% documentation and/or other materials provided with the distribution.
+%
+% - Neither the name of John MacFarlane nor the names of other
+% contributors may be used to endorse or promote products derived
+% from this software without specific prior written permission.
+%
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+% "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+% LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+% FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+% COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+% INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+% BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+% LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+% CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+% LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+% ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+% POSSIBILITY OF SUCH DAMAGE.
+%%
+
+%%
+% This is the Eisvogel pandoc LaTeX template.
+%
+% For usage information and examples visit the official GitHub page:
+% https://github.com/Wandmalfarbe/pandoc-latex-template
+%%
+
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names,table}{xcolor}
+%
+\documentclass[
+  paper=a4,
+  ,captions=tableheading
+]{scrartcl}
+\usepackage{amsmath,amssymb}
+% Use setspace anyway because we change the default line spacing.
+% The spacing is changed early to affect the titlepage and the TOC.
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\definecolor{default-linkcolor}{HTML}{A50000}
+\definecolor{default-filecolor}{HTML}{A50000}
+\definecolor{default-citecolor}{HTML}{4077C0}
+\definecolor{default-urlcolor}{HTML}{4077C0}
+\usepackage[margin=2.5cm,includehead=true,includefoot=true,centering,]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+% add backlinks to footnote references, cf. https://tex.stackexchange.com/questions/302266/make-footnote-clickable-both-ways
+\usepackage{footnotebackref}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+% Make use of float-package and set default placement for figures to H.
+% The option H means 'PUT IT HERE' (as  opposed to the standard h option which means 'You may put it here if you like').
+\usepackage{float}
+\floatplacement{figure}{H}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+\babelprovide[main,import]{american}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+\makeatletter
+\newcounter{none}
+\renewcommand{\thenone}{}
+\makeatother
+\makeatletter
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\captionsetup[subfigure]{margin=0.5em}
+\AtBeginDocument{%
+\renewcommand*\figurename{Figure}
+\renewcommand*\tablename{Table}
+}
+\AtBeginDocument{%
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+}
+\newcounter{pandoccrossref@subfigures@footnote@counter}
+\newenvironment{pandoccrossrefsubfigures}{%
+\setcounter{pandoccrossref@subfigures@footnote@counter}{0}
+\begin{figure}\centering%
+\gdef\global@pandoccrossref@subfigures@footnotes{}%
+\DeclareRobustCommand{\footnote}[1]{\footnotemark%
+\stepcounter{pandoccrossref@subfigures@footnote@counter}%
+\ifx\global@pandoccrossref@subfigures@footnotes\empty%
+\gdef\global@pandoccrossref@subfigures@footnotes{{##1}}%
+\else%
+\g@addto@macro\global@pandoccrossref@subfigures@footnotes{, {##1}}%
+\fi}}%
+{\end{figure}%
+\addtocounter{footnote}{-\value{pandoccrossref@subfigures@footnote@counter}}
+\@for\f:=\global@pandoccrossref@subfigures@footnotes\do{\stepcounter{footnote}\footnotetext{\f}}%
+\gdef\global@pandoccrossref@subfigures@footnotes{}}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Supplementary Information},
+  pdfauthor={Kerswell B.; Wheeler J.; Gassmöller R.; Davies, J.H.},
+  pdflang={en-US},
+  pdfsubject={Mantle Convection},
+  pdfkeywords={mantle convection, phase transition, reaction
+kinetics, geodynamics, numerical modeling},
+  colorlinks=true,
+  linkcolor={default-linkcolor},
+  filecolor={default-filecolor},
+  citecolor={default-citecolor},
+  urlcolor={default-urlcolor},
+  breaklinks=true,
+  pdfcreator={LaTeX via pandoc with the Eisvogel template}}
+\title{Supplementary Information}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Beyond Equilibrium: Kinetic Thresholds and Rheological
+Feedbacks Control 410 Topography}
+\author{Kerswell B. \and Wheeler J. \and Gassmöller R. \and Davies,
+J.H.}
+\date{24 November 2025}
+
+
+
+%%
+%% added
+%%
+
+
+%
+% for the background color of the title page
+%
+\usepackage{pagecolor}
+\usepackage{afterpage}
+\usepackage[margin=2.5cm,includehead=true,includefoot=true,centering]{geometry}
+
+%
+% break urls
+%
+\PassOptionsToPackage{hyphens}{url}
+
+%
+% When using babel or polyglossia with biblatex, loading csquotes is recommended
+% to ensure that quoted texts are typeset according to the rules of your main language.
+%
+\usepackage{csquotes}
+
+%
+% captions
+%
+\definecolor{caption-color}{HTML}{777777}
+\usepackage[font={stretch=1.2}, textfont={color=caption-color}, position=top, skip=4mm, labelfont=bf, singlelinecheck=false, justification=justified]{caption}
+\setcapindent{0em}
+
+%
+% blockquote
+%
+\definecolor{blockquote-border}{RGB}{221,221,221}
+\definecolor{blockquote-text}{RGB}{119,119,119}
+\usepackage{mdframed}
+\newmdenv[rightline=false,bottomline=false,topline=false,linewidth=3pt,linecolor=blockquote-border,skipabove=\parskip]{customblockquote}
+\renewenvironment{quote}{\begin{customblockquote}\list{}{\rightmargin=0em\leftmargin=0em}%
+\item\relax\color{blockquote-text}\ignorespaces}{\unskip\unskip\endlist\end{customblockquote}}
+
+%
+% Source Sans Pro as the default font family
+% Source Code Pro for monospace text
+%
+% 'default' option sets the default
+% font family to Source Sans Pro, not \sfdefault.
+%
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+    \usepackage[default]{sourcesanspro}
+  \usepackage{sourcecodepro}
+  \else % if not pdftex
+    \usepackage[default]{sourcesanspro}
+  \usepackage{sourcecodepro}
+
+  % XeLaTeX specific adjustments for straight quotes: https://tex.stackexchange.com/a/354887
+  % This issue is already fixed (see https://github.com/silkeh/latex-sourcecodepro/pull/5) but the
+  % fix is still unreleased.
+  % TODO: Remove this workaround when the new version of sourcecodepro is released on CTAN.
+  \ifxetex
+    \makeatletter
+    \defaultfontfeatures[\ttfamily]
+      { Numbers   = \sourcecodepro@figurestyle,
+        Scale     = \SourceCodePro@scale,
+        Extension = .otf }
+    \setmonofont
+      [ UprightFont    = *-\sourcecodepro@regstyle,
+        ItalicFont     = *-\sourcecodepro@regstyle It,
+        BoldFont       = *-\sourcecodepro@boldstyle,
+        BoldItalicFont = *-\sourcecodepro@boldstyle It ]
+      {SourceCodePro}
+    \makeatother
+  \fi
+  \fi
+
+%
+% heading color
+%
+\definecolor{heading-color}{RGB}{40,40,40}
+\addtokomafont{section}{\color{heading-color}}
+% When using the classes report, scrreprt, book,
+% scrbook or memoir, uncomment the following line.
+%\addtokomafont{chapter}{\color{heading-color}}
+
+%
+% variables for title, author and date
+%
+\usepackage{titling}
+\title{Supplementary Information}
+\author{Kerswell B., Wheeler J., Gassmöller R., Davies, J.H.}
+\date{24 November 2025}
+
+%
+% tables
+%
+
+\definecolor{table-row-color}{HTML}{F5F5F5}
+\definecolor{table-rule-color}{HTML}{999999}
+
+%\arrayrulecolor{black!40}
+\arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
+\setlength\heavyrulewidth{0.3ex}      % thickness of \toprule, \bottomrule
+\renewcommand{\arraystretch}{1.3}     % spacing (padding)
+
+
+%
+% remove paragraph indentation
+%
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+%
+%
+% Listings
+%
+%
+
+
+%
+% header and footer
+%
+\usepackage[headsepline,footsepline]{scrlayer-scrpage}
+
+\newpairofpagestyles{eisvogel-header-footer}{
+  \clearpairofpagestyles
+  \ihead*{Supplementary Information}
+  \chead*{}
+  \ohead*{24 November 2025}
+  \ifoot*{Kerswell B., Wheeler J., Gassmöller R., Davies, J.H.}
+  \cfoot*{}
+  \ofoot*{\thepage}
+  \addtokomafont{pageheadfoot}{\upshape}
+}
+\pagestyle{eisvogel-header-footer}
+
+
+
+%%
+%% end added
+%%
+
+\begin{document}
+
+%%
+%% begin titlepage
+%%
+\begin{titlepage}
+\newgeometry{left=6cm}
+\definecolor{titlepage-color}{HTML}{2E7A40}
+\newpagecolor{titlepage-color}\afterpage{\restorepagecolor}
+\newcommand{\colorRule}[3][black]{\textcolor[HTML]{#1}{\rule{#2}{#3}}}
+\begin{flushleft}
+\noindent
+\\[-1em]
+\color[HTML]{FFFFFF}
+\makebox[0pt][l]{\colorRule[FFFFFF]{1.3\textwidth}{2pt}}
+\par
+\noindent
+
+{
+  \setstretch{1.4}
+  \vfill
+  \noindent {\huge \textbf{\textsf{Supplementary Information}}}
+    \vskip 1em
+  {\Large \textsf{Beyond Equilibrium: Kinetic Thresholds and Rheological
+Feedbacks Control 410 Topography}}
+    \vskip 2em
+  \noindent {\Large \textsf{Kerswell B., Wheeler J., Gassmöller
+R., Davies, J.H.}}
+  \vfill
+}
+
+
+\textsf{24 November 2025}
+\end{flushleft}
+\end{titlepage}
+\restoregeometry
+\pagenumbering{arabic}
+
+%%
+%% end titlepage
+%%
+
+% \maketitle
+
+
+\clearpage
+
+\section*{Measuring 410 Displacement and
+Width}\label{sec:measuring-displacement-width}
+\addcontentsline{toc}{section}{Measuring 410 Displacement and Width}
+
+Structure of the 410 was evaluated from the volume fraction field \(X\)
+along vertical profiles that intersected either: 1) the widest phase
+transition zone or 2) the largest displacement of the olivine
+\(\Leftrightarrow\) wadsleyite reaction found within model domain. The
+phase transition zone width was defined as the difference between the
+depths at \(X\) = 0.9 and \(X\) = 0.1, while the olivine
+\(\Leftrightarrow\) wadsleyite reaction displacement was defined as the
+offset between the nominal equilibrium reaction depth and the depth at
+\(X\) = 0.9. The exact vertical profile position was chosen
+heuristically by ``best fit'' criteria based on structural
+characteristics of the phase transition zone. The maximum reaction rate
+\(\dot{X}\) and vertical velocity \(\vec{u}_y\) were evaluated along the
+selected vertical profile, within the upper and lower bounds of the
+phase transition zone, after 100 Ma of evolution. Selected examples of
+vertical profile picking in slab simulations are shown in Figure
+\ref{fig:slab-composition-set1}.
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Slab simulations with intermediate strength contrasts (B = 4) demonstrating ultra-sluggish (top row: Z = 3.0e0 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), reaction rate \textbackslash dot\{X\} (middle column), and volume fraction of wadsleyite X (right column). Thin black lines indicate the vertical profile and depth bounds for measuring 410 structure (width and displacement).}]{../figs/simulation/compositions/slab-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png}
+\caption{Slab simulations with intermediate strength contrasts (\(B\) =
+4) demonstrating ultra-sluggish (top row: \(Z\) = 3.0e0 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), reaction rate \(\dot{X}\) (middle column),
+and volume fraction of wadsleyite \(X\) (right column). Thin black lines
+indicate the vertical profile and depth bounds for measuring 410
+structure (width and displacement).}\label{fig:slab-composition-set1}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Plume simulations with intermediate strength contrasts (B = 4) demonstrating ultra-sluggish (top row: Z = 3.0e0 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), reaction rate \textbackslash dot\{X\} (middle column), and volume fraction of wadsleyite X (right column). Thin black lines indicate the vertical profile and depth bounds for measuring 410 structure (width and displacement).}]{../figs/simulation/compositions/plume-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png}
+\caption{Plume simulations with intermediate strength contrasts (\(B\) =
+4) demonstrating ultra-sluggish (top row: \(Z\) = 3.0e0 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), reaction rate \(\dot{X}\) (middle column),
+and volume fraction of wadsleyite \(X\) (right column). Thin black lines
+indicate the vertical profile and depth bounds for measuring 410
+structure (width and displacement).}\label{fig:plume-composition-set1}
+\end{figure}
+
+\clearpage
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1400}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.0700}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.0700}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1600}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.0900}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1900}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.2800}}@{}}
+\caption{Summary of the kinetic prefactor \(Z\), rheological activation
+factor \(B\), 410 structure (displacement and width), maximum vertical
+velocity \(\vec{u}_y\), and maximum reaction rate \(\dot{X}\) evaluated
+in plume and slab simulations after 100 Ma of evolution. Units are
+\(Z\): K s\(^{-1}\), \(B\): none, displacement: km, width: km,
+\(\vec{u}_y\): cm/yr, log\(_{10}\) \(\dot{X}\): log\(_{10}\)
+Ma\(^{-1}\).}\label{tbl:depth-profile-summary}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Simulation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+\(Z\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+\(B\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Displacement
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Width
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Max \(\vec{u}_y\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+log\(_{10}\) Max \(\dot{X}\)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Simulation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+\(Z\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+\(B\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Displacement
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Width
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Max \(\vec{u}_y\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+log\(_{10}\) Max \(\dot{X}\)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+plume & 3.0e0 & 2 & 20 & 19 & 1.71 & -0.01 \\
+plume & 3.0e0 & 4 & 20 & 19 & 1.78 & -0.01 \\
+plume & 3.0e0 & 6 & 19 & 20 & 1.85 & -0.01 \\
+plume & 3.0e0 & 8 & 19 & 21 & 1.91 & -0.01 \\
+plume & 3.0e0 & 10 & 18 & 21 & 1.96 & -0.01 \\
+plume & 7.0e0 & 2 & 21 & 14 & 2.06 & 0.2 \\
+plume & 7.0e0 & 4 & 21 & 15 & 2.19 & 0.21 \\
+plume & 7.0e0 & 6 & 20 & 15 & 2.32 & 0.22 \\
+plume & 7.0e0 & 8 & 20 & 16 & 2.45 & 0.22 \\
+plume & 7.0e0 & 10 & 19 & 17 & 2.58 & 0.22 \\
+plume & 1.6e1 & 2 & 22 & 10 & 2.29 & 0.39 \\
+plume & 1.6e1 & 4 & 22 & 11 & 2.46 & 0.41 \\
+plume & 1.6e1 & 6 & 21 & 12 & 2.65 & 0.42 \\
+plume & 1.6e1 & 8 & 21 & 12 & 2.84 & 0.42 \\
+plume & 1.6e1 & 10 & 20 & 12 & 3.04 & 0.44 \\
+plume & 3.7e1 & 2 & 23 & 8 & 2.42 & 0.59 \\
+plume & 3.7e1 & 4 & 23 & 8 & 2.62 & 0.61 \\
+plume & 3.7e1 & 6 & 22 & 8 & 2.85 & 0.61 \\
+plume & 3.7e1 & 8 & 22 & 9 & 3.09 & 0.61 \\
+plume & 3.7e1 & 10 & 21 & 9 & 3.34 & 0.64 \\
+plume & 8.7e1 & 2 & 24 & 6 & 2.53 & 0.76 \\
+plume & 8.7e1 & 4 & 24 & 6 & 2.76 & 0.75 \\
+plume & 8.7e1 & 6 & 23 & 7 & 3 & 0.8 \\
+plume & 8.7e1 & 8 & 23 & 7 & 3.29 & 0.84 \\
+plume & 8.7e1 & 10 & 22 & 7 & 3.58 & 0.86 \\
+plume & 2.0e2 & 2 & 24 & 4 & 2.57 & 0.97 \\
+plume & 2.0e2 & 4 & 24 & 5 & 2.84 & 0.94 \\
+plume & 2.0e2 & 6 & 24 & 6 & 3.07 & 0.89 \\
+plume & 2.0e2 & 8 & 24 & 6 & 3.38 & 0.98 \\
+plume & 2.0e2 & 10 & 23 & 6 & 3.72 & 1.04 \\
+plume & 4.7e2 & 2 & 24 & 3 & 2.59 & 1.19 \\
+plume & 4.7e2 & 4 & 24 & 4 & 2.85 & 1.13 \\
+plume & 4.7e2 & 6 & 24 & 4 & 3.14 & 1.07 \\
+plume & 4.7e2 & 8 & 24 & 4 & 3.48 & 1.04 \\
+plume & 4.7e2 & 10 & 24 & 5 & 3.74 & 1.1 \\
+plume & 1.1e3 & 2 & 24 & 3 & 2.65 & 1.42 \\
+plume & 1.1e3 & 4 & 24 & 3 & 2.87 & 1.3 \\
+plume & 1.1e3 & 6 & 24 & 3 & 3.15 & 1.26 \\
+plume & 1.1e3 & 8 & 24 & 4 & 3.51 & 1.19 \\
+plume & 1.1e3 & 10 & 24 & 4 & 3.86 & 1.14 \\
+plume & 2.6e3 & 2 & 24 & 3 & 2.79 & 1.6 \\
+plume & 2.6e3 & 4 & 24 & 3 & 2.91 & 1.5 \\
+plume & 2.6e3 & 6 & 24 & 3 & 3.23 & 1.44 \\
+plume & 2.6e3 & 8 & 24 & 3 & 3.46 & 1.5 \\
+plume & 2.6e3 & 10 & 24 & 4 & 3.92 & 1.27 \\
+plume & 6.0e3 & 2 & 24 & 2 & 2.5 & 1.63 \\
+plume & 6.0e3 & 4 & 24 & 3 & 2.88 & 1.93 \\
+plume & 6.0e3 & 6 & 24 & 3 & 3.29 & 1.65 \\
+plume & 6.0e3 & 8 & 24 & 3 & 3.47 & 1.86 \\
+plume & 6.0e3 & 10 & 24 & 4 & 3.88 & 1.63 \\
+plume & 1.4e4 & 2 & 24 & 2 & 2.51 & 1.7 \\
+plume & 1.4e4 & 4 & 24 & 3 & 2.82 & 2.03 \\
+plume & 1.4e4 & 6 & 24 & 2 & 3.09 & 1.68 \\
+plume & 1.4e4 & 8 & 24 & 3 & 3.55 & 2.11 \\
+plume & 1.4e4 & 10 & 24 & 4 & 3.89 & 2.02 \\
+plume & 3.3e4 & 2 & 24 & 2 & 2.42 & 1.82 \\
+plume & 3.3e4 & 4 & 24 & 2 & 2.63 & 1.66 \\
+plume & 3.3e4 & 6 & 24 & 3 & 2.99 & 2.3 \\
+plume & 3.3e4 & 8 & 24 & 3 & 3.63 & 2.36 \\
+plume & 3.3e4 & 10 & 24 & 3 & 4.03 & 2.21 \\
+plume & 7.8e4 & 2 & 24 & 2 & 2.06 & 1.64 \\
+plume & 7.8e4 & 4 & 24 & 3 & 2.9 & 2.67 \\
+plume & 7.8e4 & 6 & 24 & 2 & 2.89 & 2.06 \\
+plume & 7.8e4 & 8 & 24 & 3 & 3.53 & 2.9 \\
+plume & 7.8e4 & 10 & 24 & 3 & 5.33 & 2.44 \\
+plume & 1.8e5 & 2 & 24 & 2 & 2.06 & 1.96 \\
+plume & 1.8e5 & 4 & 24 & 3 & 2.88 & 3.08 \\
+plume & 1.8e5 & 6 & 24 & 2 & 2.93 & 2.52 \\
+plume & 1.8e5 & 8 & 24 & 3 & 3.51 & 3.28 \\
+plume & 1.8e5 & 10 & 24 & 2 & 4.26 & 2.65 \\
+plume & 4.3e5 & 2 & 24 & 2 & 2.06 & 2.34 \\
+plume & 4.3e5 & 4 & 24 & 3 & 2.87 & 3.48 \\
+plume & 4.3e5 & 6 & 24 & 2 & 3.24 & 2.93 \\
+plume & 4.3e5 & 8 & 24 & 3 & 3.51 & 3.66 \\
+plume & 4.3e5 & 10 & 24 & 3 & 4.18 & 3.13 \\
+plume & 1.0e6 & 2 & 24 & 2 & 2.06 & 2.71 \\
+plume & 1.0e6 & 4 & 24 & 3 & 2.87 & 3.85 \\
+plume & 1.0e6 & 6 & 24 & 2 & 3.23 & 3.31 \\
+plume & 1.0e6 & 8 & 24 & 3 & 3.51 & 4.03 \\
+plume & 1.0e6 & 10 & 24 & 3 & 4.19 & 3.48 \\
+plume & 2.4e6 & 2 & 24 & 2 & 2.06 & 3.09 \\
+plume & 2.4e6 & 4 & 24 & 3 & 2.87 & 4.24 \\
+plume & 2.4e6 & 6 & 24 & 2 & 3.22 & 3.7 \\
+plume & 2.4e6 & 8 & 24 & 3 & 3.51 & 4.41 \\
+plume & 2.4e6 & 10 & 24 & 3 & 4.21 & 3.83 \\
+plume & 5.6e6 & 2 & 24 & 2 & 2.06 & 3.46 \\
+plume & 5.6e6 & 4 & 24 & 3 & 2.86 & 4.61 \\
+plume & 5.6e6 & 6 & 24 & 2 & 3.22 & 4.08 \\
+plume & 5.6e6 & 8 & 24 & 3 & 3.51 & 4.77 \\
+plume & 5.6e6 & 10 & 24 & 2 & 4.24 & 4.17 \\
+plume & 1.3e7 & 2 & 24 & 2 & 2.05 & 3.83 \\
+plume & 1.3e7 & 4 & 24 & 3 & 2.86 & 4.98 \\
+plume & 1.3e7 & 6 & 24 & 2 & 3.22 & 4.45 \\
+plume & 1.3e7 & 8 & 24 & 3 & 3.51 & 5.14 \\
+plume & 1.3e7 & 10 & 24 & 2 & 4.31 & 4.45 \\
+plume & 3.0e7 & 2 & 24 & 2 & 2.05 & 4.19 \\
+plume & 3.0e7 & 4 & 24 & 3 & 2.86 & 5.34 \\
+plume & 3.0e7 & 6 & 24 & 2 & 3.21 & 4.82 \\
+plume & 3.0e7 & 8 & 24 & 3 & 3.51 & 5.5 \\
+plume & 3.0e7 & 10 & 24 & 2 & 3.71 & 4.05 \\
+plume & 7.0e7 & 2 & 24 & 2 & 2.05 & 4.56 \\
+plume & 7.0e7 & 4 & 24 & 3 & 2.86 & 5.71 \\
+plume & 7.0e7 & 6 & 24 & 2 & 3.21 & 5.18 \\
+plume & 7.0e7 & 8 & 24 & 3 & 3.51 & 5.87 \\
+plume & 7.0e7 & 10 & 24 & 2 & 3.7 & 4.4 \\
+slab & 3.0e0 & 2 & 83 & 7 & 0.09 & -2 \\
+slab & 3.0e0 & 4 & 85 & 8 & 0.08 & -1.92 \\
+slab & 3.0e0 & 6 & 88 & 10 & 0.1 & -1.85 \\
+slab & 3.0e0 & 8 & 91 & 14 & 0.13 & -1.8 \\
+slab & 3.0e0 & 10 & 95 & 20 & 0.16 & -1.74 \\
+slab & 7.0e0 & 2 & 66 & 9 & 0.09 & -1.74 \\
+slab & 7.0e0 & 4 & 69 & 11 & 0.11 & -1.71 \\
+slab & 7.0e0 & 6 & 73 & 14 & 0.13 & -1.66 \\
+slab & 7.0e0 & 8 & 78 & 20 & 0.15 & -1.6 \\
+slab & 7.0e0 & 10 & 84 & 32 & 0.23 & -1.58 \\
+slab & 1.6e1 & 2 & 50 & 11 & 0.11 & -1.56 \\
+slab & 1.6e1 & 4 & 54 & 13 & 0.12 & -1.53 \\
+slab & 1.6e1 & 6 & 60 & 18 & 0.16 & -1.49 \\
+slab & 1.6e1 & 8 & 144 & 150 & 0.72 & -1.53 \\
+slab & 1.6e1 & 10 & 167 & 172 & 0.84 & -1.39 \\
+slab & 3.7e1 & 2 & 38 & 13 & 0.13 & -1.37 \\
+slab & 3.7e1 & 4 & 45 & 18 & 0.18 & -1.37 \\
+slab & 3.7e1 & 6 & 144 & 155 & 1 & -1.38 \\
+slab & 3.7e1 & 8 & 169 & 179 & 1.09 & -1.23 \\
+slab & 3.7e1 & 10 & 145 & 154 & 0.99 & -1.17 \\
+slab & 8.7e1 & 2 & 48 & 32 & 0.29 & -1.5 \\
+slab & 8.7e1 & 4 & 60 & 49 & 0.46 & -1.46 \\
+slab & 8.7e1 & 6 & 169 & 183 & 1.34 & -1.11 \\
+slab & 8.7e1 & 8 & 88 & 101 & 0.91 & -0.99 \\
+slab & 8.7e1 & 10 & 57 & 70 & 0.72 & -0.97 \\
+slab & 2.0e2 & 2 & 158 & 184 & 1.11 & -1.69 \\
+slab & 2.0e2 & 4 & 139 & 158 & 1.09 & -1.17 \\
+slab & 2.0e2 & 6 & 48 & 64 & 0.68 & -0.83 \\
+slab & 2.0e2 & 8 & 32 & 49 & 0.56 & -0.93 \\
+slab & 2.0e2 & 10 & 27 & 43 & 0.57 & -0.9 \\
+slab & 4.7e2 & 2 & 143 & 167 & 1.35 & -1.21 \\
+slab & 4.7e2 & 4 & 89 & 106 & 1.15 & -0.52 \\
+slab & 4.7e2 & 6 & 25 & 45 & 0.54 & -0.78 \\
+slab & 4.7e2 & 8 & 14 & 35 & 0.52 & -0.81 \\
+slab & 4.7e2 & 10 & 9 & 29 & 0.54 & -0.75 \\
+slab & 1.1e3 & 2 & 102 & 124 & 1.54 & -0.51 \\
+slab & 1.1e3 & 4 & 56 & 75 & 1.17 & -0.32 \\
+slab & 1.1e3 & 6 & 16 & 40 & 0.65 & -0.69 \\
+slab & 1.1e3 & 8 & -1 & 24 & 0.47 & -0.73 \\
+slab & 1.1e3 & 10 & -4 & 19 & 0.5 & -0.61 \\
+slab & 2.6e3 & 2 & 64 & 87 & 1.75 & -0.32 \\
+slab & 2.6e3 & 4 & 33 & 56 & 1.35 & -0.29 \\
+slab & 2.6e3 & 6 & 7 & 33 & 0.92 & -0.48 \\
+slab & 2.6e3 & 8 & -8 & 20 & 0.59 & -0.54 \\
+slab & 2.6e3 & 10 & -15 & 11 & 0.37 & -0.45 \\
+slab & 6.0e3 & 2 & 34 & 61 & 2.01 & -0.26 \\
+slab & 6.0e3 & 4 & 14 & 41 & 1.59 & -0.23 \\
+slab & 6.0e3 & 6 & -4 & 25 & 1.1 & -0.34 \\
+slab & 6.0e3 & 8 & -18 & 11 & 0.53 & -0.27 \\
+slab & 6.0e3 & 10 & -19 & 8 & 0.42 & -0.26 \\
+slab & 1.4e4 & 2 & 12 & 42 & 2.26 & -0.17 \\
+slab & 1.4e4 & 4 & -2 & 29 & 1.76 & -0.17 \\
+slab & 1.4e4 & 6 & -14 & 18 & 1.22 & -0.19 \\
+slab & 1.4e4 & 8 & -21 & 9 & 0.62 & -0.11 \\
+slab & 1.4e4 & 10 & -22 & 7 & 0.52 & -0.08 \\
+slab & 3.3e4 & 2 & -5 & 29 & 2.46 & -0.05 \\
+slab & 3.3e4 & 4 & -14 & 20 & 1.88 & -0.02 \\
+slab & 3.3e4 & 6 & -22 & 11 & 1.17 & 0.08 \\
+slab & 3.3e4 & 8 & -25 & 7 & 0.73 & 0.06 \\
+slab & 3.3e4 & 10 & -24 & 6 & 0.57 & 0.08 \\
+slab & 7.8e4 & 2 & -17 & 20 & 2.59 & 0.13 \\
+slab & 7.8e4 & 4 & -24 & 11 & 1.87 & 0.27 \\
+slab & 7.8e4 & 6 & -27 & 9 & 1.25 & 0.21 \\
+slab & 7.8e4 & 8 & -27 & 5 & 0.82 & 0.29 \\
+slab & 7.8e4 & 10 & -27 & 4 & 0.6 & 0.17 \\
+slab & 1.8e5 & 2 & -27 & 8 & 2.51 & 0.53 \\
+slab & 1.8e5 & 4 & -28 & 10 & 1.93 & 0.33 \\
+slab & 1.8e5 & 6 & -30 & 6 & 1.32 & 0.37 \\
+slab & 1.8e5 & 8 & -29 & 8 & 0.82 & 0.57 \\
+slab & 1.8e5 & 10 & -28 & 3 & 0.62 & 0.35 \\
+slab & 4.3e5 & 2 & -31 & 8 & 2.6 & 0.6 \\
+slab & 4.3e5 & 4 & -32 & 7 & 1.96 & 0.52 \\
+slab & 4.3e5 & 6 & -32 & 4 & 1.35 & 0.49 \\
+slab & 4.3e5 & 8 & -30 & 7 & 0.82 & 0.85 \\
+slab & 4.3e5 & 10 & -29 & 2 & 0.63 & 0.51 \\
+slab & 1.0e6 & 2 & -34 & 6 & 2.66 & 0.7 \\
+slab & 1.0e6 & 4 & -35 & 5 & 1.97 & 0.62 \\
+slab & 1.0e6 & 6 & -34 & 3 & 1.34 & 0.78 \\
+slab & 1.0e6 & 8 & -30 & 6 & 0.88 & 1.16 \\
+slab & 1.0e6 & 10 & -29 & 2 & 0.63 & 0.66 \\
+slab & 2.4e6 & 2 & -37 & 4 & 2.69 & 0.85 \\
+slab & 2.4e6 & 4 & -37 & 3 & 1.98 & 0.87 \\
+slab & 2.4e6 & 6 & -34 & 7 & 1.34 & 1.06 \\
+slab & 2.4e6 & 8 & -31 & 5 & 0.8 & 1.26 \\
+slab & 2.4e6 & 10 & -29 & 2 & 0.62 & 0.85 \\
+slab & 5.6e6 & 2 & -38 & 4 & 2.7 & 1.12 \\
+slab & 5.6e6 & 4 & -37 & 3 & 1.99 & 1.07 \\
+slab & 5.6e6 & 6 & -35 & 3 & 1.31 & 1.05 \\
+slab & 5.6e6 & 8 & -32 & 5 & 0.78 & 1.41 \\
+slab & 5.6e6 & 10 & -29 & 2 & 0.69 & 1.13 \\
+slab & 1.3e7 & 2 & -39 & 7 & 2.71 & 1.41 \\
+slab & 1.3e7 & 4 & -38 & 2 & 2 & 1.32 \\
+slab & 1.3e7 & 6 & -36 & 1 & 1.31 & 1.29 \\
+slab & 1.3e7 & 8 & -32 & 5 & 0.78 & 1.78 \\
+slab & 1.3e7 & 10 & -29 & 2 & 0.71 & 1.23 \\
+slab & 3.0e7 & 2 & -39 & 7 & 2.72 & 1.62 \\
+slab & 3.0e7 & 4 & -38 & 2 & 2.01 & 1.65 \\
+slab & 3.0e7 & 6 & -36 & 5 & 1.32 & 1.85 \\
+slab & 3.0e7 & 8 & -32 & 5 & 0.79 & 2.15 \\
+slab & 3.0e7 & 10 & -29 & 2 & 0.71 & 1.59 \\
+slab & 7.0e7 & 2 & -39 & 7 & 2.67 & 2.26 \\
+slab & 7.0e7 & 4 & -38 & 2 & 2.01 & 2.01 \\
+slab & 7.0e7 & 6 & -36 & 5 & 1.32 & 2.24 \\
+slab & 7.0e7 & 8 & -32 & 5 & 0.79 & 2.52 \\
+slab & 7.0e7 & 10 & -29 & 1 & 0.56 & 1.84 \\
+\end{longtable}
+
+\clearpage
+
+\section*{Effects of Rheological Strength Contrasts on Flow
+Dynamics}\label{sec:rheological-strength-contrasts}
+\addcontentsline{toc}{section}{Effects of Rheological Strength Contrasts
+on Flow Dynamics}
+
+The following simulation snapshots demonstrate the effect of the
+rheological activation factor \(B\) on 410 structure after 100 Ma of
+evolution.
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Slab simulations with low strength contrasts (B = 2) demonstrating ultra-sluggish (top row: Z = 3.0e0 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/slab-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png}
+\caption{Slab simulations with low strength contrasts (\(B\) = 2)
+demonstrating ultra-sluggish (top row: \(Z\) = 3.0e0 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:slab-B2-composition-set2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Slab simulations with intermediate strength contrasts (B = 4) showing ultra-sluggish (top row: Z = 3.0e0 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/slab-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set2-composition-0010.png}
+\caption{Slab simulations with intermediate strength contrasts (\(B\) =
+4) showing ultra-sluggish (top row: \(Z\) = 3.0e0 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:slab-B4-composition-set2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Slab simulations with intermediate strength contrasts (B = 6) demonstrating ultra-sluggish (top row: Z = 4.7e2 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/slab-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png}
+\caption{Slab simulations with intermediate strength contrasts (\(B\) =
+6) demonstrating ultra-sluggish (top row: \(Z\) = 4.7e2 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:slab-B6-composition-set2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Slab simulations with high strength contrasts (B = 10) demonstrating ultra-sluggish (top row: Z = 7.0e7 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/slab-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png}
+\caption{Slab simulations with high strength contrasts (\(B\) = 10)
+demonstrating ultra-sluggish (top row: \(Z\) = 7.0e7 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:slab-B10-composition-set2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Plume simulations with low strength contrasts (B = 2) demonstrating ultra-sluggish (top row: Z = 3.0e0 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/plume-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png}
+\caption{Plume simulations with low strength contrasts (\(B\) = 2)
+demonstrating ultra-sluggish (top row: \(Z\) = 3.0e0 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:plume-B2-composition-set2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Plume simulations with intermediate strength contrasts (B = 4) showing ultra-sluggish (top row: Z = 3.0e0 K s\^{}\{-1\}), intermediate-sluggish (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/plume-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set2-composition-0010.png}
+\caption{Plume simulations with intermediate strength contrasts (\(B\) =
+4) showing ultra-sluggish (top row: \(Z\) = 3.0e0 K s\(^{-1}\)),
+intermediate-sluggish (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:plume-B4-composition-set2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Plume simulations with intermediate strength contrasts (B = 6) demonstrating ultra-sluggish (top row: Z = 4.7e2 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/plume-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png}
+\caption{Plume simulations with intermediate strength contrasts (\(B\) =
+6) demonstrating ultra-sluggish (top row: \(Z\) = 4.7e2 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:plume-B6-composition-set2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Plume simulations with high strength contrasts (B = 10) demonstrating ultra-sluggish (top row: Z = 7.0e7 K s\^{}\{-1\}), intermediate (middle row: Z = 4.7e2 K s\^{}\{-1\}), and quasi-equilibrium (bottom row: Z = 7.0e7 K s\^{}\{-1\}) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature \textbackslash hat\{T\} (left column), dynamic density \textbackslash hat\{\textbackslash rho\} (middle column), and pressure-wave velocity V\_p (right column).}]{../figs/simulation/compositions/plume-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png}
+\caption{Plume simulations with high strength contrasts (\(B\) = 10)
+demonstrating ultra-sluggish (top row: \(Z\) = 7.0e7 K s\(^{-1}\)),
+intermediate (middle row: \(Z\) = 4.7e2 K s\(^{-1}\)), and
+quasi-equilibrium (bottom row: \(Z\) = 7.0e7 K s\(^{-1}\)) kinetic
+regimes after 100 Ma evolution. Panels show dynamic temperature
+\(\hat{T}\) (left column), dynamic density \(\hat{\rho}\) (middle
+column), and pressure-wave velocity \(V_p\) (right
+column).}\label{fig:plume-B10-composition-set2}
+\end{figure}
+
+\clearpage
+
+\end{document}

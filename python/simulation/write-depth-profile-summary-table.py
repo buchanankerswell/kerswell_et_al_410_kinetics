@@ -40,23 +40,25 @@ def main():
     print(f" -> {out_path.name}")
 
     df = pd.read_csv(in_path)
-    df_100 = cast(pd.DataFrame, df[df["timestep"] == 100])
+    df_100 = cast(pd.DataFrame, df[df["timestep"] == 10])
     df_100 = df_100.drop_duplicates(subset=["model_id", "timestep"], keep="first")
 
-    df_100[["model_id", "Z"]] = df_100["model_id"].str.extract(r"^(plume|slab)_(\d+\.\d+e[+-]?\d+)$").astype(str)
-    df_100["Z"] = df_100["Z"].apply(lambda x: f"`{x}`")
+    df_100["model_id"] = df_100["model_id"].str.extract(r"^(plume|slab)").astype(str)
     df_100["displacement"] = (df_100["displacement"] / 1e3).round(0)
     df_100["width"] = (df_100["width"] / 1e3).round(0)
     df_100["max_velocity"] = df_100["max_velocity"].round(2)
     df_100["max_reaction_rate"] = np.log10(df_100["max_reaction_rate"]).round(2)
 
-    cols = ["model_id", "Z", "displacement", "width", "max_velocity", "max_reaction_rate"]
+    cols = ["model_id", "Z_factor", "B_factor", "displacement", "width", "max_velocity", "max_reaction_rate"]
     df_100 = df_100[cols]
 
+    df_100 = df_100.sort_values(by=["model_id", "Z_factor", "B_factor"], ascending=[True, True, True])
+    df_100["Z_factor"] = df_100["Z_factor"].apply(lambda x: f"`{x:.1e}`")
     df_100 = df_100.rename(  # pyright: ignore
         columns={
-            "model_id": "Model",
-            "Z": "$Z$",
+            "model_id": "Simulation",
+            "Z_factor": "$Z$",
+            "B_factor": "$B$",
             "displacement": "410 Displacement",
             "width": "410 Width",
             "max_velocity": "Max $\\vec{u}_y$",

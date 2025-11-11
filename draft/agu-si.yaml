@@ -1,0 +1,26 @@
+---
+journal: "JGR: Machine Learning and Computation"
+classoption: "draft,linenumbers"
+#title: "Reaction Kinetics and Rheology Jointly Control 410 km Discontinuity Structure in Subduction Zones"
+# title: "From Sharp to Diffuse: Kinetically Controlled Variability of the 410 km Discontinuity"
+title: "Supplementary Information for Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks Control 410 Topography"
+authors:
+  - name: "Buchanan Kerswell"
+    affil: 1
+  - name: "John Wheeler"
+    affil: 1
+  - name: "Rene Gassmöller"
+    affil: 2
+  - name: "J. Huw Davies"
+    affil: 3
+affiliations:
+  - number: 1
+    name: "Department of Earth, Oceans and Ecological Sciences, University of Liverpool, Liverpool L69 3BX, UK"
+  - number: 2
+    name: "GEOMAR Helmholtz Centre for Ocean Research Kiel, Kiel, Germany"
+  - number: 3
+    name: "School of Earth and Environmental Sciences, Cardiff University, Park Place, Cardiff, CF10 3AT, UK"
+corresponding_author:
+  - name: "Buchanan Kerswell"
+    email: "b.kerswell@liverpool.ac.uk"
+---

@@ -80,34 +80,28 @@ class PyVistaModelConfig:
     plotter_background: str = "#FFFFFF"
     plotter_lighting: str = "none"
     edge_opacity: float = 0.3
-    title_font_size: int = 60
-    title_position: tuple[float, float] = field(default_factory=lambda: (0.39, 0.90))
     cbar_vertical: bool = False
     cbar_title_font_size: int = 115
-    cbar_label_font_size: int = 80
-    cbar_width: float = 0.4
+    cbar_label_font_size: int = 115
+    cbar_width: float = 0.6
+    cbar_height: float = 0.13
     cbar_n_labels: int = 3
-    cbar_position: list[float] = field(default_factory=lambda: [0.30, 0.05])
-    rotation_init: float = 0
-    rotation_coeff: float = 0
+    cbar_position: list[float] = field(default_factory=lambda: [0.20, 0.12])
     camera_center_zoom: bool = True
     camera_full_view: bool = True
-    camera_y_shift_factor: float = -0.045
-    camera_zoom_factor: float = 1.9
+    camera_y_shift_factor: float = -0.15
+    camera_zoom_factor: float = 1.95
     screenshot_dpi: tuple[int, int] = field(default_factory=lambda: (330, 330))
-    vertical_profile_line_width: int = 6
-    depth_contour_depths_km: list[int] = field(default_factory=lambda: [])
-    depth_contour_line_widths: list[int] = field(default_factory=lambda: [3])
-    depth_contour_tolerance_km: float = 1
     velocity_glyph_factor: float = 18e5
     stress_glyph_factor: float = 1e-3
     glyph_line_width: float = 4
     scale_bar_enabled: bool = True
     scale_bar_color: str = "black"
-    scale_bar_thickness: float = 25
+    scale_bar_thickness: float = 30
     scale_bar_length_fraction: float = 0.222
     scale_bar_position: tuple = (0.05, 0.08)
-    scale_bar_font_size_factor: float = 1.0
+    scale_bar_label_font_size: int = 115
+    scale_bar_label_shift_factor: float = 0.01
 
     topography_plot_width: float = 7.0
     topography_plot_height: float = 5.5
@@ -519,8 +513,10 @@ class PyVistaModelVisualizer:
                 df = pd.DataFrame(depth_profile_summary)
                 df = df.drop_duplicates()
                 csv_path = Path("simulation") / "data" / "depth-profile-data.csv"
-                csv_path.parent.mkdir(parents=True, exist_ok=True)
-                df.to_csv(csv_path, index=False)
+
+                if not csv_path.exists():
+                    csv_path.parent.mkdir(parents=True, exist_ok=True)
+                    df.to_csv(csv_path, index=False)
             except Exception as e:
                 print(f"\n !! Error: Failed to write CSV file with pandas: {e}")
 
@@ -706,6 +702,7 @@ class PyVistaModelVisualizer:
             label_font_size=cfg.cbar_label_font_size,
             fmt=cfg.fmt_mapping.get(field_name, "%.1f"),
             width=cfg.cbar_width,
+            height=cfg.cbar_height,
             n_labels=cfg.cbar_n_labels,
             position_x=cfg.cbar_position[0],
             position_y=cfg.cbar_position[1],
@@ -724,6 +721,7 @@ class PyVistaModelVisualizer:
 
         camera_settings = self._compute_camera_settings(mesh, cfg.camera_full_view)
         plotter.camera_position = camera_settings
+        plotter.enable_parallel_projection()
 
         if cfg.scale_bar_enabled:
             self._add_scale_bar(mesh, plotter)
@@ -1049,9 +1047,7 @@ class PyVistaModelVisualizer:
 
         x_offset = (
             50e3
-            if (B_factor <= 4 and Z_factor < 2.0e2)
-            or (B_factor > 4 and B_factor <= 6 and Z_factor < 3.7e1)
-            or (B_factor > 6 and Z_factor < 1.6e1)
+            if (B_factor <= 4 and Z_factor < 2.0e2) or (B_factor > 4 and B_factor <= 6 and Z_factor < 3.7e1) or (B_factor > 6 and Z_factor < 1.6e1)
             else 450e3
         )
 
@@ -1479,15 +1475,14 @@ class PyVistaModelVisualizer:
         line = pv.Line(start_point, end_point)
         plotter.add_mesh(line, color=self.plot_config.scale_bar_color, line_width=self.plot_config.scale_bar_thickness)
 
-        text_pos = [
-            (start_point[0] + end_point[0]) / 2,
-            start_point[1] + 0.01 * x_range,
-            0,
-        ]
+        text_pos = [start_point[0], start_point[1] + 0.01 * x_range, 0]
+        shift_factor = self.plot_config.scale_bar_label_shift_factor
+        text_pos[0] += shift_factor * x_range
+
         plotter.add_point_labels(
             [text_pos],
             [f"{scale_km:.0f} km"],
-            font_size=self.plot_config.cbar_label_font_size,
+            font_size=self.plot_config.scale_bar_label_font_size,
             point_color=self.plot_config.scale_bar_color,
             text_color=self.plot_config.scale_bar_color,
             point_size=0,

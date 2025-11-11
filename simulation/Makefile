@@ -48,7 +48,7 @@ SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(ZB_COM
 DATA := $(SIMULATION)/data/reaction-410-profile.txt
 
 # Simulation plugins
-PLUGINS := plugins/libphase-transition-kinetics.release.so
+PLUGINS := plugins/libreaction-kinetics.release.so
 
 # Cleanup targets
 CLEAN := \
@@ -145,28 +145,20 @@ clean:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
 	done
 
 	@find $(PROJECT_ROOT)/simulation -type l -path '*/plugins/aspect*' | while read -r item; do \
-		case "$$item" in \
-			$(PROJECT_ROOT)*) \
-				echo " -> Safely removing symlink\n   $$item"; \
-				rm -v "$$item";; \
-			*) \
-				echo " -- Skipping (outside project root)\n   $$item";; \
-		esac; \
+		if [[ "$$item" == $(PROJECT_ROOT)* ]]; then \
+			echo " -> Safely removing symlink: $$item"; \
+			rm -v "$$item"; \
+		fi; \
 	done
 
 deep-clean:
@@ -174,15 +166,10 @@ deep-clean:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \

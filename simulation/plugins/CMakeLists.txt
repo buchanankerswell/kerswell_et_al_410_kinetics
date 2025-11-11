@@ -32,6 +32,6 @@ ENDIF ()
 
 DEAL_II_INITIALIZE_CACHED_VARIABLES()
 
-SET(TARGET "phase-transition-kinetics")
-ADD_LIBRARY(${TARGET} SHARED phase-transition-kinetics.cc)
+SET(TARGET "reaction-kinetics")
+ADD_LIBRARY(${TARGET} SHARED reaction-kinetics.cc)
 ASPECT_SETUP_PLUGIN(${TARGET})

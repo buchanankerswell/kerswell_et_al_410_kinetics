@@ -99,55 +99,39 @@ visualize_material_table <- function(profile_path, table_path, out_path) {
       ggplot() +
       geom_raster(data = df_tables, aes(temperature, pressure, fill = get(props[1]))) +
       geom_path(data = df_profile, aes(temperature, pressure), color = "white", linewidth = 1.4) +
-      geom_path(
-        data = data.frame(
-          x = c(1705, 1809, 1809, 1705, 1705),
-          y = c(10, 10, 18, 18, 10)
-        ),
-        aes(x, y),
-        color = "black",
-        linewidth = 1.4
-      ) +
+      geom_path(data = data.frame(x = c(1705, 1809, 1809, 1705, 1705), y = c(10, 10, 18, 18, 10)), aes(x, y), color = "black", linewidth = 1.4) +
       scale_fill_viridis_c(
         option = color_map[props[1]],
         direction = color_direction[props[1]],
         limits = color_lims[[props[1]]],
-        breaks = scales::pretty_breaks(n = 4),
+        breaks = pretty_breaks(n = 3),
         na.value = "grey90"
       ) +
       labs(x = "Temperature (K)", y = "Pressure (GPa)", fill = custom_labeller(props[1])) +
       coord_cartesian(expand = FALSE) +
       theme_bw(base_size = 30) +
-      table_theme()
+      theme_table()
 
     p2 <-
       ggplot() +
       geom_raster(data = df_tables, aes(temperature, pressure, fill = get(props[2]))) +
       geom_path(data = df_profile, aes(temperature, pressure), color = "white", linewidth = 1.4) +
-      geom_path(
-        data = data.frame(
-          x = c(1705, 1809, 1809, 1705, 1705),
-          y = c(10, 10, 18, 18, 10)
-        ),
-        aes(x, y),
-        color = "black",
-        linewidth = 1.4
-      ) +
+      geom_path(data = data.frame(x = c(1705, 1809, 1809, 1705, 1705), y = c(10, 10, 18, 18, 10)), aes(x, y), color = "black", linewidth = 1.4) +
       scale_fill_viridis_c(
         option = color_map[props[2]],
         direction = color_direction[props[2]],
         limits = color_lims[[props[2]]],
-        breaks = scales::pretty_breaks(n = 5),
+        breaks = pretty_breaks(n = 4),
         na.value = "grey90"
       ) +
       labs(x = "Temperature (K)", y = "Pressure (GPa)", fill = custom_labeller(props[2])) +
       coord_cartesian(expand = FALSE) +
       theme_bw(base_size = 30) +
-      table_theme() +
+      theme_table() +
       theme(axis.title.y = element_blank(), axis.text.y = element_blank())
 
-    p <- p1 + p2 + plot_annotation(tag_levels = "a")
+    p <- p1 + p2
 
-    ggsave(out_path, plot = p, width = 11, height = 6, dpi = 300, bg = "white", create.dir = TRUE)
+    ggsave(out_path, plot = p, width = 10, height = 5.5, dpi = 300, bg = "white", create.dir = TRUE)
   })
 }

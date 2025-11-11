@@ -7,7 +7,7 @@ include parts/globals.prm
 include parts/solver.prm
 include parts/geometry.prm
 include parts/velocity-plume.prm
-include parts/composition.prm
+include parts/composition-plume.prm
 include parts/temperature-plume.prm
 include parts/heating.prm
 include parts/traction-plume.prm

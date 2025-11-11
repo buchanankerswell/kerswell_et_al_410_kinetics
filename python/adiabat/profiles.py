@@ -895,7 +895,7 @@ class DrivingForceProfile:
         """Write profile."""
 
         header = (
-            f"# This ASPECT-compatible file contains data to calculate the thermodynamic driving force in the PhaseTransitionKinetics material model. This table is for {self.material_a.name} -> {self.material_b.name} evaluated along an isentrope produced by the BurnMan software.\n"
+            f"# This ASPECT-compatible file contains data to calculate the thermodynamic driving force in the ReactionKinetics material model. This table is for {self.material_a.name} -> {self.material_b.name} evaluated along an isentrope produced by the BurnMan software.\n"
             f"# POINTS: {len(self.depths)}\n"
             "#\n"
             "# pressure (Pa), temperature (K), density a (kg/m3), density b (kg/m3), thermal expansivity a (1/K), thermal expansivity b (1/K), specific heat a (J/K/kg), specific heat b (J/K/kg), compressibility a (1/Pa), compressibility b (1/Pa), seismic Vp a (m/s), seismic Vp b (m/s), seismic dVp/dT a (m/s/K), seismic dVp/dT b (m/s/K), seismic Vs a (m/s), seismic Vs b (m/s), seismic dVs/dT a (m/s/K), seismic dVs/dT b (m/s/K), molar internal energy a (J/mol), molar internal energy b (J/mol), molar Gibbs a (J/mol), molar Gibbs b (J/mol), molar entropy a (J/mol), molar entropy b (J/mol), molar volume a (m^3/mol), molar volume b (m^3/mol), delta density (kg/m3), delta thermal expansivity (1/K), delta specific heat (J/K/kg), delta compressibility (1/Pa), delta internal energy (J/mol), delta molar Gibbs (J/mol), delta molar entropy (J/K/mol), delta molar volume (m^3/mol)\n"

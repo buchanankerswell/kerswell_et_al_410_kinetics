@@ -2,9 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Usage / args
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if [ $# -ne 6 ]; then
   echo "Usage: $0 <FIG_DIR> <OUT_DIR> <TIMESTEP> <ID1> <ID2> <ID3>"
   exit 1
@@ -16,7 +16,7 @@ TIMESTEP="$3"
 ID1="$4"
 ID2="$5"
 ID3="$6"
-Y_CROP=5
+Y_CROP=9
 
 mkdir -p "${OUT_DIR}"
 
@@ -28,9 +28,9 @@ echo "    --------------------------------------------------"
 echo "    Composing mesh plots"
 echo "    --------------------------------------------------"
 
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Helper function
-# ===========================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 compose_figures() {
   local TYPE="$1"
   local MODE="$2"
@@ -49,16 +49,18 @@ compose_figures() {
     local ID="$5"
     local ID_DIR="${ID//-/_}"
     magick \
-      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[0]}-${TIMESTEP}-tagged-abc.png" -gravity south -chop "0x${Y_CROP}%" \) \
-      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[1]}-${TIMESTEP}-tagged-def.png" -gravity south -chop "0x${Y_CROP}%" \) \
-      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[2]}-${TIMESTEP}-tagged-ghi.png" -gravity south -chop "0x${Y_CROP}%" \) \
-      "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[3]}-${TIMESTEP}-tagged-jkl.png" -append "${OUT_PATH}"
+      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[0]}-${TIMESTEP}.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[1]}-${TIMESTEP}.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[2]}-${TIMESTEP}.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID_DIR}/tiles/${TYPE}-${ID}-${SUFFIXES[3]}-${TIMESTEP}.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      -append "${OUT_PATH}"
 
   elif [[ "$MODE" == "triple" ]]; then
     magick \
-      \( "${FIG_DIR}/${TYPE}_${ID1_DIR}/tiles/${TYPE}-${ID1}-${SUFFIXES[0]}-${TIMESTEP}-tagged-abc.png" -gravity south -chop "0x${Y_CROP}%" \) \
-      \( "${FIG_DIR}/${TYPE}_${ID2_DIR}/tiles/${TYPE}-${ID2}-${SUFFIXES[0]}-${TIMESTEP}-tagged-def.png" -gravity south -chop "0x${Y_CROP}%" \) \
-      "${FIG_DIR}/${TYPE}_${ID3_DIR}/tiles/${TYPE}-${ID3}-${SUFFIXES[0]}-${TIMESTEP}-tagged-ghi.png" -append "${OUT_PATH}"
+      \( "${FIG_DIR}/${TYPE}_${ID1_DIR}/tiles/${TYPE}-${ID1}-${SUFFIXES[0]}-${TIMESTEP}.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID2_DIR}/tiles/${TYPE}-${ID2}-${SUFFIXES[0]}-${TIMESTEP}.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      \( "${FIG_DIR}/${TYPE}_${ID3_DIR}/tiles/${TYPE}-${ID3}-${SUFFIXES[0]}-${TIMESTEP}.png" -gravity south -chop "0x${Y_CROP}%" \) \
+      -append "${OUT_PATH}"
   fi
 }
 

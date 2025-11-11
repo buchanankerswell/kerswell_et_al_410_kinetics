@@ -4,7 +4,7 @@ R := $(PROJECT_ROOT)/R
 BASH := $(PROJECT_ROOT)/bash
 PYTHON := $(PROJECT_ROOT)/python
 SIMULATION := $(PROJECT_ROOT)/simulation
-MARKDOWN := $(PROJECT_ROOT)/markdown
+DRAFT := $(PROJECT_ROOT)/draft
 
 # Targets
 .PHONY: install uninstall models adiabat visualize environments clean deep-clean help
@@ -34,11 +34,8 @@ visualize:
 	@$(MAKE) --no-print-directory -C $(R) visualize
 	@$(MAKE) --no-print-directory -C $(PYTHON) visualize
 
-manuscript-diff:
-	@$(MAKE) --no-print-directory -C $(MARKDOWN) diff
-
 manuscript:
-	@$(MAKE) --no-print-directory -C $(MARKDOWN)
+	@$(MAKE) --no-print-directory -C $(DRAFT)
 
 environments:
 	@for file in $(PYTHON)/environments/*.yml; do \
@@ -59,7 +56,7 @@ clean:
 	@$(MAKE) --no-print-directory -C $(PYTHON) clean || true
 	@$(MAKE) --no-print-directory -C $(R) clean || true
 	@$(MAKE) --no-print-directory -C $(SIMULATION) clean || true
-	@$(MAKE) --no-print-directory -C $(MARKDOWN) clean || true
+	@$(MAKE) --no-print-directory -C $(DRAFT) clean || true
 	@find . -name ".DS_Store" -type f -delete
 
 deep-clean: clean
@@ -71,7 +68,7 @@ deep-clean: clean
 	@$(MAKE) --no-print-directory -C $(PYTHON) deep-clean || true
 	@$(MAKE) --no-print-directory -C $(R) deep-clean || true
 	@$(MAKE) --no-print-directory -C $(SIMULATION) deep-clean || true
-	@$(MAKE) --no-print-directory -C $(MARKDOWN) deep-clean || true
+	@$(MAKE) --no-print-directory -C $(DRAFT) deep-clean || true
 
 help:
 	@echo "    --------------------------------------------------"

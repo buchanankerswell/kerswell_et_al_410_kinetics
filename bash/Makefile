@@ -69,15 +69,10 @@ uninstall-aspect:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -91,15 +86,10 @@ uninstall-dealii:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -144,15 +134,10 @@ clean:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -163,15 +148,10 @@ deep-clean:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \

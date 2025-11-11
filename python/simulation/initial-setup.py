@@ -65,7 +65,7 @@ def draw_initial_conditions(ax, X, Y, T, cmap, x_extent, y_extent, phase_depth, 
         bc_labels["top1"],
         ha="right" if "Slab" in title else "center",
         va="top",
-        fontsize=12
+        fontsize=13,
     )
 
     ax.text(
@@ -74,7 +74,7 @@ def draw_initial_conditions(ax, X, Y, T, cmap, x_extent, y_extent, phase_depth, 
         bc_labels["top2"],
         ha="left" if "Slab" in title else "center",
         va="top",
-        fontsize=12
+        fontsize=13,
     )
 
     ax.text(
@@ -83,7 +83,7 @@ def draw_initial_conditions(ax, X, Y, T, cmap, x_extent, y_extent, phase_depth, 
         bc_labels["bottom1"],
         ha="center" if "Slab" in title else "left",
         va="bottom",
-        fontsize=12
+        fontsize=13,
     )
 
     ax.text(
@@ -92,28 +92,11 @@ def draw_initial_conditions(ax, X, Y, T, cmap, x_extent, y_extent, phase_depth, 
         bc_labels["bottom2"],
         ha="center" if "Slab" in title else "right",
         va="bottom",
-        fontsize=12
+        fontsize=13,
     )
 
-    ax.text(
-        text_offset,
-        y_extent / 2,
-        bc_labels["left"],
-        ha="left",
-        va="center",
-        rotation=90,
-        fontsize=12
-    )
-
-    ax.text(
-        x_extent - text_offset,
-        y_extent / 2,
-        bc_labels["right"],
-        ha="right",
-        va="center",
-        rotation=90,
-        fontsize=12
-    )
+    ax.text(text_offset * 2.6, y_extent / 2, bc_labels["left"], ha="center", va="center", rotation=90, fontsize=13)
+    ax.text(x_extent - text_offset * 2.6, y_extent / 2, bc_labels["right"], ha="center", va="center", rotation=90, fontsize=13)
 
     if "Slab" in title:
         ax.set_xticks([])
@@ -122,7 +105,7 @@ def draw_initial_conditions(ax, X, Y, T, cmap, x_extent, y_extent, phase_depth, 
         ax.set_xlabel("X (km)")
 
     ax.set_ylabel("Y (km)")
-    ax.set_title(title, fontsize=14)
+    ax.set_title(title, fontsize=16)
 
     return contour
 
@@ -157,7 +140,8 @@ def main():
 
     x_extent = 900
     y_extent = 600
-    phase_transition_depth = 470
+    phase_transition_depth_slab = 473
+    phase_transition_depth_plume = 460
 
     nx, ny = 900, 600
     x = np.linspace(0, x_extent, nx)
@@ -206,17 +190,17 @@ def main():
     bc_slab = {
         "top1": "$\\vec{u}_x$=$f(x)$, $\\vec{u}_y$=$f(x)$",
         "top2": "Fixed $T$",
-        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
-        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
-        "bottom1": "$\\sigma_{yy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
+        "right": "$\\sigma_{xx}$ = $d\\bar{P}/dy$,\n $\\vec{u}_x$=0",
+        "left": "$\\sigma_{xx}$ = $d\\bar{P}/dy$,\n $\\vec{u}_x$=0",
+        "bottom1": "$\\sigma_{yy}$ = $\\bar{P}(bottom)$, $\\vec{u}_x$=0",
         "bottom2": None,
     }
 
     bc_plume = {
-        "top1": "$\\sigma_{yy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
+        "top1": "$\\sigma_{yy}$ = $\\bar{P}(top)$, $\\vec{u}_x$=0",
         "top2": None,
-        "right": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
-        "left": "$\\sigma_{xy}$ = $\\bar{P}$, $\\vec{u}_x$=0",
+        "right": "$\\sigma_{xx}$ = $d\\bar{P}/dy$,\n $\\vec{u}_x$=0",
+        "left": "$\\sigma_{xx}$ = $d\\bar{P}/dy$,\n $\\vec{u}_x$=0",
         "bottom1": "Fixed $T$",
         "bottom2": "$\\vec{u}_x$=0, $\\vec{u}_y$=$f(x)$",
     }
@@ -242,18 +226,16 @@ def main():
     ax_plume = fig.add_subplot(gs[1, 0])
 
     contour_slab = draw_initial_conditions(
-        ax_slab, X, Y, T_slab, cmap_modified, x_extent, y_extent, phase_transition_depth, bc_slab, "Slab Setup"
+        ax_slab, X, Y, T_slab, cmap_modified, x_extent, y_extent, phase_transition_depth_slab, bc_slab, "Slab Setup"
     )
 
-    _ = draw_initial_conditions(
-        ax_plume, X, Y, T_plume, cmap_modified, x_extent, y_extent, phase_transition_depth, bc_plume, "Plume Setup"
-    )
+    _ = draw_initial_conditions(ax_plume, X, Y, T_plume, cmap_modified, x_extent, y_extent, phase_transition_depth_plume, bc_plume, "Plume Setup")
 
     ticks = [-500, -250, 0, 250, 500]
-    cax = fig.add_axes([0.30, 0.0, 0.5, 0.02])  # pyright: ignore
+    cax = fig.add_axes([0.30, -0.02, 0.55, 0.028])  # pyright: ignore
     cbar = fig.colorbar(contour_slab, cax=cax, ticks=ticks, orientation="horizontal")
     cbar.set_label("Thermal Anomaly (K)")
-    cbar.ax.tick_params(labelsize=10)
+    cbar.ax.tick_params(labelsize=13)
 
     plt.savefig(out_path, dpi=300, bbox_inches="tight", pad_inches=0.05)
 

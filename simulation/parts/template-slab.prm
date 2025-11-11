@@ -7,7 +7,7 @@ include parts/globals.prm
 include parts/solver.prm
 include parts/geometry.prm
 include parts/velocity-slab.prm
-include parts/composition.prm
+include parts/composition-slab.prm
 include parts/temperature-slab.prm
 include parts/heating.prm
 include parts/traction-slab.prm

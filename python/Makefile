@@ -60,7 +60,9 @@ write-markdown-table:
 
 compositions:
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B2" "Z4.7e2-B2" "Z7.0e7-B2")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B4" "Z4.7e2-B4" "Z7.0e7-B4")
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B6" "Z4.7e2-B6" "Z7.0e7-B6")
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B8" "Z4.7e2-B8" "Z7.0e7-B8")
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B10" "Z4.7e2-B10" "Z7.0e7-B10")
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B2" "Z3.0e0-B6" "Z3.0e0-B10")
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z4.7e2-B2" "Z4.7e2-B6" "Z4.7e2-B10")
@@ -108,15 +110,10 @@ clean:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \
@@ -127,15 +124,10 @@ deep-clean:
 		safe_rm() { \
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
-				case "$$ABS_PATH" in \
-					$(PROJECT_ROOT)*) \
-						echo " -> Safely removing\n   $$ABS_PATH"; \
-						rm -rf "$$ABS_PATH";; \
-					*) \
-						echo " -- Skipping (outside project root)\n   $$ABS_PATH";; \
-				esac; \
-			else \
-				echo " -- Skipping (not found)\n   $$1"; \
+				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
+					echo " -> Safely removing: $$ABS_PATH"; \
+					rm -rf "$$ABS_PATH"; \
+				fi; \
 			fi; \
 		}; \
 		safe_rm "$$item"; \

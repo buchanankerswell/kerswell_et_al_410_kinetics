@@ -103,13 +103,6 @@ read_material_table <- function(filepath) {
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-expand_range <- function(x, factor = 0.5) {
-  r <- range(x, na.rm = TRUE)
-  delta <- diff(r) * factor / 2
-  c(r[1] - delta, r[2] + delta)
-}
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 expand_range_iqr <- function(x, threshold = 5.0) {
   x <- x[is.finite(x)]
   q <- quantile(x, probs = c(0.25, 0.75), na.rm = TRUE)
@@ -121,9 +114,9 @@ expand_range_iqr <- function(x, threshold = 5.0) {
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-profile_theme <- function() {
+theme_profile <- function() {
   theme(
-    panel.grid.major = element_line(linewidth = 0.4, color = "white"),
+    panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = "grey90"),
     panel.spacing.x = unit(1.5, "cm"),
@@ -144,31 +137,22 @@ profile_theme <- function() {
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-table_theme <- function() {
+theme_table <- function() {
   theme(
-    panel.ontop = TRUE,
-    panel.grid.major = element_line(
-      linewidth = 0.3,
-      color = rgb(0.9, 0.9, 0.9, 0.8)
-    ),
+    panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = NA),
-    plot.margin = margin(50, 10, 5, 5),
+    plot.margin = margin(50, 25, 5, 5),
     plot.title = element_text(hjust = 0.5),
     plot.tag.location = "panel",
-    plot.tag = element_text(
-      margin = margin(5, 0, 0, -5),
-      hjust = 0,
-      face = "bold",
-      color = "white"
-    ),
+    plot.tag = element_text(margin = margin(5, 0, 0, -5), hjust = 0, face = "bold", color = "white"),
     axis.ticks = element_blank(),
     legend.justification = c(1, 0),
     legend.position = "inside",
     legend.position.inside = c(1.0, 1.0),
     legend.direction = "horizontal",
-    legend.key.height = unit(1.0, "lines"),
-    legend.key.width = unit(3.0, "lines"),
+    legend.key.height = unit(1.15, "lines"),
+    legend.key.width = unit(2.0, "lines"),
     legend.ticks = element_line(color = "black", linewidth = 0.6),
     legend.ticks.length = unit(0.2, "lines"),
     legend.frame = element_rect(color = "black", linewidth = 0.6),
