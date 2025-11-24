@@ -19,7 +19,7 @@ PREV_DOC := $(DRAFT)/bak/manuscript-28-oct-2025
 DIFF_DOC := $(DRAFT)/diff
 
 # Cleanup targets
-CLEAN := $(DOC).{tex,pdf,aux,bbl,blg,log,toc} $(DIFF_DOC).{tex,pdf,aux,bbl,blg,log,toc}
+CLEAN := $(DOC).{tex,pdf,aux,bbl,blg,log,toc} $(DIFF_DOC).{tex,pdf,aux,bbl,blg,log,toc} $(SI).{tex,pdf,aux,bbl,blg,log,toc}
 DEEP_CLEAN :=
 
 # Targets
