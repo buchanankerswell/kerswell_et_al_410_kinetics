@@ -41,7 +41,7 @@ simulation:
 	@Rscript $(R)/simulation.R $(UTILS) $(PYTHON)/simulation/data $(FIGS)
 
 download:
-	@Rscript $(R)/download.R $(UTILS) $(SIMULATION)
+	@Rscript $(R)/download.R $(UTILS) $(PYTHON)/simulation/data
 
 clean:
 	@for item in $(CLEAN); do \

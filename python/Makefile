@@ -1,8 +1,6 @@
 # Python config
-CONDA_ENV_BURNMAN := burnman
-CONDA_ENV_PYVISTA := pyvista
-CONDA_PYTHON_BURNMAN := $$(conda run -n $(CONDA_ENV_BURNMAN) which python)
-CONDA_PYTHON_PYVISTA := $$(conda run -n $(CONDA_ENV_PYVISTA) which python)
+CONDA_ENV := kerswell-et-al-410-kinetics
+CONDA_PYTHON := $$(conda run -n $(CONDA_ENV) which python)
 
 # Top-level dirs
 PROJECT_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST)))/..)
@@ -50,13 +48,13 @@ DEEP_CLEAN := $(PYTHON)/*/data
 
 all: adiabat visualize
 
-visualize: initial-setup meshes compositions
+visualize: initial-setup
 
 sync-barkla:
 	@source $(BASH)/simulation/sync-barkla2.sh "$(PRMS)" "$(TIMESTEPS_SYNC)" "$(SIMULATION)" "$(SIMULATION_BARKLA)"
 
 write-markdown-table:
-	@$(CONDA_PYTHON_PYVISTA) -u $(WRITE_TABLE) --in-dir $(PYTHON)/simulation/data
+	@$(CONDA_PYTHON) -u $(WRITE_TABLE) --in-dir $(PYTHON)/simulation/data
 
 compositions:
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B2" "Z4.7e2-B2" "Z7.0e7-B2")
@@ -69,7 +67,7 @@ compositions:
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z7.0e7-B2" "Z7.0e7-B6" "Z7.0e7-B10")
 
 initial-setup: $(INITIAL_SETUP)
-	@$(CONDA_PYTHON_PYVISTA) -u $(INITIAL_SETUP) --out-fig-dir $(FIGS)
+	@$(CONDA_PYTHON) -u $(INITIAL_SETUP) --out-fig-dir $(FIGS)
 
 meshes: $(MAIN_SIMULATION)
 	@MODEL_IDS=""; \
@@ -84,7 +82,7 @@ meshes: $(MAIN_SIMULATION)
 	TSTEPS_PROFILE="$(TIMESTEPS_PROFILE)"; \
 	TSTEPS_TOPOGRAPHY="$(TIMESTEPS_TOPOGRAPHY)"; \
 	OUT_FIG_DIR=$(FIGS)/simulation; \
-	$(CONDA_PYTHON_PYVISTA) -u $(MAIN_SIMULATION) \
+	$(CONDA_PYTHON) -u $(MAIN_SIMULATION) \
 	    --model-ids $$MODEL_IDS \
 	    --timesteps-mesh $$TSTEPS_MESH \
 	    --timesteps-profile $$TSTEPS_PROFILE \
@@ -98,7 +96,7 @@ adiabat: $(MAIN_ADIABAT)
 		OUT_DIR="$(SIMULATION)/data"; \
 		OUT_FIG_DIR="$(FIGS)/adiabat"; \
 		(cd $$IN_DIR && \
-		    $(CONDA_PYTHON_BURNMAN) -u $(MAIN_ADIABAT) \
+		    $(CONDA_PYTHON) -u $(MAIN_ADIABAT) \
 		        --model-id "$$model" \
 		        --out-dir "$$OUT_DIR" \
 		        --out-fig-dir "$$OUT_FIG_DIR" \

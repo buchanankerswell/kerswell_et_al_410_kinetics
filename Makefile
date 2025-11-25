@@ -9,7 +9,8 @@ DRAFT := $(PROJECT_ROOT)/draft
 # Targets
 .PHONY: install uninstall models plume-models slab-models adiabat sync-barkla download visualize manuscript environments clean deep-clean help
 
-build: environments adiabat download visualize manuscript
+build: environments download adiabat visualize
+	@open figs/*.png
 
 install:
 	@$(MAKE) --no-print-directory -C $(BASH)
@@ -43,15 +44,18 @@ manuscript:
 	@$(MAKE) --no-print-directory -C $(DRAFT)
 
 environments:
-	@for file in $(PYTHON)/environments/*.yml; do \
-		name=$$(basename $$file .yml); \
-		if conda info --envs | awk '{print $$1}' | grep -qx "$$name"; then \
-			echo " -- Environment '$$name' already exists. Skipping ..."; \
-		else \
-			echo " -> Creating environment: $$name from $$file"; \
-			conda env create -n "$$name" -f "$$file"; \
-		fi \
-	done
+	@echo "    --------------------------------------------------"
+	@echo "    Creating conda environments"
+	@echo "    --------------------------------------------------"
+	@if conda info --envs | awk '{print $$1}' | grep -qx "kerswell-et-al-410-kinetics"; then \
+	  echo " -- Environment 'kerswell-et-al-410-kinetics' already exists. Skipping ..."; \
+	else \
+	  echo " -> Creating environment: kerswell-et-al-410-kinetics from environment.yaml"; \
+	  conda env create -f $(PYTHON)/environment.yaml; \
+	fi
+	@echo "    --------------------------------------------------"
+	@echo "    Creating R environment"
+	@echo "    --------------------------------------------------"
 	@Rscript $(R)/environment.R
 
 clean:

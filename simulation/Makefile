@@ -60,8 +60,7 @@ CLEAN := \
 	$(MATERIAL_PRMS) \
 	$(PLUME_PRMS) \
 	$(SLAB_PRMS)
-DEEP_CLEAN := \
-	$(SIMULATION)/**/configs/logs
+DEEP_CLEAN := $(SIMULATION)/**/configs/logs $(SIMULATION)/data
 
 # Targets
 .PHONY: all models prms clean deep-clean help

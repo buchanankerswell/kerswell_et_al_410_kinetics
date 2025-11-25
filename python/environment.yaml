@@ -1,9 +1,12 @@
 ---
-name: burnman
+name: kerswell-et-al-410-kinetics
 channels:
   - conda-forge
 dependencies:
   - python=3.12
+  - pandas
+  - scipy
+  - pyvista
   - pip
   - pip:
       - autograd

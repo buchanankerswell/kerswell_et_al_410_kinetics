@@ -17,7 +17,7 @@ main <- function() {
     cran_pkgs <- c("tidyverse", "patchwork", "osfr")
 
     suppressWarnings({
-      renv::install(cran_pkgs)
+      renv::install(cran_pkgs, verbose = FALSE)
       renv::snapshot(packages = cran_pkgs, prompt = FALSE)
     })
   }
