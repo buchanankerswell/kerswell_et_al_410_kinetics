@@ -1081,8 +1081,8 @@ width0pt\relax}\\*\noindent\ignorespaces}
 %% bibliography when using BibTeX.
 %\bibliographystyle{agufull08}
 %
-%\bibliographystyle{apacite}
-\bibliographystyle{apalike}
+\bibliographystyle{apacite}
+%\bibliographystyle{apalike}
 
 %% In case you want to enter bib entries without using bibtex
 \def\references{\thebibliography{}\item[]}

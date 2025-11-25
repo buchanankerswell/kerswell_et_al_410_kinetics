@@ -7,7 +7,9 @@ SIMULATION := $(PROJECT_ROOT)/simulation
 DRAFT := $(PROJECT_ROOT)/draft
 
 # Targets
-.PHONY: install uninstall models adiabat visualize environments clean deep-clean help
+.PHONY: install uninstall models plume-models slab-models adiabat sync-barkla download visualize manuscript environments clean deep-clean help
+
+build: environments adiabat download visualize manuscript
 
 install:
 	@$(MAKE) --no-print-directory -C $(BASH)
@@ -30,6 +32,9 @@ adiabat:
 sync-barkla:
 	@$(MAKE) --no-print-directory -C $(PYTHON) sync-barkla
 
+download:
+	@$(MAKE) --no-print-directory -C $(R) download
+
 visualize:
 	@$(MAKE) --no-print-directory -C $(R) visualize
 	@$(MAKE) --no-print-directory -C $(PYTHON) visualize
@@ -47,6 +52,7 @@ environments:
 			conda env create -n "$$name" -f "$$file"; \
 		fi \
 	done
+	@Rscript $(R)/environment.R
 
 clean:
 	@echo "    --------------------------------------------------"
@@ -80,6 +86,8 @@ help:
 	@echo "    plume-models  Run ASPECT 2d box plume models"
 	@echo "    slab-models   Run ASPECT 2d box slab models"
 	@echo "    adiabat       Generate adiabatic profiles for ASPECT models"
+	@echo "    sync-barkla   Sync data from barkla2 cluster (UoL)"
+	@echo "    download      Download ASPECT results from OSF repo"
 	@echo "    visualize     Visualize all results"
 	@echo "    environments  Create Conda environments"
 	@echo "    clean         Cleanup unnecessary files and directories (safe)"

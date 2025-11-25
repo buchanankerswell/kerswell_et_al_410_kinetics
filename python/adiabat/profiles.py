@@ -57,8 +57,9 @@ class AdiabaticProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __post_init__(self) -> None:
         """"""
-        print("    --------------------------------------------------\n")
-        print(f"   Generating adiabatic profile for {self.model_id}")
+        print("    --------------------------------------------------")
+        print(f"    Generating adiabatic profile for {self.model_id}")
+        print("    --------------------------------------------------")
 
         if not self.out_table.exists():
             if not self.out_table.parent.exists():
@@ -388,8 +389,9 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __post_init__(self) -> None:
         """"""
-        print("    --------------------------------------------------\n")
+        print("    --------------------------------------------------")
         print(f"    Generating driving force profile for {self.material_a.name} -> {self.material_b.name}")
+        print("    --------------------------------------------------")
 
         # Initialize arrays
         _ = self.depths

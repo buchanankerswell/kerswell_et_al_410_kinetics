@@ -48,7 +48,7 @@ DEEP_CLEAN := $(PYTHON)/*/data
 # Targets
 .PHONY: all visualize sync-barkla compositions initial-setup meshes adiabat clean deep-clean help
 
-all: adiabat visualize write-markdown-table
+all: adiabat visualize
 
 visualize: initial-setup meshes compositions
 

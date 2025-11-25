@@ -1,6 +1,7 @@
 # Top-level dirs
 PROJECT_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 R := $(PROJECT_ROOT)/R
+UTILS := $(R)/utils
 PYTHON := $(PROJECT_ROOT)/python
 PERPLEX := $(PROJECT_ROOT)/perplex
 SIMULATION := $(PROJECT_ROOT)/simulation
@@ -27,21 +28,20 @@ CLEAN :=
 DEEP_CLEAN :=
 
 # Targets
-.PHONY: all visualize adiabat simulation clean deep-clean help
+.PHONY: all visualize adiabat simulation download clean deep-clean help
 
 all: visualize
 
 visualize: adiabat simulation
 
-adiabat: $(R)/adiabat/main.R
-	@for model in $(PERPLEX_MODELS); do \
-		IN_DIR=$(SIMULATION)/data; \
-		OUT_FIG_DIR=$(FIGS); \
-		Rscript $(R)/adiabat/main.R $$model $$IN_DIR $$OUT_FIG_DIR; \
-	done
+adiabat:
+	@for model in $(PERPLEX_MODELS); do Rscript $(R)/adiabat.R $(UTILS) $$model $(SIMULATION)/data $(FIGS); done
 
-simulation: $(R)/simulation/main.R
-	@Rscript $(R)/simulation/main.R $(PYTHON)/simulation/data $(FIGS)
+simulation:
+	@Rscript $(R)/simulation.R $(UTILS) $(PYTHON)/simulation/data $(FIGS)
+
+download:
+	@Rscript $(R)/download.R $(UTILS) $(SIMULATION)
 
 clean:
 	@for item in $(CLEAN); do \
@@ -78,6 +78,8 @@ help:
 	@echo "    visualize      Visualize all results"
 	@echo "    adiabat        Visualize adiabatic profiles"
 	@echo "    simulation     Visualize simulation results"
+	@echo "    download       Download ASPECT results from OSF repo"
+	@echo "    environment    Prepare R environment"
 	@echo "    clean          Cleanup unnecessary files and directories (safe)"
 	@echo "    deep-clean     Deep clean figures and results (use with caution!)"
 	@echo "    help           Show this help message"

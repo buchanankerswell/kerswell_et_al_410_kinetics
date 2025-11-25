@@ -138,11 +138,11 @@ Structure of the 410 was evaluated from the volume fraction field $X$ along vert
 
 \clearpage
 
-![Slab simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). Thin black lines indicate the vertical profile and depth bounds for measuring 410 structure (width and displacement).](../figs/simulation/compositions/slab-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:slab-composition-set1 width=100%}
+![Slab simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). Thin black lines (right column) indicate the vertical profile and depth bounds for measuring 410 structure (width and displacement).](../figs/simulation/compositions/slab-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:slab-composition-set1 width=100%}
 
 \clearpage
 
-![Plume simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). Thin black lines indicate the vertical profile and depth bounds for measuring 410 structure (width and displacement).](../figs/simulation/compositions/plume-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:plume-composition-set1 width=100%}
+![Plume simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). Thin black lines (right column) indicate the vertical profile and depth bounds for measuring 410 structure (width and displacement).](../figs/simulation/compositions/plume-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:plume-composition-set1 width=100%}
 
 \clearpage
 
@@ -369,35 +369,27 @@ The following simulation snapshots demonstrate the effect of the rheological act
 
 \clearpage
 
-![Slab simulations with low strength contrasts ($B$ = 2) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/slab-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:slab-B2-composition-set2 width=100%}
+![Slab simulations with ultra-sluggish kinetics ($Z$ = 3.0e0 K s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2), intermediate (middle row: $B$ = 6), and high (bottom row: $B$ = 10) viscosity contrasts after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/slab-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:slab-Z3.0e0-composition-set2 width=100%}
 
 \clearpage
 
-![Slab simulations with intermediate strength contrasts ($B$ = 4) showing ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/slab-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set2-composition-0010.png){#fig:slab-B4-composition-set2 width=100%}
+![Slab simulations with intermediate kinetics ($Z$ = 4.7e2 K s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2), intermediate (middle row: $B$ = 6), and high (bottom row: $B$ = 10) viscosity contrasts after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/slab-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:slab-Z4.7e2-composition-set2 width=100%}
 
 \clearpage
 
-![Slab simulations with intermediate strength contrasts ($B$ = 6) demonstrating ultra-sluggish (top row: $Z$ = 4.7e2 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/slab-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:slab-B6-composition-set2 width=100%}
+![Slab simulations with quasi-equilibrium kinetics ($Z$ = 7.0e7 K s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2), intermediate (middle row: $B$ = 6), and high (bottom row: $B$ = 10) viscosity contrasts after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/slab-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:slab-Z7.0e7-composition-set2 width=100%}
 
 \clearpage
 
-![Slab simulations with high strength contrasts ($B$ = 10) demonstrating ultra-sluggish (top row: $Z$ = 7.0e7 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/slab-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:slab-B10-composition-set2 width=100%}
+![Plume simulations with ultra-sluggish kinetics ($Z$ = 3.0e0 K s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2), intermediate (middle row: $B$ = 6), and high (bottom row: $B$ = 10) viscosity contrasts after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/plume-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:plume-Z3.0e0-composition-set2 width=100%}
 
 \clearpage
 
-![Plume simulations with low strength contrasts ($B$ = 2) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/plume-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:plume-B2-composition-set2 width=100%}
+![Plume simulations with intermediate kinetics ($Z$ = 4.7e2 K s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2), intermediate (middle row: $B$ = 6), and high (bottom row: $B$ = 10) viscosity contrasts after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/plume-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:plume-Z4.7e2-composition-set2 width=100%}
 
 \clearpage
 
-![Plume simulations with intermediate strength contrasts ($B$ = 4) showing ultra-sluggish (top row: $Z$ = 3.0e0 K s$^{-1}$), intermediate-sluggish (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/plume-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set2-composition-0010.png){#fig:plume-B4-composition-set2 width=100%}
-
-\clearpage
-
-![Plume simulations with intermediate strength contrasts ($B$ = 6) demonstrating ultra-sluggish (top row: $Z$ = 4.7e2 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/plume-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:plume-B6-composition-set2 width=100%}
-
-\clearpage
-
-![Plume simulations with high strength contrasts ($B$ = 10) demonstrating ultra-sluggish (top row: $Z$ = 7.0e7 K s$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/plume-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:plume-B10-composition-set2 width=100%}
+![Plume simulations with quasi-equilibrium kinetics ($Z$ = 7.0e7 K s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2), intermediate (middle row: $B$ = 6), and high (bottom row: $B$ = 10) viscosity contrasts after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column).](../figs/simulation/compositions/plume-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:plume-Z7.0e7-composition-set2 width=100%}
 
 \clearpage
 

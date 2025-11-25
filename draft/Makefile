@@ -110,7 +110,6 @@ $(DOC).tex: update-date
 	    --template "$(TEMPLATE)" \
 	    --metadata-file=$(YAML) \
 	    --bibliography=$(BIB) \
-	    --csl=$(CSL) \
 	    --filter=pandoc-crossref \
 	    --natbib; \
 	fi

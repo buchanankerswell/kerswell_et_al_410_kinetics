@@ -1,44 +1,6 @@
-#!/usr/bin/env Rscript
-
 #######################################################
-## .0. Load Libraries                            !!! ##
+## Visualize 410 structure                       !!! ##
 #######################################################
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(readr)
-  library(stringr)
-  library(purrr)
-  library(tidyr)
-  library(ggplot2)
-  library(scales)
-  library(patchwork)
-  library(zoo)
-})
-
-#######################################################
-## .1. Utility Functions                         !!! ##
-#######################################################
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ensure_output_dir <- function(out_path) {
-  parent_dir <- dirname(out_path)
-  if (!dir.exists(parent_dir)) {
-    dir.create(parent_dir)
-  }
-}
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-plot_exists <- function(out_path) {
-  if (file.exists(out_path)) {
-    cat(" -- Found plot: ", basename(out_path), "!\n", sep = "")
-    return(TRUE)
-  }
-
-  ensure_output_dir(out_path)
-
-  cat(" -> ", basename(out_path), "\n", sep = "")
-  FALSE
-}
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 read_410_data <- function(filepath) {
   suppressWarnings(df <- read_csv(filepath, show_col_types = FALSE))
