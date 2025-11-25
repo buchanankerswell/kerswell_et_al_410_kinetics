@@ -48,9 +48,9 @@ environments:
 	@echo "    Creating conda environments"
 	@echo "    --------------------------------------------------"
 	@if conda info --envs | awk '{print $$1}' | grep -qx "kerswell-et-al-410-kinetics"; then \
-	  echo " -- Environment 'kerswell-et-al-410-kinetics' already exists. Skipping ..."; \
+	  echo " -- Found conda environment: kerswell-et-al-410-kinetics"; \
 	else \
-	  echo " -> Creating environment: kerswell-et-al-410-kinetics from environment.yaml"; \
+	  echo " -> Creating conda environment: kerswell-et-al-410-kinetics from environment.yaml"; \
 	  conda env create -f $(PYTHON)/environment.yaml; \
 	fi
 	@echo "    --------------------------------------------------"
