@@ -12,15 +12,19 @@ This repository provides all materials for the manuscript *Beyond Equilibrium: K
 
 ### Python
 
-For most users, I recommend installing the [miniforge](https://github.com/conda-forge/miniforge) python distribution. This includes at least a minimal installation of python (plus some dependencies) and the package manager [conda](https://docs.conda.io/en/latest/), which is required to build the necessary python environment for this study.
+I recommend installing the [miniforge](https://github.com/conda-forge/miniforge) python distribution. This includes a minimal installation of python (plus some dependencies) and the package manager [conda](https://docs.conda.io/en/latest/), which is required to build the necessary python environment for this study.
 
 ### R
 
-R can be downloaded from the [R Project homepage](https://www.r-project.org). Follow their instructions to install R on your machine.
+R is a programming language used to visualize the results in this study. R can be downloaded from the [R Project homepage](https://www.r-project.org). Follow their instructions to install R on your machine.
+
+### Pandoc
+
+Pandoc is a universal document converter used to build a PDF version of the manuscript, which written in Markdown. Pandoc can be downloaded from the [Pandoc homepage](https://pandoc.org). Follow their instructions to install Pandoc on your machine.
 
 ## Reproducing the study
 
-The full set of ASPECT solution files and 410 structural measurement dataset can be downloaded from the [Open Science Framework repository](https://osf.io/9phwc/files). The following steps will download all necessary data and reproduce the figures:
+The full set of ASPECT solution files and 410 structural measurement dataset can be downloaded from the [Open Science Framework repository](https://osf.io/9phwc/files). The following steps will download all necessary data, reproduce the results and figures, and build a pdf version of the manuscript:
 
 ```bash
 # Clone this repository
