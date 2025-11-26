@@ -7,9 +7,9 @@ SIMULATION := $(PROJECT_ROOT)/simulation
 DRAFT := $(PROJECT_ROOT)/draft
 
 # Targets
-.PHONY: build install uninstall models plume-models slab-models adiabat sync-barkla download visualize manuscript environments clean deep-clean help
+.PHONY: build install uninstall models plume-models slab-models adiabat sync-barkla download visualize manuscript environments check-deps clean deep-clean help
 
-build: environments download adiabat visualize manuscript
+build: check-deps environments download adiabat visualize manuscript
 	@echo "    --------------------------------------------------"
 	@echo "    Study built successfully!"
 	@echo "    --------------------------------------------------"
@@ -60,6 +60,24 @@ environments:
 	@echo "    Creating R environment"
 	@echo "    --------------------------------------------------"
 	@Rscript $(R)/environment.R
+
+check-deps:
+	@echo "    --------------------------------------------------"
+	@echo "    Checking required dependencies"
+	@echo "    --------------------------------------------------"
+	@if ! command -v conda >/dev/null 2>&1; then \
+	    echo " !! ERROR: conda not found in PATH!"; \
+	    exit 1; \
+	fi
+	@if ! command -v R >/dev/null 2>&1; then \
+	    echo "ERROR: R not found in PATH."; \
+	    exit 1; \
+	fi
+	@if ! command -v pandoc >/dev/null 2>&1; then \
+	    echo " !! ERROR: pandoc not found in PATH!"; \
+	    exit 1; \
+	fi
+	@echo " -- All dependencies found"
 
 clean:
 	@echo "    --------------------------------------------------"
