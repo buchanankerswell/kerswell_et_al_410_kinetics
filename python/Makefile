@@ -48,7 +48,7 @@ DEEP_CLEAN := $(PYTHON)/*/data
 
 all: adiabat visualize
 
-visualize: initial-setup
+visualize: initial-setup meshes compositions-main
 
 sync-barkla:
 	@source $(BASH)/simulation/sync-barkla2.sh "$(PRMS)" "$(TIMESTEPS_SYNC)" "$(SIMULATION)" "$(SIMULATION_BARKLA)"
@@ -56,9 +56,11 @@ sync-barkla:
 write-markdown-table:
 	@$(CONDA_PYTHON) -u $(WRITE_TABLE) --in-dir $(PYTHON)/simulation/data
 
-compositions:
-	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B2" "Z4.7e2-B2" "Z7.0e7-B2")
+compositions-main:
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B4" "Z4.7e2-B4" "Z7.0e7-B4")
+
+compositions-supp:
+	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B2" "Z4.7e2-B2" "Z7.0e7-B2")
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B6" "Z4.7e2-B6" "Z7.0e7-B6")
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B8" "Z4.7e2-B8" "Z7.0e7-B8")
 	@(cd $(BASH)/simulation && ./make-compositions.sh "$(FIGS)/simulation/meshes" "$(FIGS)/simulation/compositions" "0010" "Z3.0e0-B10" "Z4.7e2-B10" "Z7.0e7-B10")
@@ -72,11 +74,9 @@ initial-setup: $(INITIAL_SETUP)
 meshes: $(MAIN_SIMULATION)
 	@MODEL_IDS=""; \
 	IN_DIRS=""; \
-	for prm in $(PRMS); do \
-		MODEL_DIR=$$(basename $$prm .prm | sed -E 's/-/_/g; s/(lnk)_([+-]?[0-9]+)/\1-\2/g'); \
-		IN_DIR=$(SIMULATION)/results/$$MODEL_DIR; \
-		MODEL_IDS="$$MODEL_IDS $$MODEL_DIR"; \
-		IN_DIRS="$$IN_DIRS $$IN_DIR"; \
+	for model_dir in $(SIMULATION)/results/*; do \
+		MODEL_IDS="$$MODEL_IDS $$(basename $$model_dir)"; \
+		IN_DIRS="$$IN_DIRS $$model_dir"; \
 	done; \
 	TSTEPS_MESH="$(TIMESTEPS_MESH)"; \
 	TSTEPS_PROFILE="$(TIMESTEPS_PROFILE)"; \

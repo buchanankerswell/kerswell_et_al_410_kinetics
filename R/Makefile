@@ -25,7 +25,7 @@ DEPTH_AVERAGE_PATHS := $(shell find $(SIMULATION) -type f -path "*/results/*/dep
 
 # Cleanup targets
 CLEAN :=
-DEEP_CLEAN :=
+DEEP_CLEAN := $(PROJECT_ROOT)/renv.lock
 
 # Targets
 .PHONY: all visualize adiabat simulation download clean deep-clean help
@@ -41,7 +41,7 @@ simulation:
 	@Rscript $(R)/simulation.R $(UTILS) $(PYTHON)/simulation/data $(FIGS)
 
 download:
-	@Rscript $(R)/download.R $(UTILS) $(PYTHON)/simulation/data
+	@Rscript $(R)/download.R $(UTILS) $(PYTHON)/simulation/data $(SIMULATION)/results
 
 clean:
 	@for item in $(CLEAN); do \

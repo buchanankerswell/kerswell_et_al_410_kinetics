@@ -20,16 +20,18 @@ DIFF_DOC := $(DRAFT)/diff
 
 # Cleanup targets
 CLEAN := $(DOC).{tex,pdf,aux,bbl,blg,log,toc} $(DIFF_DOC).{tex,pdf,aux,bbl,blg,log,toc} $(SI).{tex,pdf,aux,bbl,blg,log,toc}
-DEEP_CLEAN :=
+DEEP_CLEAN := $(PROJECT_ROOT)/figs
 
 # Targets
-.PHONY: all diff manuscript update-date draw-figures write-markdown-table clean deep-clean help
+.PHONY: all diff manuscript supp update-date clean deep-clean help
 
 all: manuscript
 
 diff: $(DIFF_DOC).pdf
 
-manuscript: $(DOC).tex $(DOC).pdf $(SI).tex $(SI).pdf
+manuscript: $(DOC).tex $(DOC).pdf
+
+supp: $(SI).tex $(SI).pdf
 
 $(DIFF_DOC).pdf: $(PREV_DOC).tex $(DOC).tex
 	@echo "    --------------------------------------------------"
@@ -139,16 +141,8 @@ $(SI).tex: update-date
 	    --natbib; \
 	fi
 
-
 update-date:
 	@sed -i '' -E "s/^date: \".*\"/date: \"$(shell date '+%d %B %Y')\"/" $(DOC).md
-
-draw-figures:
-	@$(MAKE) --no-print-directory -C $(R) visualize
-	@$(MAKE) --no-print-directory -C $(PYTHON) visualize
-
-write-markdown-table:
-	@$(MAKE) --no-print-directory -C $(PYTHON) write-markdown-table
 
 clean:
 	@for item in $(CLEAN); do \

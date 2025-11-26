@@ -79,7 +79,7 @@ class AdiabaticProfile:
         _ = self.temperatures
 
         if self.out_profile.exists():
-            print(" -- Found adiabatic profile!")
+            print(f" -- Found data: {self.out_profile}")
             return
 
         self._write_profile()
@@ -409,7 +409,7 @@ class DrivingForceProfile:
         _ = self.delta_volume
 
         if self.out_profile.exists():
-            print(" -- Found driving force profile!")
+            print(f" -- Found data: {self.out_profile}")
             return
 
         self._write_profile()

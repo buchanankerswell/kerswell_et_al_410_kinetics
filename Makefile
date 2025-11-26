@@ -7,10 +7,13 @@ SIMULATION := $(PROJECT_ROOT)/simulation
 DRAFT := $(PROJECT_ROOT)/draft
 
 # Targets
-.PHONY: install uninstall models plume-models slab-models adiabat sync-barkla download visualize manuscript environments clean deep-clean help
+.PHONY: build install uninstall models plume-models slab-models adiabat sync-barkla download visualize manuscript environments clean deep-clean help
 
-build: environments download adiabat visualize
-	@open figs/*.png
+build: environments download adiabat visualize manuscript
+	@echo "    --------------------------------------------------"
+	@echo "    Study built successfully!"
+	@echo "    --------------------------------------------------"
+	@open draft/manuscript.pdf
 
 install:
 	@$(MAKE) --no-print-directory -C $(BASH)

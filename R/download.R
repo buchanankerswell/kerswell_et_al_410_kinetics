@@ -7,14 +7,15 @@
 main <- function() {
   args <- commandArgs(trailingOnly = TRUE)
 
-  if (length(args) < 2) {
+  if (length(args) < 3) {
     cat("    --------------------------------------------------\n")
-    cat(" !! Usage: Rscript main.R [util_dir] [out_dir]\n")
+    cat(" !! Usage: Rscript main.R [util_dir] [out_dir_csv] [out_dir_sim]\n")
     return(invisible(NULL))
   }
 
   util_dir <- args[1]
-  out_dir <- args[2]
+  out_dir_csv <- args[2]
+  out_dir_sim <- args[3]
 
   lapply(list.files(util_dir, pattern = "\\.R$", full.names = TRUE), source)
 
@@ -22,7 +23,7 @@ main <- function() {
   cat("    Downloading simulation results from OSF repo\n")
   cat("    --------------------------------------------------\n")
 
-  download_simulation_results_from_osf(out_dir)
+  download_simulation_results_from_osf(out_dir_csv, out_dir_sim)
 }
 
 if (
