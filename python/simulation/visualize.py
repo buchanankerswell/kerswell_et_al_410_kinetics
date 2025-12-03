@@ -30,6 +30,7 @@ class PyVistaModelConfig:
     draw_mesh_plots: bool = True
     draw_depth_profile_plots: bool = False
     draw_topography_plots: bool = False
+    draw_X_field_contours: bool = True
 
     # Mappings
     file_mapping: dict[str, str] = field(default_factory=dict)
@@ -422,11 +423,11 @@ class PyVistaModelVisualizer:
                     mesh = pv.UnstructuredGrid(pvtu_path)
                     if mesh is None:
                         if self.verbosity >= 1:
-                            print(f" !! Warning: pyvista.read returned None for pvtu_file:\n" f"    {pvtu_path.name}")
+                            print(f" !! Warning: pyvista.read returned None for pvtu_file:\n    {pvtu_path.name}")
                         continue
                 except Exception as e:
                     if self.verbosity >= 1:
-                        print(f" !! Warning: failed to read mesh pvtu_file {pvtu_path.name}:\n" f" !! Error message: {e}")
+                        print(f" !! Warning: failed to read mesh pvtu_file {pvtu_path.name}:\n    {e}")
                     continue
 
                 for field_name in cfg.file_mapping.keys():
@@ -518,7 +519,7 @@ class PyVistaModelVisualizer:
                     csv_path.parent.mkdir(parents=True, exist_ok=True)
                     df.to_csv(csv_path, index=False)
             except Exception as e:
-                print(f"\n !! Error: Failed to write CSV file with pandas: {e}")
+                print(f"!! Error: Failed to write CSV file with pandas:\n    {e}")
 
         if cfg.draw_depth_profile_plots and depth_profile_cache:
             print("    --------------------------------------------------")
@@ -719,6 +720,9 @@ class PyVistaModelVisualizer:
             nan_color="#FEFEFE",
         )
 
+        if self.plot_config.draw_X_field_contours:
+            self._add_X_field_contours(plotter, mesh)
+
         camera_settings = self._compute_camera_settings(mesh, cfg.camera_full_view)
         plotter.camera_position = camera_settings
         plotter.enable_parallel_projection()
@@ -746,7 +750,7 @@ class PyVistaModelVisualizer:
             img = Image.open(out_path)
             img.save(out_path, dpi=cfg.screenshot_dpi)
         except Exception as e:
-            print(f"PIL failed to resave {out_path} with new DPI: {e}")
+            print(f" !! Error: PIL failed to resave {out_path} with new DPI:\n    {e}")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def draw_depth_profile(
@@ -967,7 +971,7 @@ class PyVistaModelVisualizer:
 
             return Z_factor, B_factor
         except (IndexError, ValueError) as e:
-            print(f" !! Warning: could not extract Z/B values from model_id '{model_id_str}'\n    {e}")
+            print(f" !! Warning: could not extract Z/B values from model_id '{model_id_str}':\n    {e}")
             return np.nan, np.nan
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1286,6 +1290,25 @@ class PyVistaModelVisualizer:
         return mcolors.ListedColormap(cmap_colors)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _add_X_field_contours(
+        self, plotter: pv.Plotter, mesh: pv.UnstructuredGrid, color: str = "black", alpha: float = 1.0, line_width: int = 5
+    ) -> None:
+        """"""
+
+        if "X_field" not in mesh.point_data:
+            return
+
+        iso_values = [0.1, 0.9]
+
+        try:
+            contour = mesh.contour(isosurfaces=iso_values, scalars="X_field")
+        except Exception as e:
+            print(f" !! Warning: failed generating X_field contours:\n    {e}")
+            return
+
+        plotter.add_mesh(contour, color=color, opacity=alpha, line_width=line_width, render_lines_as_tubes=True)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _add_vertical_contour(
         self,
         plotter: pv.Plotter,
@@ -1317,7 +1340,7 @@ class PyVistaModelVisualizer:
 
             polyline = pv.lines_from_points(ordered_contour_points, close=False)
 
-            plotter.add_mesh(polyline, color=color, line_width=line_width, opacity=alpha)
+            plotter.add_mesh(polyline, color=color, line_width=line_width, opacity=alpha, render_lines_as_tubes=True)
         elif verbosity >= 1:
             print(f" !! Warning: Fewer than 2 points found at x={x_pos / 1e3:.1f} km (tolerance={tolerance_km} m).\n -- Skipping X contour")
 
@@ -1348,7 +1371,7 @@ class PyVistaModelVisualizer:
 
             line_points = np.array([[x_min, y_val, 0.0], [x_max, y_val, 0.0]])
             polyline = pv.lines_from_points(line_points)
-            plotter.add_mesh(polyline, color=color, line_width=line_width, opacity=alpha)
+            plotter.add_mesh(polyline, color=color, line_width=line_width, opacity=alpha, render_lines_as_tubes=True)
         elif verbosity >= 1:
             print(f" !! Warning: Fewer than 2 points found at depth {depth / 1e3:.1f} km (tolerance={tolerance_km} m).\n -- Skipping X contour")
 
@@ -1401,7 +1424,7 @@ class PyVistaModelVisualizer:
                 clim_actual = (cmin - expansion * crange, cmax + expansion * crange)
             except (TypeError, ValueError) as e:
                 if self.verbosity >= 1:
-                    print(f" !! Expansion skipped: CLIM values not numeric: {clim_actual} ({e})")
+                    print(f" !! Warning: expansion skipped: CLIM values not numeric: {clim_actual}:\n    {e}")
 
         modified_seq_target = ["stress_second_invariant", "X_field"]
 
