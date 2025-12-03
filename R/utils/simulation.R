@@ -54,6 +54,12 @@ visualize_410_structure <- function(in_path, out_path) {
   rate_range <- range(df_slab$max_reaction_rate, df_plume$max_reaction_rate)
   z_range <- range(df_slab_tiled$xmin, df_slab_tiled$xmax, df_plume_tiled$xmin, df_plume_tiled$xmax)
 
+  width_range_slab <- range(df_slab$width)
+  displacement_range_slab <- range(df_slab$displacement)
+  max_velocity_range_slab <- range(df_slab$max_velocity)
+  rate_range_slab <- range(df_slab$max_reaction_rate)
+  z_range_slab <- range(df_slab_tiled$xmin, df_slab_tiled$xmax)
+
   plume_breaks_rxn <- c(1e-1, 1e1, 1e3, 1e5)
   slab_breaks_rxn <- c(1e-1, 1e1, 1e3, 1e5)
   breaks_z <- c(1e1, 1e3, 1e5, 1e7)
@@ -93,7 +99,12 @@ visualize_410_structure <- function(in_path, out_path) {
 
     p1 <- d_slab |>
       ggplot(aes(x = max_reaction_rate, y = width, fill = max_reaction_rate)) +
+      geom_vline(xintercept = 2.14e0, linewidth = 0.3, color = "grey50") +
+      geom_vline(xintercept = 6.76e-2, linewidth = 0.3, color = "grey50") +
       geom_point(size = 3.5, color = "black", shape = 21, show.legend = FALSE) +
+      annotate("text", x = 2.5e1, y = 180, label = "equil.", size = 4, vjust = 0) +
+      annotate("text", x = 4.0e-1, y = 180, label = "inter.", size = 4, vjust = 0) +
+      annotate("text", x = 1.8e-2, y = 180, label = "slug.", size = 4, vjust = 0) +
       scale_x_continuous(trans = "log10", labels = label_log(), breaks = slab_breaks_rxn, expand = expansion(mult = c(0.1, 0.1))) +
       scale_y_continuous(limits = width_range, expand = expansion(mult = c(0.1, 0.1))) +
       annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -128,6 +139,8 @@ visualize_410_structure <- function(in_path, out_path) {
 
     p3 <- d_slab |>
       ggplot(aes(x = max_reaction_rate, y = displacement, fill = max_reaction_rate)) +
+      geom_vline(xintercept = 2.14e0, linewidth = 0.3, color = "grey50") +
+      geom_vline(xintercept = 6.76e-2, linewidth = 0.3, color = "grey50") +
       geom_point(size = 3.5, color = "black", shape = 21, show.legend = FALSE) +
       scale_x_continuous(trans = "log10", labels = label_log(), breaks = slab_breaks_rxn, expand = expansion(mult = c(0.1, 0.1))) +
       scale_y_reverse(limits = displacement_range, expand = expansion(mult = c(0.1, 0.1))) +
@@ -148,7 +161,7 @@ visualize_410_structure <- function(in_path, out_path) {
     ggsave(out_pth, plot = p, width = 4.5, height = 4.5, dpi = 300, bg = "white")
   }
 
-  walk(unique(c(df_slab$B_factor, df_plume$B_factor)), draw_composition)
+  draw_composition(b = 4)
 
   draw_rect <- function(b_row, zmin, zmax, color = "black", size = 0.3, linetype = 1, alpha = 1.0) {
     z_unique <- sort(unique(df_slab$Z_factor))
@@ -213,95 +226,70 @@ visualize_410_structure <- function(in_path, out_path) {
   )
 
   p0 <- df_slab_tiled |>
+    ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_reaction_rate)) +
+    geom_rect() +
+    rects_slab_b +
+    annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "equil.", fontface = "bold") +
+    annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "intermed.", fontface = "bold") +
+    annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "slug.", fontface = "bold") +
+    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
+    scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
+    annotation_logticks(sides = "b", linewidth = 0.2) +
+    scale_fill_viridis_c(trans = "log10", option = "viridis", labels = label_log(), limits = rate_range_slab, direction = -1) +
+    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma" ^-1 * ")")) +
+    theme_bw(base_size = 14) +
+    theme_2() +
+    theme(legend.box.margin = margin(0, 0, 2, 0))
+
+  p1 <- df_slab_tiled |>
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = displacement)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "equilibrium", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "intermed.", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "slug.", fontface = "bold") +
-    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range, expand = c(0, 0)) +
+    annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "equil.", fontface = "bold") +
+    annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "deepen", fontface = "bold") +
+    annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "diseq.", fontface = "bold") +
+    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
-    scale_fill_gradient2(low = "#A50026", mid = "white", high = "#313695", limits = displacement_range) +
+    scale_fill_gradient2(low = "#A50026", mid = "white", high = "#313695", limits = displacement_range_slab) +
     labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Displacement (km)") +
     theme_bw(base_size = 14) +
-    theme_2()
+    theme_2() +
+    theme(axis.text.y = element_blank(), axis.title.y = element_blank())
 
-  p1 <- df_slab_tiled |>
+  p2 <- df_slab_tiled |>
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = width)) +
     geom_rect() +
     rects_slab_b +
     annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "sharp", fontface = "bold") +
     annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "broaden", fontface = "bold") +
     annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "sharp", fontface = "bold") +
-    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range, expand = c(0, 0)) +
+    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
-    scale_fill_viridis_c(option = "mako", limits = width_range, direction = -1) +
+    scale_fill_viridis_c(option = "mako", limits = width_range_slab, direction = -1) +
     labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Width (km)") +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text.y = element_blank(), axis.title.y = element_blank())
 
-  p2 <- df_slab_tiled |>
+  p3 <- df_slab_tiled |>
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_velocity)) +
     geom_rect() +
     rects_slab_w +
     annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "penetrate", color = "white", fontface = "bold") +
     annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "intermed.", color = "white", fontface = "bold") +
     annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "pond", color = "white", fontface = "bold") +
-    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range, expand = c(0, 0)) +
+    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
-    scale_fill_viridis_c(option = "rocket", limits = max_velocity_range) +
+    scale_fill_viridis_c(option = "rocket", limits = max_velocity_range_slab) +
     labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(u)[y] * " (cm/yr)")) +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text.y = element_blank(), axis.title.y = element_blank(), legend.title = element_text(margin = margin(0, 0, 2, 0)))
 
-  p3 <- df_plume_tiled |>
-    ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = displacement)) +
-    geom_rect() +
-    rects_plume_b +
-    annotate("text", x = 1.4e4, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "equilibrium", fontface = "bold") +
-    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range, expand = c(0, 0)) +
-    scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
-    annotation_logticks(sides = "b", linewidth = 0.2) +
-    scale_fill_gradient2(low = "#A50026", mid = "white", high = "#313695", limits = displacement_range) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Displacement (km)") +
-    theme_bw(base_size = 14) +
-    theme_2()
-
-  p4 <- df_plume_tiled |>
-    ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = width)) +
-    geom_rect() +
-    rects_plume_b +
-    annotate("text", x = 1.4e4, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "sharp", fontface = "bold") +
-    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range, expand = c(0, 0)) +
-    scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
-    annotation_logticks(sides = "b", linewidth = 0.2) +
-    scale_fill_viridis_c(option = "mako", limits = width_range, direction = -1) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Width (km)", title = "Plume Regimes") +
-    theme_bw(base_size = 14) +
-    theme_2() +
-    theme(axis.text.y = element_blank(), axis.title.y = element_blank())
-
-  p5 <- df_plume_tiled |>
-    ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_velocity)) +
-    geom_rect() +
-    rects_plume_b +
-    annotate("text", x = 1.4e4, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "penetrate", fontface = "bold") +
-    scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range, expand = c(0, 0)) +
-    scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
-    annotation_logticks(sides = "b", linewidth = 0.2) +
-    scale_fill_viridis_c(option = "rocket", limits = max_velocity_range) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(u)[y] * " (cm/yr)")) +
-    theme_bw(base_size = 14) +
-    theme_2() +
-    theme(axis.text.y = element_blank(), axis.title.y = element_blank())
-
-  # p <- (p0 | p1 | p2) / (p3 | p4 | p5) & theme(plot.title = element_text(size = 14), legend.title = element_text(size = 10))
-  p <- (p0 | p1 | p2)
+  p <- (p0 | p3 | p2 | p1)
 
   out_path_comp <- str_replace(out_path, ".png", "-comp.png")
 
@@ -309,8 +297,7 @@ visualize_410_structure <- function(in_path, out_path) {
     return(invisible())
   }
 
-  # suppressWarnings(ggsave(out_path_comp, plot = p, width = 6.5, height = 5.0, dpi = 300, bg = "white"))
-  suppressWarnings(ggsave(out_path_comp, plot = p, width = 6.5, height = 3.0, dpi = 300, bg = "white"))
+  suppressWarnings(ggsave(out_path_comp, plot = p, width = 8.2, height = 3.0, dpi = 300, bg = "white"))
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
