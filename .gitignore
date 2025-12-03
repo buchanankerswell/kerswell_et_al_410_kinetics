@@ -24,7 +24,6 @@ simulation/plugins/.cache
 simulation/plugins/compile_commands.json
 python/*/__pycache__
 python/*/data
-draft/figs
 draft/diff.tex
 draft/diff.pdf
 draft/diff.aux
