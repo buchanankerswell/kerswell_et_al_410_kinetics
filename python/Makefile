@@ -48,7 +48,7 @@ DEEP_CLEAN := $(PYTHON)/*/data
 
 all: adiabat visualize
 
-visualize: initial-setup meshes compositions-main
+visualize: initial-setup meshes compositions-main compositions-supp
 
 sync-barkla:
 	@source $(BASH)/simulation/sync-barkla2.sh "$(PRMS)" "$(TIMESTEPS_SYNC)" "$(SIMULATION)" "$(SIMULATION_BARKLA)"

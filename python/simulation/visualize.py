@@ -721,7 +721,7 @@ class PyVistaModelVisualizer:
         )
 
         if self.plot_config.draw_X_field_contours:
-            self._add_X_field_contours(plotter, mesh)
+            self._add_X_field_contours(plotter, mesh, color = "white" if field_name == "nonadiabatic_temperature" and "slab" in out_path.name else "black")
 
         camera_settings = self._compute_camera_settings(mesh, cfg.camera_full_view)
         plotter.camera_position = camera_settings

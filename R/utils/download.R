@@ -13,7 +13,14 @@ download_simulation_results_from_osf <- function(out_dir_csv, out_dir_sim) {
   }
 
   if (!dir.exists(out_dir_sim)) dir.create(out_dir_sim, recursive = TRUE)
-  patterns <- c("Z3.0e0_B4", "Z4.7e2_B4", "Z7.0e7_B4")
+
+  patterns <- c(
+    "Z3.0e0_B2", "Z4.7e2_B2", "Z7.0e7_B2",
+    "Z3.0e0_B4", "Z4.7e2_B4", "Z7.0e7_B4",
+    "Z3.0e0_B6", "Z4.7e2_B6", "Z7.0e7_B6",
+    "Z3.0e0_B8", "Z4.7e2_B8", "Z7.0e7_B8",
+    "Z3.0e0_B10", "Z4.7e2_B10", "Z7.0e7_B10"
+  )
 
   walk(patterns, ~ {
     plume_dir <- file.path(out_dir_sim, paste0("plume_", .x))
