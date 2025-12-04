@@ -15,7 +15,7 @@ CSL := $(DRAFT)/agu.csl
 BIB := $(DRAFT)/main.bib
 DOC := $(DRAFT)/manuscript
 SI := $(DRAFT)/supplementary-information
-PREV_DOC := $(DRAFT)/bak/manuscript-28-oct-2025
+PREV_DOC := $(DRAFT)/bak/manuscript-24-nov-2025
 DIFF_DOC := $(DRAFT)/diff
 
 # Cleanup targets
@@ -42,7 +42,6 @@ $(DIFF_DOC).pdf: $(PREV_DOC).tex $(DOC).tex
 	  --flatten \
 	  --math-markup=0 \
 	  --type=CFONT \
-	  --exclude-textcmd=caption \
 	  --add-to-config PICTUREENV=longtable \
 	  --graphics-markup=none \
 	  $(PREV_DOC).tex $(DOC).tex > $(DIFF_DOC).tex 2> /dev/null
