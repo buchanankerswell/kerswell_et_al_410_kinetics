@@ -99,6 +99,7 @@ visualize_410_structure <- function(in_path, out_path) {
 
     p1 <- d_slab |>
       ggplot(aes(x = max_reaction_rate, y = width, fill = max_reaction_rate)) +
+      geom_hline(yintercept = 173, linewidth = 0.3, color = "grey50") +
       geom_vline(xintercept = 2.14e0, linewidth = 0.3, color = "grey50") +
       geom_vline(xintercept = 6.76e-2, linewidth = 0.3, color = "grey50") +
       geom_point(size = 3.5, color = "black", shape = 21, show.legend = FALSE) +
@@ -158,7 +159,7 @@ visualize_410_structure <- function(in_path, out_path) {
       theme(axis.text.y = element_blank(), axis.title.y = element_blank())
 
     p <- (p0 / p2) | (p1 / p3)
-    ggsave(out_pth, plot = p, width = 4.5, height = 4.5, dpi = 300, bg = "white")
+    ggsave(out_pth, plot = p, width = 4.5, height = 4.2, dpi = 300, bg = "white")
   }
 
   draw_composition(b = 4)
@@ -229,9 +230,9 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_reaction_rate)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "equil.", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "intermed.", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "slug.", fontface = "bold") +
+    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
+    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
+    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -239,15 +240,15 @@ visualize_410_structure <- function(in_path, out_path) {
     labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma" ^-1 * ")")) +
     theme_bw(base_size = 14) +
     theme_2() +
-    theme(legend.box.margin = margin(0, 0, 2, 0))
+    theme(axis.text.x = element_blank(), axis.title.x = element_blank(), legend.box.margin = margin(0, 0, 2, 0))
 
   p1 <- df_slab_tiled |>
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = displacement)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "equil.", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "deepen", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "diseq.", fontface = "bold") +
+    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
+    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
+    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -261,25 +262,24 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = width)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "sharp", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "broaden", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "sharp", fontface = "bold") +
+    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
+    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
+    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(option = "mako", limits = width_range_slab, direction = -1) +
     labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Width (km)") +
     theme_bw(base_size = 14) +
-    theme_2() +
-    theme(axis.text.y = element_blank(), axis.title.y = element_blank())
+    theme_2()
 
   p3 <- df_slab_tiled |>
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_velocity)) +
     geom_rect() +
     rects_slab_w +
-    annotate("text", x = 3.5e6, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "penetrate", color = "white", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "intermed.", color = "white", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 3, hjust = 0.5, vjust = 0.5, label = "pond", color = "white", fontface = "bold") +
+    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", color = "white", fontface = "bold") +
+    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", color = "white", fontface = "bold") +
+    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", color = "white", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -287,9 +287,7 @@ visualize_410_structure <- function(in_path, out_path) {
     labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(u)[y] * " (cm/yr)")) +
     theme_bw(base_size = 14) +
     theme_2() +
-    theme(axis.text.y = element_blank(), axis.title.y = element_blank(), legend.title = element_text(margin = margin(0, 0, 2, 0)))
-
-  p <- (p0 | p3 | p2 | p1)
+    theme(axis.text = element_blank(), axis.title = element_blank(), legend.title = element_text(margin = margin(0, 0, 2, 0)))
 
   out_path_comp <- str_replace(out_path, ".png", "-comp.png")
 
@@ -297,7 +295,8 @@ visualize_410_structure <- function(in_path, out_path) {
     return(invisible())
   }
 
-  suppressWarnings(ggsave(out_path_comp, plot = p, width = 8.2, height = 3.0, dpi = 300, bg = "white"))
+  p <- (p0 | p3) / (p2 | p1)
+  suppressWarnings(ggsave(out_path_comp, plot = p, width = 4.5, height = 5.0, dpi = 300, bg = "white"))
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -306,7 +305,7 @@ theme_1 <- function() {
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = "grey90"),
-    plot.margin = margin(5, 10, 5, 5),
+    plot.margin = margin(5, 5, 5, 5),
     plot.title = element_text(hjust = 0.5, size = 12),
     plot.tag.location = "panel",
     plot.tag.position = "topleft",
@@ -314,7 +313,7 @@ theme_1 <- function() {
     axis.ticks = element_blank(),
     legend.justification = "left",
     legend.position = "inside",
-    legend.position.inside = c(0.07, 0.77),
+    legend.position.inside = c(0.07, 0.75),
     legend.direction = "horizontal",
     legend.key.height = unit(0.6, "lines"),
     legend.key.width = unit(1.2, "lines"),
@@ -339,7 +338,7 @@ theme_2 <- function() {
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = "grey90"),
-    plot.margin = margin(5, 10, 5, 5),
+    plot.margin = margin(2, 5, 2, 5),
     plot.title = element_text(siz = 14, hjust = 0.5),
     plot.tag.location = "panel",
     plot.tag.position = "topleft",
