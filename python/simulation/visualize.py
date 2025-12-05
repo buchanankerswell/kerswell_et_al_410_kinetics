@@ -1291,7 +1291,7 @@ class PyVistaModelVisualizer:
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _add_X_field_contours(
-        self, plotter: pv.Plotter, mesh: pv.UnstructuredGrid, color: str = "black", alpha: float = 1.0, line_width: int = 5
+        self, plotter: pv.Plotter, mesh: pv.UnstructuredGrid, color: str = "black", alpha: float = 1.0, line_width: int = 7
     ) -> None:
         """"""
 
