@@ -1,6 +1,7 @@
 # Top-level dirs
 PROJECT_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 BASH := $(PROJECT_ROOT)/bash
+PYTHON := $(PROJECT_ROOT)/python
 SIMULATION := $(PROJECT_ROOT)/simulation
 
 # Check OS
@@ -48,18 +49,19 @@ SLAB_PRMS := $(addprefix $(SIMULATION)/configs/slab-, $(addsuffix .prm, $(ZB_COM
 DATA := $(SIMULATION)/data/reaction-410-profile.txt
 
 # Simulation plugins
-PLUGINS := plugins/libreaction-kinetics.release.so
+PLUGINS := plugins/libreaction-kinetics.release.so plugins/libreaction-kinetics.debug.so
 
 # Cleanup targets
 CLEAN := \
-	$(SIMULATION)/**/plugins/CMakeFiles \
-	$(SIMULATION)/**/plugins/Makefile \
-	$(SIMULATION)/**/plugins/CMakeCache.txt \
-	$(SIMULATION)/**/plugins/cmake_install.cmake \
-	$(SIMULATION)/**/plugins/.cache \
+	$(SIMULATION)/plugins/CMakeFiles \
+	$(SIMULATION)/plugins/Makefile \
+	$(SIMULATION)/plugins/CMakeCache.txt \
+	$(SIMULATION)/plugins/cmake_install.cmake \
+	$(SIMULATION)/plugins/.cache \
 	$(MATERIAL_PRMS) \
 	$(PLUME_PRMS) \
-	$(SLAB_PRMS)
+	$(SLAB_PRMS) \
+	$(PLUGINS)
 DEEP_CLEAN := $(SIMULATION)/**/configs/logs $(SIMULATION)/data $(SIMULATION)/configs $(SIMULATION)/results
 
 # Targets
@@ -156,7 +158,7 @@ clean:
 	@find $(PROJECT_ROOT)/simulation -type l -path '*/plugins/aspect*' | while read -r item; do \
 		if [[ "$$item" == $(PROJECT_ROOT)* ]]; then \
 			echo " -> Safely removing symlink: $$item"; \
-			rm -v "$$item"; \
+			rm "$$item"; \
 		fi; \
 	done
 

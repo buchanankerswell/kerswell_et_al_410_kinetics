@@ -255,51 +255,6 @@ $endfor$
 $for(corresponding_author)$
 \correspondingauthor{$corresponding_author.name$}{$corresponding_author.email$}
 $endfor$
-
-%% Keypoints, final entry on title page.
-
-%  List up to three key points (at least one is required)
-%  Key Points summarize the main points and conclusions of the article
-%  Each must be 100 characters or less with no special characters or punctuation
-
-% Example:
-% \begin{keypoints}
-% \item	List up to three key points (at least one is required)
-% \item	Key Points summarize the main points and conclusions of the article
-% \item	Each must be 100 characters or less with no special characters or punctuation
-% \end{keypoints}
-
-$if(keypoints)$
-\begin{keypoints}
-$for(keypoints)$
-\item $keypoints$
-$endfor$
-\end{keypoints}
-$endif$
-
-%% ------------------------------------------------------------------------ %%
-%
-%  ABSTRACT
-%
-% A good abstract will begin with a short description of the problem
-% being addressed, briefly describe the new data or analyses, then
-% briefly states the main conclusion(s) and how they are supported and
-% uncertainties.
-%% ------------------------------------------------------------------------ %%
-
-%% \begin{abstract} starts the second page
-
-$if(abstract)$
-\begin{abstract}
-$abstract$
-\end{abstract}
-$endif$
-$if(plain_language_summary)$
-\noindent{\bf Plain language summary}\vskip-\parskip
-
-\noindent{$plain_language_summary$}
-\vskip18pt
-$endif$
 $body$
 
 $if(bibliography)$

@@ -10,8 +10,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from burnman import Material, PerplexMaterial, constants
 from burnman.classes.perplex import create_perplex_table
-from matplotlib.cm import get_cmap
-from matplotlib.colors import Normalize
 from scipy.integrate import odeint
 from scipy.interpolate import interp1d
 from scipy.optimize import newton
@@ -352,7 +350,9 @@ class DrivingForceProfile:
     """"""
 
     material_a: Material
+    n_total_a: float
     material_b: Material
+    n_total_b: float
     in_profile: AdiabaticProfile
     out_profile: Path
     out_fig_dir: Path
@@ -687,8 +687,8 @@ class DrivingForceProfile:
         """"""
         molar_mass_a = self.material_a.evaluate(["molar_mass"], self.pressures, self.temperatures)
         molar_mass_b = self.material_b.evaluate(["molar_mass"], self.pressures, self.temperatures)
-        molar_heat_capacity_a = self.material_a.evaluate(["molar_heat_capacity_p"], self.pressures, self.temperatures)
-        molar_heat_capacity_b = self.material_b.evaluate(["molar_heat_capacity_p"], self.pressures, self.temperatures)
+        molar_heat_capacity_a = np.array(self.material_a.evaluate(["molar_heat_capacity_p"], self.pressures, self.temperatures))
+        molar_heat_capacity_b = np.array(self.material_b.evaluate(["molar_heat_capacity_p"], self.pressures, self.temperatures))
         specific_heat_a = molar_heat_capacity_a / molar_mass_a
         specific_heat_b = molar_heat_capacity_b / molar_mass_b
 
@@ -715,26 +715,10 @@ class DrivingForceProfile:
         """Evaluate seismic pressure wave velocity derivatives with respect to temperature."""
         dT = 0.1
 
-        Vp_low_a = self.material_a.evaluate(
-            ["p_wave_velocity"],
-            self.pressures,
-            self.temperatures - dT / 2,
-        )
-        Vp_low_b = self.material_b.evaluate(
-            ["p_wave_velocity"],
-            self.pressures,
-            self.temperatures - dT / 2,
-        )
-        Vp_high_a = self.material_a.evaluate(
-            ["p_wave_velocity"],
-            self.pressures,
-            self.temperatures + dT / 2,
-        )
-        Vp_high_b = self.material_b.evaluate(
-            ["p_wave_velocity"],
-            self.pressures,
-            self.temperatures + dT / 2,
-        )
+        Vp_low_a = np.array(self.material_a.evaluate(["p_wave_velocity"], self.pressures, self.temperatures - dT / 2))
+        Vp_low_b = np.array(self.material_b.evaluate(["p_wave_velocity"], self.pressures, self.temperatures - dT / 2))
+        Vp_high_a = np.array(self.material_a.evaluate(["p_wave_velocity"], self.pressures, self.temperatures + dT / 2))
+        Vp_high_b = np.array(self.material_b.evaluate(["p_wave_velocity"], self.pressures, self.temperatures + dT / 2))
 
         dVp_dT_a = (Vp_high_a - Vp_low_a) / dT
         dVp_dT_b = (Vp_high_b - Vp_low_b) / dT
@@ -754,26 +738,10 @@ class DrivingForceProfile:
         """Evaluate seismic shear wave velocity derivatives with respect to temperature."""
         dT = 0.1
 
-        Vs_low_a = self.material_a.evaluate(
-            ["shear_wave_velocity"],
-            self.pressures,
-            self.temperatures - dT / 2,
-        )
-        Vs_low_b = self.material_b.evaluate(
-            ["shear_wave_velocity"],
-            self.pressures,
-            self.temperatures - dT / 2,
-        )
-        Vs_high_a = self.material_a.evaluate(
-            ["shear_wave_velocity"],
-            self.pressures,
-            self.temperatures + dT / 2,
-        )
-        Vs_high_b = self.material_b.evaluate(
-            ["shear_wave_velocity"],
-            self.pressures,
-            self.temperatures + dT / 2,
-        )
+        Vs_low_a = np.array(self.material_a.evaluate(["shear_wave_velocity"], self.pressures, self.temperatures - dT / 2))
+        Vs_low_b = np.array(self.material_b.evaluate(["shear_wave_velocity"], self.pressures, self.temperatures - dT / 2))
+        Vs_high_a = np.array(self.material_a.evaluate(["shear_wave_velocity"], self.pressures, self.temperatures + dT / 2))
+        Vs_high_b = np.array(self.material_b.evaluate(["shear_wave_velocity"], self.pressures, self.temperatures + dT / 2))
 
         dVs_dT_a = (Vs_high_a - Vs_low_a) / dT
         dVs_dT_b = (Vs_high_b - Vs_low_b) / dT
@@ -783,34 +751,34 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_internal_energy(self) -> np.ndarray:
         """"""
-        internal_energy_a = self.material_a.evaluate(["molar_internal_energy"], self.pressures, self.temperatures)
-        internal_energy_b = self.material_b.evaluate(["molar_internal_energy"], self.pressures, self.temperatures)
+        internal_energy_a = np.array(self.material_a.evaluate(["molar_internal_energy"], self.pressures, self.temperatures))
+        internal_energy_b = np.array(self.material_b.evaluate(["molar_internal_energy"], self.pressures, self.temperatures))
 
-        return np.stack([internal_energy_a, internal_energy_b])
+        return np.stack([internal_energy_a * self.n_total_a, internal_energy_b * self.n_total_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_gibbs(self) -> np.ndarray:
         """"""
-        gibbs_a = self.material_a.evaluate(["molar_gibbs"], self.pressures, self.temperatures)
-        gibbs_b = self.material_b.evaluate(["molar_gibbs"], self.pressures, self.temperatures)
+        gibbs_a = np.array(self.material_a.evaluate(["molar_gibbs"], self.pressures, self.temperatures))
+        gibbs_b = np.array(self.material_b.evaluate(["molar_gibbs"], self.pressures, self.temperatures))
 
-        return np.stack([gibbs_a, gibbs_b])
+        return np.stack([gibbs_a * self.n_total_a, gibbs_b * self.n_total_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_entropy(self) -> np.ndarray:
         """"""
-        entropy_a = self.material_a.evaluate(["molar_entropy"], self.pressures, self.temperatures)
-        entropy_b = self.material_b.evaluate(["molar_entropy"], self.pressures, self.temperatures)
+        entropy_a = np.array(self.material_a.evaluate(["molar_entropy"], self.pressures, self.temperatures))
+        entropy_b = np.array(self.material_b.evaluate(["molar_entropy"], self.pressures, self.temperatures))
 
-        return np.stack([entropy_a, entropy_b])
+        return np.stack([entropy_a * self.n_total_a, entropy_b * self.n_total_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_volume(self) -> np.ndarray:
         """"""
-        volume_a = self.material_a.evaluate(["molar_volume"], self.pressures, self.temperatures)
-        volume_b = self.material_b.evaluate(["molar_volume"], self.pressures, self.temperatures)
+        volume_a = np.array(self.material_a.evaluate(["molar_volume"], self.pressures, self.temperatures))
+        volume_b = np.array(self.material_b.evaluate(["molar_volume"], self.pressures, self.temperatures))
 
-        return np.stack([volume_a, volume_b])
+        return np.stack([volume_a * self.n_total_a, volume_b * self.n_total_b])
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _evaluate_delta_density(self) -> np.ndarray:
@@ -960,8 +928,8 @@ class DrivingForceProfile:
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def visualize(
         self,
-        contour_lims_P: tuple[float, float] = (-1e9, 1e9),
-        contour_lims_T: tuple[float, float] = (-500, 500),
+        contour_lims_P: tuple[float, float] = (-1.2e9, 1.2e9),
+        contour_lims_T: tuple[float, float] = (-600, 600),
         n_contours: int = 100,
     ) -> None:
         """"""
@@ -969,25 +937,13 @@ class DrivingForceProfile:
             self.out_fig_dir.mkdir(parents=True, exist_ok=True)
 
         target_depth = self.equilibrium_depth
-        depth_lims = (target_depth - 100e3, target_depth + 100e3)
+        depth_lims = (float(target_depth - 100e3), float(target_depth + 100e3))
 
-        self._visualize_delta_PT_at_target_depth(
-            target_depth=target_depth,
-            contour_lims_P=contour_lims_P,
-            contour_lims_T=contour_lims_T,
-            n_contours=n_contours,
-        )
         self._visualize_delta_PT_contours_fill(
             depth_lims=depth_lims,
             contour_lims_P=contour_lims_P,
             contour_lims_T=contour_lims_T,
             n_contours=n_contours,
-        )
-        self._visualize_delta_PT_contours_lines(
-            depth_lims=depth_lims,
-            contour_lims_P=contour_lims_P,
-            contour_lims_T=contour_lims_T,
-            n_contours=5,
         )
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1016,7 +972,7 @@ class DrivingForceProfile:
     def _get_driving_force_grid_fixed_dT(
         self,
         depth_lims: tuple[float, float] = (300e3, 600e3),
-        contour_lims: tuple[float, float] = (-1e9, 1e9),
+        contour_lims: tuple[float, float] = (-1.2e9, 1.2e9),
         n_contours: int = 100,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """"""
@@ -1042,7 +998,7 @@ class DrivingForceProfile:
     def _get_driving_force_grid_fixed_dP(
         self,
         depth_lims: tuple[float, float] = (300e3, 600e3),
-        contour_lims: tuple[float, float] = (-500, 500),
+        contour_lims: tuple[float, float] = (-600, 600),
         n_contours: int = 100,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """"""
@@ -1068,8 +1024,8 @@ class DrivingForceProfile:
     def _get_driving_force_grid_at_target_depth(
         self,
         target_depth: float = 410e3,
-        contour_lims_P: tuple[float, float] = (-1e9, 1e9),
-        contour_lims_T: tuple[float, float] = (-500, 500),
+        contour_lims_P: tuple[float, float] = (-1.2e9, 1.2e9),
+        contour_lims_T: tuple[float, float] = (-600, 600),
         n_contours: int = 100,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """"""
@@ -1130,153 +1086,11 @@ class DrivingForceProfile:
         return False
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _visualize_delta_PT_at_target_depth(
-        self,
-        target_depth: float = 410e3,
-        contour_lims_P: tuple[float, float] = (-1e9, 1e9),
-        contour_lims_T: tuple[float, float] = (-500, 500),
-        n_contours: int = 100,
-    ) -> None:
-        """"""
-        out_path = self.out_fig_dir / f"driving-force-contours-{target_depth / 1e3:.0f}km-{self.material_a.name}-{self.material_b.name}.png"
-
-        self._plot_exists(out_path)
-
-        dP_grid, dT_grid, driving_force_grid, levels = self._get_driving_force_grid_at_target_depth(
-            target_depth=target_depth,
-            contour_lims_P=contour_lims_P,
-            contour_lims_T=contour_lims_T,
-            n_contours=n_contours,
-        )
-
-        self._set_rc_params()
-
-        fig, ax = plt.subplots(figsize=(5, 4.5))
-
-        _ = ax.contourf(
-            dT_grid,
-            dP_grid / 1e9,
-            driving_force_grid / 1e3,
-            levels=np.round(levels / 1e3, 1),
-            cmap="PuOr_r",
-        )
-        filtered_levels = levels[::3]
-        filtered_levels = filtered_levels[filtered_levels != 0]
-        contours = ax.contour(
-            dT_grid,
-            dP_grid / 1e9,
-            driving_force_grid / 1e3,
-            levels=np.round(filtered_levels / 1e3, 1),
-            colors="k",
-            linewidths=0.5,
-        )
-        contour_0 = ax.contour(
-            dT_grid,
-            dP_grid / 1e9,
-            driving_force_grid / 1e3,
-            levels=[0],
-            colors="k",
-            linewidths=1,
-        )
-        ax.clabel(contours, fmt="%.1f", inline_spacing=14, fontsize=12)
-        ax.clabel(
-            contour_0,
-            fmt={0: "$\\Delta{G}$ = 0 kJ/mol"},
-            inline_spacing=14,
-            fontsize=12,
-        )
-
-        ax.set_xlabel("$\\hat{T}$ [K]")
-        ax.set_ylabel("$\\hat{P}$ [GPa]")
-        ax.set_title(f"Depth = {target_depth / 1e3:.0f} km")
-        ax.grid(True, "both", linewidth=0.5, color="#E5E5E5")
-        ax.tick_params(axis="both", which="both", length=0)
-
-        plt.tight_layout()
-        fig.savefig(out_path)
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _visualize_delta_PT_contours_lines(
-        self,
-        depth_lims: tuple[float, float] = (300e3, 600e3),
-        contour_lims_P: tuple[float, float] = (-1e9, 1e9),
-        contour_lims_T: tuple[float, float] = (-500, 500),
-        n_contours: int = 5,
-    ) -> None:
-        """"""
-        out_path = self.out_fig_dir / f"driving-force-contours-lines-{self.material_a.name}-{self.material_b.name}.png"
-
-        self._plot_exists(out_path)
-
-        (depths, _, delta_gibbs, delta_entropy, delta_volume) = self._mask_arrays(depth_lims)
-
-        self._set_rc_params()
-        plt.rcParams.update({"legend.loc": "lower right"})
-
-        fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
-
-        cmap_P = get_cmap("PuOr")
-        norm_P = Normalize(vmin=contour_lims_P[0] / 1e9, vmax=contour_lims_P[1] / 1e9)
-
-        cmap_T = get_cmap("PuOr")
-        norm_T = Normalize(vmin=contour_lims_T[0], vmax=contour_lims_T[1])
-
-        for dP in np.linspace(contour_lims_P[0], contour_lims_P[1], n_contours):
-            color = cmap_P(norm_P(dP / 1e9))
-            driving_force = delta_gibbs + dP * delta_volume - 0 * delta_entropy
-            axes[0].plot(driving_force / 1e3, depths / 1e3, color=color, label=f"{dP/1e9:.1f}")
-
-        axes[0].set_xlabel("Driving Force [kJ/mol]")
-        axes[0].set_ylabel("Depth [km]")
-        axes[0].set_title("$\\hat{T}$ = 0 K")
-        axes[0].grid(True, "both", linewidth=0.5, color="#999999")
-        axes[0].tick_params(axis="both", which="both", length=0)
-        axes[0].legend(title="$\\hat{P}$ [GPa]")
-        axes[0].text(
-            0.02,
-            0.98,
-            "a",
-            transform=axes[0].transAxes,
-            fontsize=24,
-            va="top",
-            ha="left",
-        )
-
-        for dT in np.linspace(contour_lims_T[0], contour_lims_T[1], n_contours):
-            color = cmap_T(norm_T(dT))
-            driving_force = delta_gibbs + 0 * delta_volume - dT * delta_entropy
-            axes[1].plot(driving_force / 1e3, depths / 1e3, color=color, label=f"{dT:.0f}")
-
-        axes[1].set_xlabel("Driving Force [kJ/mol]")
-        axes[1].set_title("$\\hat{P}$ = 0 GPa")
-        axes[1].grid(True, "both", linewidth=0.5, color="#999999")
-        axes[1].tick_params(axis="both", which="both", length=0)
-        axes[1].legend(title="$\\hat{T}$ [K]")
-        axes[1].text(
-            0.02,
-            0.98,
-            "b",
-            transform=axes[1].transAxes,
-            fontsize=24,
-            va="top",
-            ha="left",
-        )
-
-        ymin = depths.min() / 1e3
-        ymax = depths.max() / 1e3
-
-        axes[0].set_ylim(ymax, ymin)
-        axes[1].set_ylim(ymax, ymin)
-
-        plt.tight_layout()
-        fig.savefig(out_path)
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _visualize_delta_PT_contours_fill(
         self,
         depth_lims: tuple[float, float] = (300e3, 600e3),
-        contour_lims_P: tuple[float, float] = (-1e9, 1e9),
-        contour_lims_T: tuple[float, float] = (-500, 500),
+        contour_lims_P: tuple[float, float] = (-1.2e9, 1.2e9),
+        contour_lims_T: tuple[float, float] = (-600, 600),
         n_contours: int = 100,
     ) -> None:
         """"""
@@ -1301,102 +1115,32 @@ class DrivingForceProfile:
 
         self._set_rc_params()
 
-        fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+        fig, axes = plt.subplots(1, 2, figsize=(6.5, 3.5), sharey=True)
 
-        _ = axes[0].contourf(
-            dP_grid / 1e9,
-            depths_grid_P / 1e3,
-            driving_force_grid_P / 1e3,
-            levels=np.round(levels_P / 1e3, 1),
-            cmap="PuOr_r",
-        )
+        _ = axes[0].contourf(dP_grid / 1e9, depths_grid_P / 1e3, driving_force_grid_P / 1e3, levels=np.round(levels_P / 1e3, 1), cmap="PuOr_r")
         filtered_levels_P = levels_P[::3]
         filtered_levels_P = filtered_levels_P[filtered_levels_P != 0]
-        contour_P = axes[0].contour(
-            dP_grid / 1e9,
-            depths_grid_P / 1e3,
-            driving_force_grid_P / 1e3,
-            levels=np.round(filtered_levels_P / 1e3, 1),
-            colors="k",
-            linewidths=0.5,
-        )
-        contour_0_P = axes[0].contour(
-            dP_grid / 1e9,
-            depths_grid_P / 1e3,
-            driving_force_grid_P / 1e3,
-            levels=[0],
-            colors="k",
-            linewidths=1,
-        )
+        contour_P = axes[0].contour(dP_grid / 1e9, depths_grid_P / 1e3, driving_force_grid_P / 1e3, levels=np.round(filtered_levels_P / 1e3, 1), colors="k", linewidths=0.5)
+        contour_0_P = axes[0].contour(dP_grid / 1e9, depths_grid_P / 1e3, driving_force_grid_P / 1e3, levels=[0], colors="k", linewidths=1)
         axes[0].set_ylim(ymax, ymin)
-        axes[0].clabel(contour_P, fmt="%.1f", inline_spacing=14, fontsize=12)
-        axes[0].clabel(
-            contour_0_P,
-            fmt={0: "$\\Delta{G}$ = 0 kJ/mol"},
-            inline_spacing=14,
-            fontsize=12,
-        )
-        axes[0].set_xlabel("$\\hat{P}$ [GPa]")
-        axes[0].set_ylabel("Depth [km]")
+        axes[0].clabel(contour_P, fmt="%.1f", fontsize=10)
+        axes[0].clabel(contour_0_P, fmt={0: "$\\Delta{G}$ = 0"}, fontsize=10)
+        axes[0].set_xlabel("$\\hat{P}$ (GPa)")
+        axes[0].set_ylabel("Depth (km)")
         axes[0].set_title("$\\hat{T}$ = 0 K")
-        axes[0].grid(True, "both", linewidth=0.5, color="#E5E5E5")
         axes[0].tick_params(axis="both", which="both", length=0)
-        axes[0].text(
-            0.02,
-            0.98,
-            "a",
-            transform=axes[0].transAxes,
-            fontsize=24,
-            va="top",
-            ha="left",
-        )
 
-        _ = axes[1].contourf(
-            dT_grid,
-            depths_grid_T / 1e3,
-            driving_force_grid_T / 1e3,
-            levels=np.round(levels_T / 1e3, 1),
-            cmap="PuOr_r",
-        )
+        _ = axes[1].contourf(dT_grid, depths_grid_T / 1e3, driving_force_grid_T / 1e3, levels=np.round(levels_T / 1e3, 1), cmap="PuOr_r")
         filtered_levels_T = levels_T[::3]
         filtered_levels_T = filtered_levels_T[filtered_levels_T != 0]
-        contour_T = axes[1].contour(
-            dT_grid,
-            depths_grid_T / 1e3,
-            driving_force_grid_T / 1e3,
-            levels=np.round(filtered_levels_T / 1e3, 1),
-            colors="k",
-            linewidths=0.5,
-        )
-        contour_0_T = axes[1].contour(
-            dT_grid,
-            depths_grid_T / 1e3,
-            driving_force_grid_T / 1e3,
-            levels=[0],
-            colors="k",
-            linewidths=1,
-        )
+        contour_T = axes[1].contour(dT_grid, depths_grid_T / 1e3, driving_force_grid_T / 1e3, levels=np.round(filtered_levels_T / 1e3, 1), colors="k", linewidths=0.5)
+        contour_0_T = axes[1].contour(dT_grid, depths_grid_T / 1e3, driving_force_grid_T / 1e3, levels=[0], colors="k", linewidths=1)
         axes[1].set_ylim(ymax, ymin)
-        axes[1].clabel(contour_T, fmt="%.1f", inline_spacing=14, fontsize=12)
-        axes[1].clabel(
-            contour_0_T,
-            fmt={0: "$\\Delta{G}$ = 0 kJ/mol"},
-            inline_spacing=14,
-            fontsize=12,
-        )
-        axes[1].set_xlabel("$\\hat{T}$ [K]")
+        axes[1].clabel(contour_T, fmt="%.1f", fontsize=10)
+        axes[1].clabel(contour_0_T, fmt={0: "$\\Delta{G}$ = 0"}, fontsize=10)
+        axes[1].set_xlabel("$\\hat{T}$ (K)")
         axes[1].set_title("$\\hat{P}$ = 0 GPa")
-        axes[1].grid(True, "both", linewidth=0.5, color="#E5E5E5")
         axes[1].tick_params(axis="both", which="both", length=0)
-        axes[1].text(
-            0.02,
-            0.98,
-            "b",
-            transform=axes[1].transAxes,
-            fontsize=24,
-            va="top",
-            ha="left",
-        )
 
         plt.tight_layout()
         fig.savefig(out_path)
@@ -1411,49 +1155,14 @@ def parse_arguments() -> Namespace:
 
     # Required arguments
     parser.add_argument("--model-id", type=str, required=True, help="ID of the Perple_X model")
-    parser.add_argument(
-        "--out-dir",
-        type=str,
-        required=True,
-        help="Directory for output data files",
-    )
-    parser.add_argument(
-        "--out-fig-dir",
-        type=str,
-        required=True,
-        help="Directory for output figures",
-    )
+    parser.add_argument("--out-dir", type=str, required=True, help="Directory for output data files")
+    parser.add_argument("--out-fig-dir", type=str, required=True, help="Directory for output figures")
 
     # Optional arguments
-    parser.add_argument(
-        "--potential-temperature",
-        type=float,
-        default=1573.0,
-        help="Potential temperature in K (default: 1573.0)",
-    )
-    parser.add_argument(
-        "--out-table-resolution",
-        type=int,
-        default=128,
-        help="Resolution of the Perple_X table (default: 128)",
-    )
-    parser.add_argument(
-        "--out-profile-resolution",
-        type=int,
-        default=501,
-        help="Resolution of the adiabat profile (default: 501)",
-    )
-    parser.add_argument(
-        "--planet-radius",
-        type=float,
-        default=6370e3,
-        help="Planet radius in meters (default: 6370e3)",
-    )
-    parser.add_argument(
-        "--surface-gravity",
-        type=float,
-        default=9.81,
-        help="Surface gravity in m/s² (default: 9.81)",
-    )
+    parser.add_argument("--potential-temperature", type=float, default=1573.0, help="Potential temperature in K (default: 1573.0)")
+    parser.add_argument("--out-table-resolution", type=int, default=128, help="Resolution of the Perple_X table (default: 128)")
+    parser.add_argument("--out-profile-resolution", type=int, default=501, help="Resolution of the adiabat profile (default: 501)")
+    parser.add_argument("--planet-radius", type=float, default=6370e3, help="Planet radius in meters (default: 6370e3)")
+    parser.add_argument("--surface-gravity", type=float, default=9.81, help="Surface gravity in m/s² (default: 9.81)")
 
     return parser.parse_args()

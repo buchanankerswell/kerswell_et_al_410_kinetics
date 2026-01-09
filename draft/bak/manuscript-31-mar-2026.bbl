@@ -1,0 +1,2417 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Agius%
+, Rychert%
+, Harmon%
+\BCBL {}\ \BBA {} Laske%
+}{%
+Agius%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2017}}%
+}]{%
+agius2017}
+\APACinsertmetastar {%
+agius2017}%
+\begin{APACrefauthors}%
+Agius, M.%
+, Rychert, C.%
+, Harmon, N.%
+\BCBL {}\ \BBA {} Laske, G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Mapping the mantle transition zone beneath Hawaii from
+  Ps receiver functions: Evidence for a hot plume and cold mantle downwellings}
+  {Mapping the mantle transition zone beneath hawaii from ps receiver
+  functions: Evidence for a hot plume and cold mantle downwellings}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{474}{}{226--236}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Agrusta%
+, Goes%
+\BCBL {}\ \BBA {} Van~Hunen%
+}{%
+Agrusta%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2017}}%
+}]{%
+agrusta2017}
+\APACinsertmetastar {%
+agrusta2017}%
+\begin{APACrefauthors}%
+Agrusta, R.%
+, Goes, S.%
+\BCBL {}\ \BBA {} Van~Hunen, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Subducting-slab transition-zone interaction: Stagnation,
+  penetration and mode switches} {Subducting-slab transition-zone interaction:
+  Stagnation, penetration and mode switches}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{464}{}{10--23}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Bangerth%
+\ \protect \BOthers {.}}{%
+Bangerth%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+{\protect \APACexlab {{\protect \BCnt {1}}}}}]{%
+aspectmanual}
+\APACinsertmetastar {%
+aspectmanual}%
+\begin{APACrefauthors}%
+Bangerth, W.%
+, Dannberg, J.%
+, Fraters, M.%
+, Gassm{\"o}ller, R.%
+, Glerum, A.%
+, Heister, T.%
+\BDBL {}Naliboff, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024{\protect \BCnt {1}}}{dec}{}.
+\newblock
+\APACrefbtitle {{{ASPECT}: Advanced Solver for Planetary Evolution, Convection,
+  and Tectonics, User Manual}.} {{{ASPECT}: Advanced Solver for Planetary
+  Evolution, Convection, and Tectonics, User Manual}.}
+\newblock
+\begin{APACrefURL} \url{https://doi.org/10.6084/m9.figshare.4865333}
+  \end{APACrefURL}
+\newblock
+\begin{APACrefDOI} \doi{10.6084/m9.figshare.4865333} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Bangerth%
+\ \protect \BOthers {.}}{%
+Bangerth%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+{\protect \APACexlab {{\protect \BCnt {2}}}}}]{%
+aspect-doi-v3.0.0}
+\APACinsertmetastar {%
+aspect-doi-v3.0.0}%
+\begin{APACrefauthors}%
+Bangerth, W.%
+, Dannberg, J.%
+, Fraters, M.%
+, Gassm{\"o}ller, R.%
+, Glerum, A.%
+, Heister, T.%
+\BDBL {}Naliboff, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024{\protect \BCnt {2}}}{dec}{}.
+\newblock
+\APACrefbtitle {ASPECT v3.0.0.} {Aspect v3.0.0.}
+\newblock
+\APACaddressPublisher{}{Zenodo}.
+\newblock
+\begin{APACrefURL} \url{https://doi.org/10.5281/zenodo.14371679}
+  \end{APACrefURL}
+\newblock
+\begin{APACrefDOI} \doi{10.5281/zenodo.14371679} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Bonatto%
+, Piromallo%
+\BCBL {}\ \BBA {} Cottaar%
+}{%
+Bonatto%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+bonatto2020}
+\APACinsertmetastar {%
+bonatto2020}%
+\begin{APACrefauthors}%
+Bonatto, L.%
+, Piromallo, C.%
+\BCBL {}\ \BBA {} Cottaar, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The transition zone beneath West Argentina-Central Chile
+  using P-to-S converted waves} {The transition zone beneath west
+  argentina-central chile using p-to-s converted waves}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{125}{8}{e2020JB019446}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cahn%
+}{%
+Cahn%
+}{%
+{\protect \APACyear {1956}}%
+}]{%
+cahn1956}
+\APACinsertmetastar {%
+cahn1956}%
+\begin{APACrefauthors}%
+Cahn, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1956}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The kinetics of grain boundary nucleated reactions} {The
+  kinetics of grain boundary nucleated reactions}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Acta metallurgica}{4}{5}{449--459}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Chambers%
+, Deuss%
+\BCBL {}\ \BBA {} Woodhouse%
+}{%
+Chambers%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2005}}%
+}]{%
+chambers2005}
+\APACinsertmetastar {%
+chambers2005}%
+\begin{APACrefauthors}%
+Chambers, K.%
+, Deuss, A.%
+\BCBL {}\ \BBA {} Woodhouse, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2005}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Reflectivity of the 410-km discontinuity from PP and SS
+  precursors} {Reflectivity of the 410-km discontinuity from pp and ss
+  precursors}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{110}{B2}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Clevenger%
+\ \BBA {} Heister%
+}{%
+Clevenger%
+\ \BBA {} Heister%
+}{%
+{\protect \APACyear {2021}}%
+}]{%
+clevenger2021}
+\APACinsertmetastar {%
+clevenger2021}%
+\begin{APACrefauthors}%
+Clevenger, T.%
+\BCBT {}\ \BBA {} Heister, T.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Comparison between algebraic and matrix-free geometric
+  multigrid for a Stokes problem on adaptive meshes with variable viscosity}
+  {Comparison between algebraic and matrix-free geometric multigrid for a
+  stokes problem on adaptive meshes with variable viscosity}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Numerical Linear Algebra with
+  Applications}{28}{5}{e2375}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Connolly%
+}{%
+Connolly%
+}{%
+{\protect \APACyear {2009}}%
+}]{%
+connolly2009}
+\APACinsertmetastar {%
+connolly2009}%
+\begin{APACrefauthors}%
+Connolly, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2009}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The geodynamic equation of state: what and how} {The
+  geodynamic equation of state: what and how}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geochemistry, geophysics, geosystems}{10}{10}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cottaar%
+\ \BBA {} Deuss%
+}{%
+Cottaar%
+\ \BBA {} Deuss%
+}{%
+{\protect \APACyear {2016}}%
+}]{%
+cottaar2016}
+\APACinsertmetastar {%
+cottaar2016}%
+\begin{APACrefauthors}%
+Cottaar, S.%
+\BCBT {}\ \BBA {} Deuss, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2016}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Large-scale mantle discontinuity topography beneath
+  Europe: Signature of akimotoite in subducting slabs} {Large-scale mantle
+  discontinuity topography beneath europe: Signature of akimotoite in
+  subducting slabs}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{121}{1}{279--292}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cottaar%
+, Heister%
+, Rose%
+\BCBL {}\ \BBA {} Unterborn%
+}{%
+Cottaar%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+cottaar2014}
+\APACinsertmetastar {%
+cottaar2014}%
+\begin{APACrefauthors}%
+Cottaar, S.%
+, Heister, T.%
+, Rose, I.%
+\BCBL {}\ \BBA {} Unterborn, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {BurnMan: A lower mantle mineral physics toolkit}
+  {Burnman: A lower mantle mineral physics toolkit}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geochemistry, Geophysics,
+  Geosystems}{15}{4}{1164--1179}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+D{\"a}{\ss}ler%
+\ \BBA {} Yuen%
+}{%
+D{\"a}{\ss}ler%
+\ \BBA {} Yuen%
+}{%
+{\protect \APACyear {1996}}%
+}]{%
+dassler1996a}
+\APACinsertmetastar {%
+dassler1996a}%
+\begin{APACrefauthors}%
+D{\"a}{\ss}ler, R.%
+\BCBT {}\ \BBA {} Yuen, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1996}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The metastable olivine wedge in fast subducting slabs:
+  Constraints from thermo-kinetic coupling} {The metastable olivine wedge in
+  fast subducting slabs: Constraints from thermo-kinetic coupling}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and planetary science
+  letters}{137}{1-4}{109--118}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+D{\"a}{\ss}ler%
+, Yuen%
+, Karato%
+\BCBL {}\ \BBA {} Riedel%
+}{%
+D{\"a}{\ss}ler%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1996}}%
+}]{%
+dassler1996b}
+\APACinsertmetastar {%
+dassler1996b}%
+\begin{APACrefauthors}%
+D{\"a}{\ss}ler, R.%
+, Yuen, D.%
+, Karato, S.%
+\BCBL {}\ \BBA {} Riedel, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1996}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Two-dimensional thermo-kinetic model for the
+  olivine-spinel phase transition in subducting slabs} {Two-dimensional
+  thermo-kinetic model for the olivine-spinel phase transition in subducting
+  slabs}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Physics of the earth and planetary
+  interiors}{94}{3-4}{217--239}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Day%
+\ \BBA {} Deuss%
+}{%
+Day%
+\ \BBA {} Deuss%
+}{%
+{\protect \APACyear {2013}}%
+}]{%
+day2013}
+\APACinsertmetastar {%
+day2013}%
+\begin{APACrefauthors}%
+Day, E.%
+\BCBT {}\ \BBA {} Deuss, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2013}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Reconciling PP and {$P^\prime P^\prime$} precursor
+  observations of a complex 660 km seismic discontinuity} {Reconciling pp and
+  {$P^\prime P^\prime$} precursor observations of a complex 660 km seismic
+  discontinuity}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{194}{2}{834--838}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Deuss%
+}{%
+Deuss%
+}{%
+{\protect \APACyear {2009}}%
+}]{%
+deuss2009}
+\APACinsertmetastar {%
+deuss2009}%
+\begin{APACrefauthors}%
+Deuss, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2009}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Global observations of mantle discontinuities using SS
+  and PP precursors} {Global observations of mantle discontinuities using ss
+  and pp precursors}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Surveys in geophysics}{30}{4}{301--326}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Faccenda%
+\ \BBA {} Dal~Zilio%
+}{%
+Faccenda%
+\ \BBA {} Dal~Zilio%
+}{%
+{\protect \APACyear {2017}}%
+}]{%
+faccenda2017}
+\APACinsertmetastar {%
+faccenda2017}%
+\begin{APACrefauthors}%
+Faccenda, M.%
+\BCBT {}\ \BBA {} Dal~Zilio, L.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The role of solid--solid phase transitions in mantle
+  convection} {The role of solid--solid phase transitions in mantle
+  convection}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Lithos}{268}{}{198--224}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Flanagan%
+\ \BBA {} Shearer%
+}{%
+Flanagan%
+\ \BBA {} Shearer%
+}{%
+{\protect \APACyear {1999}}%
+}]{%
+flanagan1999}
+\APACinsertmetastar {%
+flanagan1999}%
+\begin{APACrefauthors}%
+Flanagan, M.%
+\BCBT {}\ \BBA {} Shearer, P.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1999}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {A map of topography on the 410-km discontinuity from PP
+  precursors} {A map of topography on the 410-km discontinuity from pp
+  precursors}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical research letters}{26}{5}{549--552}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Fraters%
+}{%
+Fraters%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+fraters2020}
+\APACinsertmetastar {%
+fraters2020}%
+\begin{APACrefauthors}%
+Fraters, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{jun}{}.
+\newblock
+\APACrefbtitle {The Geodynamic World Builder.} {The geodynamic world builder.}
+\newblock
+\APACaddressPublisher{}{Zenodo}.
+\newblock
+\begin{APACrefURL} \url{https://doi.org/10.5281/zenodo.3900603}
+  \end{APACrefURL}
+\newblock
+\begin{APACrefDOI} \doi{10.5281/zenodo.3900603} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Fraters%
+, Thieulot%
+, {van den Berg}%
+\BCBL {}\ \BBA {} Spakman%
+}{%
+Fraters%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2019}}%
+}]{%
+fraters2019}
+\APACinsertmetastar {%
+fraters2019}%
+\begin{APACrefauthors}%
+Fraters, M.%
+, Thieulot, C.%
+, {van den Berg}, A.%
+\BCBL {}\ \BBA {} Spakman, W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The Geodynamic World Builder: a solution for complex
+  initial conditions in numerical modeling} {The geodynamic world builder: a
+  solution for complex initial conditions in numerical modeling}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Solid Earth}{10}{5}{1785--1807}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Fukao%
+\ \BBA {} Obayashi%
+}{%
+Fukao%
+\ \BBA {} Obayashi%
+}{%
+{\protect \APACyear {2013}}%
+}]{%
+fukao2013}
+\APACinsertmetastar {%
+fukao2013}%
+\begin{APACrefauthors}%
+Fukao, Y.%
+\BCBT {}\ \BBA {} Obayashi, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2013}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Subducted slabs stagnant above, penetrating through, and
+  trapped below the 660 km discontinuity} {Subducted slabs stagnant above,
+  penetrating through, and trapped below the 660 km discontinuity}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{118}{11}{5920--5938}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Garel%
+\ \protect \BOthers {.}}{%
+Garel%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+garel2014}
+\APACinsertmetastar {%
+garel2014}%
+\begin{APACrefauthors}%
+Garel, F.%
+, Goes, S.%
+, Davies, D.%
+, Davies, J.%
+, Kramer, S.%
+\BCBL {}\ \BBA {} Wilson, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Interaction of subducted slabs with the mantle
+  transition-zone: A regime diagram from 2-D thermo-mechanical models with a
+  mobile trench and an overriding plate} {Interaction of subducted slabs with
+  the mantle transition-zone: A regime diagram from 2-d thermo-mechanical
+  models with a mobile trench and an overriding plate}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geochemistry, Geophysics,
+  Geosystems}{15}{5}{1739--1765}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Gassm{\"o}ller%
+, Dannberg%
+, Bangerth%
+, Heister%
+\BCBL {}\ \BBA {} Myhill%
+}{%
+Gassm{\"o}ller%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+gassmoller2020}
+\APACinsertmetastar {%
+gassmoller2020}%
+\begin{APACrefauthors}%
+Gassm{\"o}ller, R.%
+, Dannberg, J.%
+, Bangerth, W.%
+, Heister, T.%
+\BCBL {}\ \BBA {} Myhill, R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {On formulations of compressible mantle convection} {On
+  formulations of compressible mantle convection}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{221}{2}{1264--1280}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Gassm{\"o}ller%
+, Lokavarapu%
+, Heien%
+, Puckett%
+\BCBL {}\ \BBA {} Bangerth%
+}{%
+Gassm{\"o}ller%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2018}}%
+}]{%
+gassmoller2018}
+\APACinsertmetastar {%
+gassmoller2018}%
+\begin{APACrefauthors}%
+Gassm{\"o}ller, R.%
+, Lokavarapu, H.%
+, Heien, E.%
+, Puckett, E.%
+\BCBL {}\ \BBA {} Bangerth, W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Flexible and scalable particle-in-cell methods with
+  adaptive mesh refinement for geodynamic computations} {Flexible and scalable
+  particle-in-cell methods with adaptive mesh refinement for geodynamic
+  computations}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geochemistry, Geophysics,
+  Geosystems}{19}{9}{3596--3604}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Glasgow%
+, Zhang%
+, Schmandt%
+, Zhou%
+\BCBL {}\ \BBA {} Zhang%
+}{%
+Glasgow%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+}]{%
+glasgow2024}
+\APACinsertmetastar {%
+glasgow2024}%
+\begin{APACrefauthors}%
+Glasgow, M.%
+, Zhang, H.%
+, Schmandt, B.%
+, Zhou, W.%
+\BCBL {}\ \BBA {} Zhang, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Global variability of the composition and temperature at
+  the 410-km discontinuity from receiver function analysis of dense arrays}
+  {Global variability of the composition and temperature at the 410-km
+  discontinuity from receiver function analysis of dense arrays}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{643}{}{118889}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Goes%
+, Yu%
+, Ballmer%
+, Yan%
+\BCBL {}\ \BBA {} van~der Hilst%
+}{%
+Goes%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2022}}%
+}]{%
+goes2022}
+\APACinsertmetastar {%
+goes2022}%
+\begin{APACrefauthors}%
+Goes, S.%
+, Yu, C.%
+, Ballmer, M.%
+, Yan, J.%
+\BCBL {}\ \BBA {} van~der Hilst, R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Compositional heterogeneity in the mantle transition
+  zone} {Compositional heterogeneity in the mantle transition zone}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Nature Reviews Earth \& Environment}{3}{8}{533--550}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+D.~Green%
+, Jaques%
+\BCBL {}\ \BBA {} Hibberson%
+}{%
+D.~Green%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1979}}%
+}]{%
+green1979}
+\APACinsertmetastar {%
+green1979}%
+\begin{APACrefauthors}%
+Green, D.%
+, Jaques, L.%
+\BCBL {}\ \BBA {} Hibberson, W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1979}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Petrogenesis of mid-ocean ridge basalts} {Petrogenesis
+  of mid-ocean ridge basalts}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {The Earth: its origin, structure and evolution} {The
+  earth: its origin, structure and evolution}\ (\BPGS\ 265--300).
+\newblock
+\APACaddressPublisher{}{Academic Press}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+H.~Green%
+\ \BBA {} Houston%
+}{%
+H.~Green%
+\ \BBA {} Houston%
+}{%
+{\protect \APACyear {1995}}%
+}]{%
+green1995}
+\APACinsertmetastar {%
+green1995}%
+\begin{APACrefauthors}%
+Green, H.%
+\BCBT {}\ \BBA {} Houston, H.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1995}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The mechanics of deep earthquakes} {The mechanics of
+  deep earthquakes}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Annual Review Of Earth And Planetary Sciences, Volume
+  23, pp. 169-214.}{23}{}{169--214}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Guest%
+, Schubert%
+\BCBL {}\ \BBA {} Gable%
+}{%
+Guest%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2004}}%
+}]{%
+guest2004}
+\APACinsertmetastar {%
+guest2004}%
+\begin{APACrefauthors}%
+Guest, A.%
+, Schubert, G.%
+\BCBL {}\ \BBA {} Gable, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2004}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Stresses along the metastable wedge of olivine in a
+  subducting slab: possible explanation for the Tonga double seismic layer}
+  {Stresses along the metastable wedge of olivine in a subducting slab:
+  possible explanation for the tonga double seismic layer}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Physics of the Earth and Planetary
+  Interiors}{141}{4}{253--267}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Han%
+\ \protect \BOthers {.}}{%
+Han%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2021}}%
+}]{%
+han2021}
+\APACinsertmetastar {%
+han2021}%
+\begin{APACrefauthors}%
+Han, G.%
+, Li, J.%
+, Guo, G.%
+, Mooney, W.%
+, Karato, S.%
+\BCBL {}\ \BBA {} Yuen, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Pervasive low-velocity layer atop the 410-km
+  discontinuity beneath the northwest Pacific subduction zone: Implications for
+  rheology and geodynamics} {Pervasive low-velocity layer atop the 410-km
+  discontinuity beneath the northwest pacific subduction zone: Implications for
+  rheology and geodynamics}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{554}{}{116642}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Heister%
+, Dannberg%
+, Gassm{\"o}ller%
+\BCBL {}\ \BBA {} Bangerth%
+}{%
+Heister%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2017}}%
+}]{%
+heister2017}
+\APACinsertmetastar {%
+heister2017}%
+\begin{APACrefauthors}%
+Heister, T.%
+, Dannberg, J.%
+, Gassm{\"o}ller, R.%
+\BCBL {}\ \BBA {} Bangerth, W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {High accuracy mantle convection simulation through
+  modern numerical methods--II: realistic models and problems} {High accuracy
+  mantle convection simulation through modern numerical methods--ii: realistic
+  models and problems}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{210}{2}{833--851}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Hindmarsh%
+\ \protect \BOthers {.}}{%
+Hindmarsh%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2005}}%
+}]{%
+hindmarsh2005}
+\APACinsertmetastar {%
+hindmarsh2005}%
+\begin{APACrefauthors}%
+Hindmarsh, A.%
+, Brown, P.%
+, Grant, K.%
+, Lee, S.%
+, Serban, R.%
+, Shumaker, D.%
+\BCBL {}\ \BBA {} Woodward, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2005}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {SUNDIALS: Suite of nonlinear and differential/algebraic
+  equation solvers} {Sundials: Suite of nonlinear and differential/algebraic
+  equation solvers}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{ACM Transactions on Mathematical Software
+  (TOMS)}{31}{3}{363--396}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Hosoya%
+, Kubo%
+, Ohtani%
+, Sano%
+\BCBL {}\ \BBA {} Funakoshi%
+}{%
+Hosoya%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2005}}%
+}]{%
+hosoya2005}
+\APACinsertmetastar {%
+hosoya2005}%
+\begin{APACrefauthors}%
+Hosoya, T.%
+, Kubo, T.%
+, Ohtani, E.%
+, Sano, A.%
+\BCBL {}\ \BBA {} Funakoshi, K\BHBI i.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2005}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Water controls the fields of metastable olivine in cold
+  subducting slabs} {Water controls the fields of metastable olivine in cold
+  subducting slabs}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Research Letters}{32}{17}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Houser%
+\ \BBA {} Williams%
+}{%
+Houser%
+\ \BBA {} Williams%
+}{%
+{\protect \APACyear {2010}}%
+}]{%
+houser2010}
+\APACinsertmetastar {%
+houser2010}%
+\begin{APACrefauthors}%
+Houser, C.%
+\BCBT {}\ \BBA {} Williams, Q.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2010}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Reconciling Pacific 410 and 660 km discontinuity
+  topography, transition zone shear velocity patterns, and mantle phase
+  transitions} {Reconciling pacific 410 and 660 km discontinuity topography,
+  transition zone shear velocity patterns, and mantle phase
+  transitions}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science
+  Letters}{296}{3-4}{255--266}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Houston%
+}{%
+Houston%
+}{%
+{\protect \APACyear {2015}}%
+}]{%
+houston2015}
+\APACinsertmetastar {%
+houston2015}%
+\begin{APACrefauthors}%
+Houston, H.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2015}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Deep earthquakes} {Deep earthquakes}.{\BBCQ}
+\newblock
+
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ishii%
+\ \BBA {} Ohtani%
+}{%
+Ishii%
+\ \BBA {} Ohtani%
+}{%
+{\protect \APACyear {2021}}%
+}]{%
+ishii2021}
+\APACinsertmetastar {%
+ishii2021}%
+\begin{APACrefauthors}%
+Ishii, T.%
+\BCBT {}\ \BBA {} Ohtani, E.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Dry metastable olivine and slab deformation in a wet
+  subducting slab} {Dry metastable olivine and slab deformation in a wet
+  subducting slab}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Nature Geoscience}{14}{7}{526--530}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Jarvis%
+\ \BBA {} Mckenzie%
+}{%
+Jarvis%
+\ \BBA {} Mckenzie%
+}{%
+{\protect \APACyear {1980}}%
+}]{%
+jarvis1980}
+\APACinsertmetastar {%
+jarvis1980}%
+\begin{APACrefauthors}%
+Jarvis, G.%
+\BCBT {}\ \BBA {} Mckenzie, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1980}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Convection in a compressible fluid with infinite Prandtl
+  number} {Convection in a compressible fluid with infinite prandtl
+  number}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Fluid Mechanics}{96}{3}{515--583}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Jenkins%
+, Cottaar%
+, White%
+\BCBL {}\ \BBA {} Deuss%
+}{%
+Jenkins%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2016}}%
+}]{%
+jenkins2016}
+\APACinsertmetastar {%
+jenkins2016}%
+\begin{APACrefauthors}%
+Jenkins, J.%
+, Cottaar, S.%
+, White, R.%
+\BCBL {}\ \BBA {} Deuss, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2016}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Depressed mantle discontinuities beneath Iceland:
+  evidence of a garnet controlled 660 km discontinuity?} {Depressed mantle
+  discontinuities beneath iceland: evidence of a garnet controlled 660 km
+  discontinuity?}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{433}{}{159--168}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Jiang%
+, Zhao%
+\BCBL {}\ \BBA {} Zhang%
+}{%
+Jiang%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2015}}%
+}]{%
+jiang2015}
+\APACinsertmetastar {%
+jiang2015}%
+\begin{APACrefauthors}%
+Jiang, G.%
+, Zhao, D.%
+\BCBL {}\ \BBA {} Zhang, G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2015}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Detection of metastable olivine wedge in the western
+  Pacific slab and its geodynamic implications} {Detection of metastable
+  olivine wedge in the western pacific slab and its geodynamic
+  implications}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Physics of the Earth and Planetary
+  Interiors}{238}{}{1--7}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Karato%
+}{%
+Karato%
+}{%
+{\protect \APACyear {1984}}%
+}]{%
+karato1984}
+\APACinsertmetastar {%
+karato1984}%
+\begin{APACrefauthors}%
+Karato, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1984}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Grain-size distribution and rheology of the upper
+  mantle} {Grain-size distribution and rheology of the upper mantle}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Tectonophysics}{104}{1-2}{155--176}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Karato%
+}{%
+Karato%
+}{%
+{\protect \APACyear {2008}}%
+}]{%
+karato2008}
+\APACinsertmetastar {%
+karato2008}%
+\begin{APACrefauthors}%
+Karato, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2008}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Deformation of earth materials} {Deformation of earth
+  materials}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{An introduction to the rheology of Solid
+  Earth}{463}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Karato%
+}{%
+Karato%
+}{%
+{\protect \APACyear {2011}}%
+}]{%
+karato2011}
+\APACinsertmetastar {%
+karato2011}%
+\begin{APACrefauthors}%
+Karato, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2011}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Water distribution across the mantle transition zone and
+  its implications for global material circulation} {Water distribution across
+  the mantle transition zone and its implications for global material
+  circulation}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science
+  Letters}{301}{3-4}{413--423}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Karato%
+, Riedel%
+\BCBL {}\ \BBA {} Yuen%
+}{%
+Karato%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2001}}%
+}]{%
+karato2001}
+\APACinsertmetastar {%
+karato2001}%
+\begin{APACrefauthors}%
+Karato, S.%
+, Riedel, M.%
+\BCBL {}\ \BBA {} Yuen, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2001}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Rheological structure and deformation of subducted slabs
+  in the mantle transition zone: implications for mantle circulation and deep
+  earthquakes} {Rheological structure and deformation of subducted slabs in the
+  mantle transition zone: implications for mantle circulation and deep
+  earthquakes}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Physics of the Earth and Planetary
+  Interiors}{127}{1-4}{83--108}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Katsura%
+\ \protect \BOthers {.}}{%
+Katsura%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2004}}%
+}]{%
+katsura2004}
+\APACinsertmetastar {%
+katsura2004}%
+\begin{APACrefauthors}%
+Katsura, T.%
+, Yamada, H.%
+, Nishikawa, O.%
+, Song, M.%
+, Kubo, A.%
+, Shinmei, T.%
+\BDBL {}others%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2004}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Olivine-wadsleyite transition in the system (Mg, Fe)
+  2SiO4} {Olivine-wadsleyite transition in the system (mg, fe) 2sio4}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{109}{B2}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Kirby%
+, Stein%
+, Okal%
+\BCBL {}\ \BBA {} Rubie%
+}{%
+Kirby%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1996}}%
+}]{%
+kirby1996}
+\APACinsertmetastar {%
+kirby1996}%
+\begin{APACrefauthors}%
+Kirby, S.%
+, Stein, S.%
+, Okal, E.%
+\BCBL {}\ \BBA {} Rubie, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1996}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Metastable mantle phase transformations and deep
+  earthquakes in subducting oceanic lithosphere} {Metastable mantle phase
+  transformations and deep earthquakes in subducting oceanic
+  lithosphere}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Reviews of geophysics}{34}{2}{261--306}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Kronbichler%
+, Heister%
+\BCBL {}\ \BBA {} Bangerth%
+}{%
+Kronbichler%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2012}}%
+}]{%
+kronbichler2012}
+\APACinsertmetastar {%
+kronbichler2012}%
+\begin{APACrefauthors}%
+Kronbichler, M.%
+, Heister, T.%
+\BCBL {}\ \BBA {} Bangerth, W.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {High accuracy mantle convection simulation through
+  modern numerical methods} {High accuracy mantle convection simulation through
+  modern numerical methods}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{191}{1}{12--29}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Kubo%
+, Ohtani%
+\BCBL {}\ \BBA {} Funakoshi%
+}{%
+Kubo%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2004}}%
+}]{%
+kubo2004}
+\APACinsertmetastar {%
+kubo2004}%
+\begin{APACrefauthors}%
+Kubo, T.%
+, Ohtani, E.%
+\BCBL {}\ \BBA {} Funakoshi, K.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2004}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Nucleation and growth kinetics of the $\alpha$-$\beta$
+  transformation in Mg2SiO4determined by in situ synchrotron powder X-ray
+  diffraction} {Nucleation and growth kinetics of the $\alpha$-$\beta$
+  transformation in mg2sio4determined by in situ synchrotron powder x-ray
+  diffraction}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{American Mineralogist}{89}{2-3}{285--293}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Lallemand%
+, Heuret%
+\BCBL {}\ \BBA {} Boutelier%
+}{%
+Lallemand%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2005}}%
+}]{%
+lallemand2005}
+\APACinsertmetastar {%
+lallemand2005}%
+\begin{APACrefauthors}%
+Lallemand, S.%
+, Heuret, A.%
+\BCBL {}\ \BBA {} Boutelier, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2005}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {On the relationships between slab dip, back-arc stress,
+  upper plate absolute motion, and crustal nature in subduction zones} {On the
+  relationships between slab dip, back-arc stress, upper plate absolute motion,
+  and crustal nature in subduction zones}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geochemistry, Geophysics, Geosystems}{6}{9}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Lawrence%
+\ \BBA {} Shearer%
+}{%
+Lawrence%
+\ \BBA {} Shearer%
+}{%
+{\protect \APACyear {2008}}%
+}]{%
+lawrence2008}
+\APACinsertmetastar {%
+lawrence2008}%
+\begin{APACrefauthors}%
+Lawrence, J.%
+\BCBT {}\ \BBA {} Shearer, P.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2008}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Imaging mantle transition zone thickness with SdS-SS
+  finite-frequency sensitivity kernels} {Imaging mantle transition zone
+  thickness with sds-ss finite-frequency sensitivity kernels}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{174}{1}{143--158}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ledoux%
+\ \protect \BOthers {.}}{%
+Ledoux%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2023}}%
+}]{%
+ledoux2023}
+\APACinsertmetastar {%
+ledoux2023}%
+\begin{APACrefauthors}%
+Ledoux, E.%
+, Krug, M.%
+, Gay, J.%
+, Chantel, J.%
+, Hilairet, N.%
+, Bykov, M.%
+\BDBL {}others%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {In-situ study of microstructures induced by the olivine
+  to wadsleyite transformation at conditions of the 410 km depth discontinuity}
+  {In-situ study of microstructures induced by the olivine to wadsleyite
+  transformation at conditions of the 410 km depth discontinuity}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{American Mineralogist}{108}{12}{2283--2293}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Liu%
+, Kerschhofer%
+, Mosenfelder%
+\BCBL {}\ \BBA {} Rubie%
+}{%
+Liu%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1998}}%
+}]{%
+liu1998}
+\APACinsertmetastar {%
+liu1998}%
+\begin{APACrefauthors}%
+Liu, M.%
+, Kerschhofer, L.%
+, Mosenfelder, J.%
+\BCBL {}\ \BBA {} Rubie, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1998}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The effect of strain energy on growth rates during the
+  olivine-spinel transformation and implications for olivine metastability in
+  subducting slabs} {The effect of strain energy on growth rates during the
+  olivine-spinel transformation and implications for olivine metastability in
+  subducting slabs}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{103}{B10}{23897--23909}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Miao%
+, Gao%
+, Sun%
+\BCBL {}\ \BBA {} Liu%
+}{%
+Miao%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+}]{%
+miao2024}
+\APACinsertmetastar {%
+miao2024}%
+\begin{APACrefauthors}%
+Miao, Z.%
+, Gao, S.%
+, Sun, M.%
+\BCBL {}\ \BBA {} Liu, K.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Topography of the 410 and 660 km discontinuities beneath
+  the Tibetan plateau and adjacent areas} {Topography of the 410 and 660 km
+  discontinuities beneath the tibetan plateau and adjacent areas}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{644}{}{118947}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Myhill%
+\ \protect \BOthers {.}}{%
+Myhill%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2023}}%
+}]{%
+myhill2023}
+\APACinsertmetastar {%
+myhill2023}%
+\begin{APACrefauthors}%
+Myhill, R.%
+, Cottaar, S.%
+, Heister, T.%
+, Rose, I.%
+, Unterborn, C.%
+, Dannberg, J.%
+\BCBL {}\ \BBA {} Gassm{\"o}ller, R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {BurnMan--a Python toolkit for planetary geophysics,
+  geochemistry and thermodynamics} {Burnman--a python toolkit for planetary
+  geophysics, geochemistry and thermodynamics}.{\BBCQ}
+\newblock
+
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ohuchi%
+\ \protect \BOthers {.}}{%
+Ohuchi%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2022}}%
+}]{%
+ohuchi2022}
+\APACinsertmetastar {%
+ohuchi2022}%
+\begin{APACrefauthors}%
+Ohuchi, T.%
+, Higo, Y.%
+, Tange, Y.%
+, Sakai, T.%
+, Matsuda, K.%
+\BCBL {}\ \BBA {} Irifune, T.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {In situ X-ray and acoustic observations of deep seismic
+  faulting upon phase transitions in olivine} {In situ x-ray and acoustic
+  observations of deep seismic faulting upon phase transitions in
+  olivine}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Nature Communications}{13}{1}{5213}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Parera-Portell%
+, Mancilla%
+, Morales%
+\BCBL {}\ \BBA {} D{\'i}az%
+}{%
+Parera-Portell%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+}]{%
+parera2024}
+\APACinsertmetastar {%
+parera2024}%
+\begin{APACrefauthors}%
+Parera-Portell, J.%
+, Mancilla, F.%
+, Morales, J.%
+\BCBL {}\ \BBA {} D{\'i}az, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {High-resolution mapping of the mantle transition zone
+  and its interaction with subducted slabs in the Ibero-Maghrebian region}
+  {High-resolution mapping of the mantle transition zone and its interaction
+  with subducted slabs in the ibero-maghrebian region}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{640}{}{118798}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Perrillat%
+\ \protect \BOthers {.}}{%
+Perrillat%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2016}}%
+}]{%
+perrillat2016}
+\APACinsertmetastar {%
+perrillat2016}%
+\begin{APACrefauthors}%
+Perrillat, J.%
+, Chollet, M.%
+, Durand, S.%
+, van De~Moortele, B.%
+, Chambat, F.%
+, Mezouar, M.%
+\BCBL {}\ \BBA {} Daniel, I.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2016}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Kinetics of the olivine--ringwoodite transformation and
+  seismic attenuation in the Earth's mantle transition zone} {Kinetics of the
+  olivine--ringwoodite transformation and seismic attenuation in the earth's
+  mantle transition zone}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{433}{}{360--369}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Perrillat%
+\ \protect \BOthers {.}}{%
+Perrillat%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2013}}%
+}]{%
+perrillat2013}
+\APACinsertmetastar {%
+perrillat2013}%
+\begin{APACrefauthors}%
+Perrillat, J.%
+, Daniel, I.%
+, Bolfan-Casanova, N.%
+, Chollet, M.%
+, Morard, G.%
+\BCBL {}\ \BBA {} Mezouar, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2013}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Mechanism and kinetics of the $\alpha$--$\beta$
+  transition in San Carlos olivine Mg1. 8Fe0. 2SiO4} {Mechanism and kinetics of
+  the $\alpha$--$\beta$ transition in san carlos olivine mg1. 8fe0.
+  2sio4}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{118}{1}{110--119}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ranalli%
+}{%
+Ranalli%
+}{%
+{\protect \APACyear {1995}}%
+}]{%
+ranalli1995}
+\APACinsertmetastar {%
+ranalli1995}%
+\begin{APACrefauthors}%
+Ranalli, G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{1995}.
+\newblock
+\APACrefbtitle {Rheology of the Earth} {Rheology of the earth}.
+\newblock
+\APACaddressPublisher{}{Springer Science \& Business Media}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Reynolds%
+, Gardner%
+, Woodward%
+\BCBL {}\ \BBA {} Chinomona%
+}{%
+Reynolds%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2023}}%
+}]{%
+reynolds2023}
+\APACinsertmetastar {%
+reynolds2023}%
+\begin{APACrefauthors}%
+Reynolds, D.%
+, Gardner, D.%
+, Woodward, C.%
+\BCBL {}\ \BBA {} Chinomona, R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {ARKODE: A flexible IVP solver infrastructure for
+  one-step methods} {Arkode: A flexible ivp solver infrastructure for one-step
+  methods}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{ACM Transactions on Mathematical
+  Software}{49}{2}{1--26}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ringwood%
+}{%
+Ringwood%
+}{%
+{\protect \APACyear {1975}}%
+}]{%
+ringwood1975}
+\APACinsertmetastar {%
+ringwood1975}%
+\begin{APACrefauthors}%
+Ringwood, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1975}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Composition and Petrology of the Earth's Mantle}
+  {Composition and petrology of the earth's mantle}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{MacGraw-Hill}{618}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Rost%
+\ \BBA {} Weber%
+}{%
+Rost%
+\ \BBA {} Weber%
+}{%
+{\protect \APACyear {2002}}%
+}]{%
+rost2002}
+\APACinsertmetastar {%
+rost2002}%
+\begin{APACrefauthors}%
+Rost, S.%
+\BCBT {}\ \BBA {} Weber, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2002}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The upper mantle transition zone discontinuities in the
+  Pacific as determined by short-period array data} {The upper mantle
+  transition zone discontinuities in the pacific as determined by short-period
+  array data}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science
+  Letters}{204}{3-4}{347--361}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Rubie%
+\ \BBA {} Ross~II%
+}{%
+Rubie%
+\ \BBA {} Ross~II%
+}{%
+{\protect \APACyear {1994}}%
+}]{%
+rubie1994}
+\APACinsertmetastar {%
+rubie1994}%
+\begin{APACrefauthors}%
+Rubie, D.%
+\BCBT {}\ \BBA {} Ross~II, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1994}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Kinetics of the olivine-spinel transformation in
+  subducting lithosphere: Experimental constraints and implications for deep
+  slab processes} {Kinetics of the olivine-spinel transformation in subducting
+  lithosphere: Experimental constraints and implications for deep slab
+  processes}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Physics of the Earth and Planetary
+  Interiors}{86}{1-3}{223--243}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Saikia%
+, Frost%
+\BCBL {}\ \BBA {} Rubie%
+}{%
+Saikia%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2008}}%
+}]{%
+saikia2008}
+\APACinsertmetastar {%
+saikia2008}%
+\begin{APACrefauthors}%
+Saikia, A.%
+, Frost, D.%
+\BCBL {}\ \BBA {} Rubie, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2008}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Splitting of the 520-kilometer seismic discontinuity and
+  chemical heterogeneity in the mantle} {Splitting of the 520-kilometer seismic
+  discontinuity and chemical heterogeneity in the mantle}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Science}{319}{5869}{1515--1518}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Schmandt%
+}{%
+Schmandt%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+schmandt2012}
+\APACinsertmetastar {%
+schmandt2012}%
+\begin{APACrefauthors}%
+Schmandt, B.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Mantle transition zone shear velocity gradients beneath
+  USArray} {Mantle transition zone shear velocity gradients beneath
+  usarray}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{355}{}{119--130}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Schmeling%
+, Monz%
+\BCBL {}\ \BBA {} Rubie%
+}{%
+Schmeling%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1999}}%
+}]{%
+schmeling1999}
+\APACinsertmetastar {%
+schmeling1999}%
+\begin{APACrefauthors}%
+Schmeling, H.%
+, Monz, R.%
+\BCBL {}\ \BBA {} Rubie, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1999}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The influence of olivine metastability on the dynamics
+  of subduction} {The influence of olivine metastability on the dynamics of
+  subduction}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{165}{1}{55--66}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Schmerr%
+\ \BBA {} Garnero%
+}{%
+Schmerr%
+\ \BBA {} Garnero%
+}{%
+{\protect \APACyear {2007}}%
+}]{%
+schmerr2007}
+\APACinsertmetastar {%
+schmerr2007}%
+\begin{APACrefauthors}%
+Schmerr, N.%
+\BCBT {}\ \BBA {} Garnero, E.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Upper mantle discontinuity topography from thermal and
+  chemical heterogeneity} {Upper mantle discontinuity topography from thermal
+  and chemical heterogeneity}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Science}{318}{5850}{623--626}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Schubert%
+, Turcotte%
+\BCBL {}\ \BBA {} Olson%
+}{%
+Schubert%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2001}}%
+}]{%
+schubert2001}
+\APACinsertmetastar {%
+schubert2001}%
+\begin{APACrefauthors}%
+Schubert, G.%
+, Turcotte, D.%
+\BCBL {}\ \BBA {} Olson, P.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2001}.
+\newblock
+\APACrefbtitle {Mantle convection in the Earth and planets} {Mantle convection
+  in the earth and planets}.
+\newblock
+\APACaddressPublisher{}{Cambridge University Press}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Shearer%
+}{%
+Shearer%
+}{%
+{\protect \APACyear {2000}}%
+}]{%
+shearer2000}
+\APACinsertmetastar {%
+shearer2000}%
+\begin{APACrefauthors}%
+Shearer, P.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2000}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Upper mantle seismic discontinuities} {Upper mantle
+  seismic discontinuities}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical monograph-American Geophysical
+  Union}{117}{}{115--132}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Shen%
+\ \BBA {} Zhan%
+}{%
+Shen%
+\ \BBA {} Zhan%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+shen2020}
+\APACinsertmetastar {%
+shen2020}%
+\begin{APACrefauthors}%
+Shen, Z.%
+\BCBT {}\ \BBA {} Zhan, Z.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Metastable olivine wedge beneath the Japan Sea imaged by
+  seismic interferometry} {Metastable olivine wedge beneath the japan sea
+  imaged by seismic interferometry}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Research Letters}{47}{6}{e2019GL085665}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Sime%
+, Wilson%
+\BCBL {}\ \BBA {} van Keken%
+}{%
+Sime%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+}]{%
+sime2024}
+\APACinsertmetastar {%
+sime2024}%
+\begin{APACrefauthors}%
+Sime, N.%
+, Wilson, C.%
+\BCBL {}\ \BBA {} van Keken, P.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Thermal modeling of subduction zones with prescribed and
+  evolving 2D and 3D slab geometries} {Thermal modeling of subduction zones
+  with prescribed and evolving 2d and 3d slab geometries}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Progress in Earth and Planetary Science}{11}{1}{14}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Sindhusuta%
+, Chi%
+, Foster%
+, Officer%
+\BCBL {}\ \BBA {} Wang%
+}{%
+Sindhusuta%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2025}}%
+}]{%
+sindhusuta2025}
+\APACinsertmetastar {%
+sindhusuta2025}%
+\begin{APACrefauthors}%
+Sindhusuta, S.%
+, Chi, S.%
+, Foster, C.%
+, Officer, T.%
+\BCBL {}\ \BBA {} Wang, Y.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2025}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Numerical investigation into mechanical behavior of
+  metastable olivine during phase transformation: Implications for deep-focus
+  earthquakes} {Numerical investigation into mechanical behavior of metastable
+  olivine during phase transformation: Implications for deep-focus
+  earthquakes}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{130}{2}{e2024JB030557}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Smyth%
+}{%
+Smyth%
+}{%
+{\protect \APACyear {1987}}%
+}]{%
+smyth1987}
+\APACinsertmetastar {%
+smyth1987}%
+\begin{APACrefauthors}%
+Smyth, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1987}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {beta-Mg2 SiO4; a potential host for water in the
+  mantle?} {beta-mg2 sio4; a potential host for water in the mantle?}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{American Mineralogist}{72}{11-12}{1051--1055}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Smyth%
+\ \BBA {} Frost%
+}{%
+Smyth%
+\ \BBA {} Frost%
+}{%
+{\protect \APACyear {2002}}%
+}]{%
+smyth2002}
+\APACinsertmetastar {%
+smyth2002}%
+\begin{APACrefauthors}%
+Smyth, J.%
+\BCBT {}\ \BBA {} Frost, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2002}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The effect of water on the 410-km discontinuity: An
+  experimental study} {The effect of water on the 410-km discontinuity: An
+  experimental study}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Research Letters}{29}{10}{123--1}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Stixrude%
+\ \BBA {} Lithgow-Bertelloni%
+}{%
+Stixrude%
+\ \BBA {} Lithgow-Bertelloni%
+}{%
+{\protect \APACyear {2022}}%
+}]{%
+stixrude2022}
+\APACinsertmetastar {%
+stixrude2022}%
+\begin{APACrefauthors}%
+Stixrude, L.%
+\BCBT {}\ \BBA {} Lithgow-Bertelloni, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Thermal expansivity, heat capacity and bulk modulus of
+  the mantle} {Thermal expansivity, heat capacity and bulk modulus of the
+  mantle}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{228}{2}{1119--1149}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Tauzin%
+, Kim%
+\BCBL {}\ \BBA {} Kennett%
+}{%
+Tauzin%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2017}}%
+}]{%
+tauzin2017}
+\APACinsertmetastar {%
+tauzin2017}%
+\begin{APACrefauthors}%
+Tauzin, B.%
+, Kim, S.%
+\BCBL {}\ \BBA {} Kennett, B.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Pervasive seismic low-velocity zones within stagnant
+  plates in the mantle transition zone: Thermal or compositional origin?}
+  {Pervasive seismic low-velocity zones within stagnant plates in the mantle
+  transition zone: Thermal or compositional origin?}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Earth and Planetary Science Letters}{477}{}{1--13}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Van~der Meijde%
+, Marone%
+, Giardini%
+\BCBL {}\ \BBA {} Van~der Lee%
+}{%
+Van~der Meijde%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2003}}%
+}]{%
+vandermeijde2003}
+\APACinsertmetastar {%
+vandermeijde2003}%
+\begin{APACrefauthors}%
+Van~der Meijde, M.%
+, Marone, F.%
+, Giardini, D.%
+\BCBL {}\ \BBA {} Van~der Lee, S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2003}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Seismic evidence for water deep in Earth's upper mantle}
+  {Seismic evidence for water deep in earth's upper mantle}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Science}{300}{5625}{1556--1558}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Van~Stiphout%
+, Cottaar%
+\BCBL {}\ \BBA {} Deuss%
+}{%
+Van~Stiphout%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2019}}%
+}]{%
+vanstiphout2019}
+\APACinsertmetastar {%
+vanstiphout2019}%
+\begin{APACrefauthors}%
+Van~Stiphout, A.%
+, Cottaar, S.%
+\BCBL {}\ \BBA {} Deuss, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Receiver function mapping of mantle transition zone
+  discontinuities beneath Alaska using scaled 3-D velocity corrections}
+  {Receiver function mapping of mantle transition zone discontinuities beneath
+  alaska using scaled 3-d velocity corrections}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{219}{2}{1432--1446}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Vinnik%
+\ \protect \BOthers {.}}{%
+Vinnik%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+vinnik2020}
+\APACinsertmetastar {%
+vinnik2020}%
+\begin{APACrefauthors}%
+Vinnik, L.%
+, Deng, Y.%
+, Kosarev, G.%
+, Oreshin, S.%
+, Zhang, Z.%
+\BCBL {}\ \BBA {} Makeyeva, L.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Sharpness of the 410-km discontinuity from the P410s and
+  P2p410s seismic phases} {Sharpness of the 410-km discontinuity from the p410s
+  and p2p410s seismic phases}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Journal International}{220}{2}{1208--1214}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wang%
+, Li%
+\BCBL {}\ \BBA {} Chen%
+}{%
+Wang%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2017}}%
+}]{%
+wang2017}
+\APACinsertmetastar {%
+wang2017}%
+\begin{APACrefauthors}%
+Wang, X.%
+, Li, J.%
+\BCBL {}\ \BBA {} Chen, Q.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Topography of the 410 km and 660 km discontinuities
+  beneath the Japan Sea and adjacent regions by analysis of multiple-ScS waves}
+  {Topography of the 410 km and 660 km discontinuities beneath the japan sea
+  and adjacent regions by analysis of multiple-scs waves}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Geophysical Research: Solid
+  Earth}{122}{2}{1264--1283}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Waszek%
+, Anandawansha%
+, Sexton%
+\BCBL {}\ \BBA {} Tauzin%
+}{%
+Waszek%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+}]{%
+waszek2024}
+\APACinsertmetastar {%
+waszek2024}%
+\begin{APACrefauthors}%
+Waszek, L.%
+, Anandawansha, R.%
+, Sexton, J.%
+\BCBL {}\ \BBA {} Tauzin, B.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Thermochemistry of the mantle transition zone beneath
+  the western Pacific} {Thermochemistry of the mantle transition zone beneath
+  the western pacific}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geophysical Research Letters}{51}{18}{e2024GL110852}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wheeler%
+}{%
+Wheeler%
+}{%
+{\protect \APACyear {2014}}%
+}]{%
+wheeler2014}
+\APACinsertmetastar {%
+wheeler2014}%
+\begin{APACrefauthors}%
+Wheeler, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Dramatic effects of stress on metamorphic reactions}
+  {Dramatic effects of stress on metamorphic reactions}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geology}{42}{8}{647--650}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wheeler%
+}{%
+Wheeler%
+}{%
+{\protect \APACyear {2015}}%
+{\protect \APACexlab {{\protect \BCnt {1}}}}}]{%
+wheeler2015}
+\APACinsertmetastar {%
+wheeler2015}%
+\begin{APACrefauthors}%
+Wheeler, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2015{\protect \BCnt {1}}}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Dramatic effects of stress on metamorphic reactions:
+  reply} {Dramatic effects of stress on metamorphic reactions: reply}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geology}{43}{11}{e373--e373}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wheeler%
+}{%
+Wheeler%
+}{%
+{\protect \APACyear {2015}}%
+{\protect \APACexlab {{\protect \BCnt {2}}}}}]{%
+wheeler2015b}
+\APACinsertmetastar {%
+wheeler2015b}%
+\begin{APACrefauthors}%
+Wheeler, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2015{\protect \BCnt {2}}}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Dramatic effects of stress on metamorphic reactions:
+  reply} {Dramatic effects of stress on metamorphic reactions: reply}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Geology}{43}{11}{e373--e373}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wheeler%
+}{%
+Wheeler%
+}{%
+{\protect \APACyear {2018}}%
+}]{%
+wheeler2018}
+\APACinsertmetastar {%
+wheeler2018}%
+\begin{APACrefauthors}%
+Wheeler, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The effects of stress on reactions in the Earth:
+  Sometimes rather mean, usually normal, always important} {The effects of
+  stress on reactions in the earth: Sometimes rather mean, usually normal,
+  always important}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Metamorphic Geology}{36}{4}{439--461}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wheeler%
+}{%
+Wheeler%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+wheeler2020}
+\APACinsertmetastar {%
+wheeler2020}%
+\begin{APACrefauthors}%
+Wheeler, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {A unifying basis for the interplay of stress and
+  chemical processes in the Earth: support from diverse experiments} {A
+  unifying basis for the interplay of stress and chemical processes in the
+  earth: support from diverse experiments}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Contributions to Mineralogy and
+  Petrology}{175}{12}{116}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Zhan%
+}{%
+Zhan%
+}{%
+{\protect \APACyear {2020}}%
+}]{%
+zhan2020}
+\APACinsertmetastar {%
+zhan2020}%
+\begin{APACrefauthors}%
+Zhan, Z.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Mechanisms and implications of deep earthquakes}
+  {Mechanisms and implications of deep earthquakes}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Annual Review of Earth and Planetary
+  Sciences}{48}{1}{147--174}.
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}

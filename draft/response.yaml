@@ -1,0 +1,13 @@
+---
+title: "Response to the Reviewers"
+subtitle: "Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in Slab Regions"
+author: "Kerswell et al."
+date: "17 April 2026"
+documentclass: scrartcl
+fontsize: 11pt
+geometry:
+  - margin=1in
+header-includes:
+  - \usepackage{lmodern}
+  - \renewcommand{\familydefault}{\sfdefault}
+---

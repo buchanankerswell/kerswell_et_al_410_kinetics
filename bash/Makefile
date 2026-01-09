@@ -45,7 +45,7 @@ LOG_FILE := $(INSTALL)/log-$(DATE).log
 LOGGER := 2>&1 | tee -a $(LOG_FILE)
 
 # Cleanup targets
-CLEAN := $(INSTALL)/log-*.log $(DEALII)/tmp
+CLEAN := $(INSTALL)/log $(DEALII)/tmp
 DEEP_CLEAN := $(BASH)/candi
 
 # Targets

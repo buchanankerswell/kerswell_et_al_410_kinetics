@@ -1,5 +1,5 @@
 ---
-journal: "JGR: Machine Learning and Computation"
+journal: "JGR: Solid Earth"
 classoption: "draft,linenumbers"
 title: "Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in Slab Regions"
 authors:
@@ -23,7 +23,7 @@ affiliations:
   - number: 3
     name: "School of Earth and Environmental Sciences, Cardiff University, Park Place, Cardiff, CF10 3AT, UK"
   - number: 4
-    name: "Bullard Laboratories, Department of Earth Sciences, University of Cambridge, CB3 0EZ, UK"
+    name: "Bullard Laboratories, Department of Earth Sciences, University of Cambridge, Cambridge CB3 0EZ, UK"
 corresponding_author:
   - name: "Buchanan Kerswell"
     email: "b.kerswell@liverpool.ac.uk"
@@ -34,11 +34,13 @@ keypoints:
 abstract: |
   The seismic expression of Earth's 410 km discontinuity varies across tectonic settings, from sharp, high-amplitude interfaces to broad transitions---patterns that cannot be explained by equilibrium thermodynamics without invoking large-scale thermal or compositional heterogeneities. Laboratory experiments show the olivine $\Leftrightarrow$ wadsleyite phase transition responsible for the 410 is rate-limited, yet previous numerical studies have not directly evaluated the sensitivity of 410 structure to kinetic and rheological factors. Here we investigate these relationships by coupling a grain-scale, interface-controlled olivine $\Leftrightarrow$ wadsleyite growth model to compressible simulations of mantle plumes and subducting slabs. We vary kinetic parameters across seven orders of magnitude and quantify the resulting 410 displacements and widths. Our results reveal an asymmetry between hot and cold environments. In plumes, high temperatures produce sharp 410s (2--3 km wide) regardless of kinetics. In slabs, kinetics exert first-order control on 410 structure through three regimes: (1) quasi-equilibrium conditions producing narrow, uplifted 410s and continuous slab descent; (2) intermediate reaction rates generating broader, deeper 410s with metastable olivine wedges resisting downward slab motion; and (3) ultra-sluggish reaction rates causing slab stagnation with re-sharpened, deeply displaced 410s ($\lesssim$ 100 km). Rheological contrasts modulate these kinetic effects by controlling slab geometry and residence time in the phase transition zone. These findings demonstrate that reaction rates strongly influence 410 structure in subduction zones, establishing the 410 as a potential seismological constraint on upper mantle kinetic processes, particularly in cold environments where disequilibrium effects are amplified.
 plain_language_summary: |
-  Seismic imaging reveals that Earth's 410 km discontinuity---a boundary in Earth's mantle where olivine transforms into a denser form called wadsleyite---varies significantly, sometimes appearing sharp and other times as a broad zone. While often explained through temperature and compositional differences, laboratory experiments show that this mineral transformation takes time to complete, suggesting that reaction speed (kinetics) is important. We simulated rising mantle plumes and descending slabs to explore how kinetics and rock strength affect the 410 km discontinuity. Our models reveal striking differences: in hot plumes, high temperatures allow fast reactions, maintaining a consistently sharp discontinuity (2--3 km thick). In cold subducting slabs, however, kinetics are critical. Fast reactions produce a narrow, uplifted discontinuity as slabs sink smoothly. Moderate reaction rates create broader, deeper discontinuities with wedges of unreacted olivine that slow downward slab motion. Extremely slow reactions cause slabs to stagnate with sharp 410 km discontinuities that are shifted downwards by up to 100 km. These findings suggest that observations of the 410 km discontinuity, particularly in subduction zones, could provide valuable constraints on reaction rates deep within Earth's mantle.
+  Seismic imaging reveals that Earth's 410 km discontinuity---a boundary in Earth's mantle where olivine transforms into a denser form called wadsleyite---varies significantly, sometimes appearing sharp and other times as a broad zone. While often explained through temperature and compositional differences, laboratory experiments show that this mineral transformation takes time to complete, suggesting that reaction speed (kinetics) is important. We simulated rising mantle plumes and descending slabs to explore how kinetics and rock strength affect the 410 km discontinuity. Our models reveal striking differences. In hot plumes, high temperatures allow fast reactions, maintaining a consistently sharp discontinuity (2--3 km thick). In cold subducting slabs, however, kinetics are critical. Fast reactions produce a narrow, uplifted discontinuity as slabs sink smoothly. Moderate reaction rates create broader, deeper discontinuities with wedges of unreacted olivine that slow downward slab motion. Extremely slow reactions cause slabs to stagnate with sharp 410 km discontinuities that are shifted downwards by up to 100 km. These findings suggest that observations of the 410 km discontinuity, particularly in subduction zones, could provide valuable constraints on reaction rates deep within Earth's mantle.
 header-includes:
   - \usepackage{amsmath}
   - \usepackage{amsfonts}
   - \usepackage{amssymb}
   - \providecommand{\listfigurename}{List of Figures}
   - \providecommand{\listtablename}{List of Tables}
+  - \newcounter{none}
+  - \setcounter{none}{0}
 ---

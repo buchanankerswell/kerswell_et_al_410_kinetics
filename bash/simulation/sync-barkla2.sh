@@ -2,7 +2,7 @@
 set -e
 
 if [ $# -ne 4 ]; then
-    echo "Usage: $0 <CONFIG_LIST> <TIMESTEP_LIST> <LOCAL_SIM_DIR> <REMOTE_SIM_DIR>"
+    echo "    Usage: $0 <CONFIG_LIST> <TIMESTEP_LIST> <LOCAL_SIM_DIR> <REMOTE_SIM_DIR>"
     exit 1
 fi
 

@@ -6,7 +6,7 @@ IFS=$'\n\t'
 # Usage / args
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if [ $# -ne 6 ]; then
-  echo "Usage: $0 <FIG_DIR> <OUT_DIR> <TIMESTEP> <ID1> <ID2> <ID3>"
+  echo "    Usage: $0 <FIG_DIR> <OUT_DIR> <TIMESTEP> <ID1> <ID2> <ID3>"
   exit 1
 fi
 

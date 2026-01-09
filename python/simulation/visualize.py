@@ -15,7 +15,6 @@ import pandas as pd
 import pyvista as pv
 from PIL import Image
 from scipy.signal import savgol_filter
-from scipy.spatial import ConvexHull
 
 __import__("vtk")
 
@@ -103,6 +102,18 @@ class PyVistaModelConfig:
     scale_bar_position: tuple = (0.05, 0.08)
     scale_bar_label_font_size: int = 115
     scale_bar_label_shift_factor: float = 0.01
+
+    bbox_half_width: float = 0e3
+    bbox_color: str = "white"
+    bbox_line_width: int = 20
+    bbox_alpha: float = 0.3
+
+    v_arrow_color: str = "white"
+    v_arrow_alpha: float = 1.0
+    v_arrow_length: float = 50e3
+    v_arrow_tip_length: float = 0.30
+    v_arrow_tip_radius: float = 0.18
+    v_arrow_shaft_radius: float = 0.05
 
     topography_plot_width: float = 7.0
     topography_plot_height: float = 5.5
@@ -398,6 +409,8 @@ class PyVistaModelVisualizer:
         reaction_depth = cfg.depth_profile_reaction_depth
         lower_bound = np.nan
         upper_bound = np.nan
+        lower_bound_plot = np.nan
+        upper_bound_plot = np.nan
 
         for model_id, (pvtu_files, timesteps) in model_out_data.items():
             print("    --------------------------------------------------")
@@ -473,6 +486,9 @@ class PyVistaModelVisualizer:
                                 upper_bound = min(np.nanmax(depths), reaction_depth + displacement + width * upper_factor)
                                 mask_depth = (depths >= lower_bound) & (depths <= upper_bound)
 
+                                lower_bound_plot = max(np.nanmin(depths), reaction_depth + displacement - width)
+                                upper_bound_plot = min(np.nanmax(depths), reaction_depth + displacement)
+
                                 if np.any(mask_depth):
                                     depth_profile_cache[model_id][tstep][key] = np.nanmax(abs(values[mask_depth]))
                                 else:
@@ -495,11 +511,11 @@ class PyVistaModelVisualizer:
                             )
 
                     if cfg.draw_mesh_plots and tstep in self.tsteps_mesh:
-                        if field_name == "X_field":
+                        if field_name in ["X_field", "seismic_Vp"] and B_factor == 4:
                             draw_vertical_profile = True
                             draw_horizontal_window = True
-                            lb = lower_bound - cfg.depth_profile_surface_depth if not np.isnan(lower_bound) else np.nan
-                            ub = upper_bound - cfg.depth_profile_surface_depth if not np.isnan(upper_bound) else np.nan
+                            lb = lower_bound_plot - cfg.depth_profile_surface_depth if not np.isnan(lower_bound_plot) else np.nan
+                            ub = upper_bound_plot - cfg.depth_profile_surface_depth if not np.isnan(upper_bound_plot) else np.nan
                         else:
                             draw_vertical_profile = False
                             draw_horizontal_window = False
@@ -721,7 +737,9 @@ class PyVistaModelVisualizer:
         )
 
         if self.plot_config.draw_X_field_contours:
-            self._add_X_field_contours(plotter, mesh, color = "white" if field_name == "nonadiabatic_temperature" and "slab" in out_path.name else "black")
+            self._add_X_field_contours(
+                plotter, mesh, color="white" if field_name == "nonadiabatic_temperature" and "slab" in out_path.name else "black"
+            )
 
         camera_settings = self._compute_camera_settings(mesh, cfg.camera_full_view)
         plotter.camera_position = camera_settings
@@ -731,11 +749,23 @@ class PyVistaModelVisualizer:
             self._add_scale_bar(mesh, plotter)
 
         if not np.isnan(lower_bound) and not np.isnan(upper_bound) and draw_horizontal_window:
-            self._add_depth_contour(plotter, mesh, lower_bound)
-            self._add_depth_contour(plotter, mesh, upper_bound)
+            self._add_vertical_arrows(
+                plotter,
+                mesh,
+                x_pos,
+                lower_bound,
+                upper_bound,
+                arrow_length=cfg.v_arrow_length,
+                tip_length=cfg.v_arrow_tip_length,
+                tip_radius=cfg.v_arrow_tip_radius,
+                shaft_radius=cfg.v_arrow_shaft_radius,
+                color=cfg.v_arrow_color,
+                alpha=cfg.v_arrow_alpha,
+            )
+            # self._add_bounding_box(plotter, mesh, x_pos, lower_bound, upper_bound)
 
-        if not np.isnan(x_pos) and draw_vertical_profile:
-            self._add_vertical_contour(plotter, mesh, x_pos)
+        # if not np.isnan(x_pos) and draw_vertical_profile:
+        #     self._add_vertical_contour(plotter, mesh, x_pos)
 
         gc.collect()
         plotter.screenshot(out_path)
@@ -1316,7 +1346,7 @@ class PyVistaModelVisualizer:
         x_pos: float,
         color: str = "black",
         alpha: float = 1.0,
-        line_width: int = 5,
+        line_width: int = 7,
         tolerance_km: float = 2,
         verbosity: int = 0,
     ) -> None:
@@ -1345,6 +1375,59 @@ class PyVistaModelVisualizer:
             print(f" !! Warning: Fewer than 2 points found at x={x_pos / 1e3:.1f} km (tolerance={tolerance_km} m).\n -- Skipping X contour")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _add_vertical_arrows(
+        self,
+        plotter: pv.Plotter,
+        mesh: pv.UnstructuredGrid,
+        x_pos: float,
+        lower_depth: float,
+        upper_depth: float,
+        arrow_length: float = 15e3,
+        tip_length: float = 0.25,
+        tip_radius: float = 0.1,
+        shaft_radius: float = 0.05,
+        color: str = "black",
+        alpha: float = 1.0,
+        tolerance_m: float = 5e3,
+    ) -> None:
+        """
+        Adds two arrows at x_pos pointing towards the upper and lower depth boundaries.
+        The arrow tips will touch the y-coordinates corresponding to the depths.
+        """
+
+        def depth_to_y(target_depth: float) -> float | None:
+            """Helper to find y-coordinate for a specific depth value."""
+            if "depth" not in mesh.point_data:
+                return None
+            mask = np.isclose(mesh.point_data["depth"], target_depth, atol=tolerance_m)
+            pts = mesh.points[mask]
+            return float(np.mean(pts[:, 1])) if pts.shape[0] > 0 else None
+
+        y_lower = depth_to_y(lower_depth)
+        y_upper = depth_to_y(upper_depth)
+
+        if y_lower is None or y_upper is None:
+            print(f" !! Warning: Could not find depth boundaries at x={x_pos/1e3:.1f}km")
+            return
+
+        tip_point_lower = np.array([x_pos, y_upper, 0.0])
+        tip_point_upper = np.array([x_pos, y_lower, 0.0])
+
+        dir_upper = np.array([0, -1, 0])
+        dir_lower = np.array([0, 1, 0])
+
+        start_upper = tip_point_upper - (dir_upper * arrow_length)
+        start_lower = tip_point_lower - (dir_lower * arrow_length)
+
+        arrow_params = dict(tip_length=tip_length, tip_radius=tip_radius, shaft_radius=shaft_radius, scale=arrow_length)
+
+        arrow_up_indicator = pv.Arrow(start=start_upper, direction=dir_upper, **arrow_params)
+        arrow_down_indicator = pv.Arrow(start=start_lower, direction=dir_lower, **arrow_params)
+
+        plotter.add_mesh(arrow_up_indicator, color=color, opacity=alpha)
+        plotter.add_mesh(arrow_down_indicator, color=color, opacity=alpha)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _add_depth_contour(
         self,
         plotter: pv.Plotter,
@@ -1352,7 +1435,7 @@ class PyVistaModelVisualizer:
         depth: float,
         color: str = "black",
         alpha: float = 1.0,
-        line_width: int = 5,
+        line_width: int = 7,
         tolerance_km: float = 2,
         verbosity: int = 1,
     ) -> None:
@@ -1374,6 +1457,41 @@ class PyVistaModelVisualizer:
             plotter.add_mesh(polyline, color=color, line_width=line_width, opacity=alpha, render_lines_as_tubes=True)
         elif verbosity >= 1:
             print(f" !! Warning: Fewer than 2 points found at depth {depth / 1e3:.1f} km (tolerance={tolerance_km} m).\n -- Skipping X contour")
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def _add_bounding_box(
+        self, pl: pv.Plotter, mesh: pv.UnstructuredGrid, x_pos: float, lower_depth: float, upper_depth: float, tolerance: float = 5e3
+    ) -> None:
+        """
+        Draw a rectangular box marking the measurement window.
+
+        x-extent is x_pos ± bbox_half_width (m).
+        y-extent is determined by slicing at lower_depth and upper_depth (m).
+        """
+        cfg = self.plot_config
+        hw = cfg.bbox_half_width
+        bounds = mesh.bounds
+
+        x_lo = max(x_pos - hw, bounds[0])
+        x_hi = min(x_pos + hw, bounds[1])
+
+        def depth_to_y(depth: float) -> float | None:
+            """Return mesh y-coordinate at a given depth value."""
+            if "depth" not in mesh.point_data:
+                return None
+            mask = np.isclose(mesh.point_data["depth"], depth, atol=tolerance)
+            pts = mesh.points[mask]
+            return float(np.mean(pts[:, 1])) if pts.shape[0] > 0 else None
+
+        y_lo = depth_to_y(lower_depth)
+        y_hi = depth_to_y(upper_depth)
+        if y_lo is None or y_hi is None:
+            return
+
+        z_nudge = 1e-3 * (bounds[1] - bounds[0])
+        corners = np.array([[x_lo, y_lo, z_nudge], [x_hi, y_lo, z_nudge], [x_hi, y_hi, z_nudge], [x_lo, y_hi, z_nudge], [x_lo, y_lo, z_nudge]])
+        box = pv.lines_from_points(corners, close=False)
+        pl.add_mesh(box, color=cfg.bbox_color, line_width=cfg.bbox_line_width, opacity=cfg.bbox_alpha, render_lines_as_tubes=True)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _configure_cmap(
