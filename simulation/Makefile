@@ -147,7 +147,7 @@ clean:
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
-					echo " -> Safely removing: $$ABS_PATH"; \
+					echo " xx $$ABS_PATH"; \
 					rm -rf "$$ABS_PATH"; \
 				fi; \
 			fi; \
@@ -157,7 +157,7 @@ clean:
 
 	@find $(PROJECT_ROOT)/simulation -type l -path '*/plugins/aspect*' | while read -r item; do \
 		if [[ "$$item" == $(PROJECT_ROOT)* ]]; then \
-			echo " -> Safely removing symlink: $$item"; \
+			echo " xx $$item"; \
 			rm "$$item"; \
 		fi; \
 	done
@@ -168,7 +168,7 @@ deep-clean:
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
-					echo " -> Safely removing: $$ABS_PATH"; \
+					echo " xx $$ABS_PATH"; \
 					rm -rf "$$ABS_PATH"; \
 				fi; \
 			fi; \

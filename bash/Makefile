@@ -70,7 +70,7 @@ uninstall-aspect:
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
-					echo " -> Safely removing: $$ABS_PATH"; \
+					echo " xx $$ABS_PATH"; \
 					rm -rf "$$ABS_PATH"; \
 				fi; \
 			fi; \
@@ -87,7 +87,7 @@ uninstall-dealii:
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
-					echo " -> Safely removing: $$ABS_PATH"; \
+					echo " xx $$ABS_PATH"; \
 					rm -rf "$$ABS_PATH"; \
 				fi; \
 			fi; \
@@ -135,7 +135,7 @@ clean:
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
-					echo " -> Safely removing: $$ABS_PATH"; \
+					echo " xx $$ABS_PATH"; \
 					rm -rf "$$ABS_PATH"; \
 				fi; \
 			fi; \
@@ -149,7 +149,7 @@ deep-clean:
 			if [ -e "$$1" ]; then \
 				ABS_PATH=$$(realpath "$$1"); \
 				if [[ "$$ABS_PATH" == $(PROJECT_ROOT)* ]]; then \
-					echo " -> Safely removing: $$ABS_PATH"; \
+					echo " xx $$ABS_PATH"; \
 					rm -rf "$$ABS_PATH"; \
 				fi; \
 			fi; \
