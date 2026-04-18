@@ -1,92 +1,42 @@
-%% March 2018
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% AGUJournalTemplate.tex: this template file is for articles formatted with LaTeX
-%
-% This file includes commands and instructions
-% given in the order necessary to produce a final output that will
-% satisfy AGU requirements, including customized APA reference formatting.
-%
-% You may copy this file and give it your
-% article name, and enter your text.
-%
-%
-% Step 1: Set the \documentclass
-%
-% There are two options for article format:
-%
-% PLEASE USE THE DRAFT OPTION TO SUBMIT YOUR PAPERS.
-% The draft option produces double spaced output.
-%
+\documentclass[draft,linenumbers]{agujournal2019}
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{soul}
 
-%% To submit your paper:
-\documentclass[draft,linenumbers]{agujournal2018}
-\usepackage{apacite}
-\usepackage{url} %this package should fix any errors with URLs in refs.
-%%%%%%%
-% As of 2018 we recommend use of the TrackChanges package to mark revisions.
-% The trackchanges package adds five new LaTeX commands:
-%
-%  \note[editor]{The note}
-%  \annote[editor]{Text to annotate}{The note}
-%  \add[editor]{Text to add}
-%  \remove[editor]{Text to remove}
-%  \change[editor]{Text to remove}{Text to add}
-%
-% complete documentation is here: http://trackchanges.sourceforge.net/
-%%%%%%%
+\usepackage{xcolor}
+\definecolor{default-linkcolor}{HTML}{A50000}
+\definecolor{default-filecolor}{HTML}{A50000}
+\definecolor{default-citecolor}{HTML}{4077C0}
+\definecolor{default-urlcolor}{HTML}{4077C0}
+
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks,
+  breaklinks=true
+}
 
 
-%% Enter journal name below.
-%% Choose from this list of Journals:
-%
-% JGR: Atmospheres
-% JGR: Biogeosciences
-% JGR: Earth Surface
-% JGR: Oceans
-% JGR: Planets
-% JGR: Solid Earth
-% JGR: Space Physics
-% Global Biogeochemical Cycles
-% Geophysical Research Letters
-% Paleoceanography and Paleoclimatology
-% Radio Science
-% Reviews of Geophysics
-% Tectonics
-% Space Weather
-% Water Resources Research
-% Geochemistry, Geophysics, Geosystems
-% Journal of Advances in Modeling Earth Systems (JAMES)
-% Earth's Future
-% Earth and Space Science
-% Geohealth
-%
-% ie, \journalname{Water Resources Research}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\listfigurename}{List of Figures}
+\providecommand{\listtablename}{List of Tables}
+\newcounter{none}
+\setcounter{none}{0}
 
-\journalname{JGR: Solid Earth}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thesection}{S\arabic{section}}
 
-
-% tightlist command for lists without linebreak
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-
-% From pandoc table feature
 \usepackage{longtable,booktabs,array}
-\usepackage{calc} % for calculating minipage widths
-% Correct order of tables after \paragraph or \subparagraph
+\usepackage{calc}
 \usepackage{etoolbox}
 \makeatletter
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
-% Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
 
 
-\usepackage{amsmath}
-\usepackage{amsfonts}
 \usepackage{amssymb}
-\providecommand{\listfigurename}{List of Figures}
-\providecommand{\listtablename}{List of Tables}
 \makeatletter
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -122,64 +72,46 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 
+\journalname{JGR: Solid Earth}
+
+\makeatletter
+\def\titlepageheadlinefont{\fontsize{9}{11}\selectfont}
+
+\def\ps@headings{
+  \def\@oddfoot{\centerline{\small --\the\c@page--}}
+  \let\@evenfoot\@oddfoot
+  \def\@oddhead{}
+  \let\@evenhead\@oddhead
+}
+\ps@headings
+
+\def\ps@front{
+  \def\@oddhead{
+    \vbox to 0pt{
+      \vskip-30pt
+      \centerline{\titlepageheadlinefont JGR: Solid Earth}
+      \vss
+    }
+  }
+  \let\@evenhead\@oddhead
+  \def\@oddfoot{\centerline{\small --\the\c@page--}}
+  \let\@evenfoot\@oddfoot
+}
+
+\let\oldtitle\title
+\renewcommand{\title}[1]{\oldtitle{#1}\thispagestyle{front}}
+\makeatother
+
 \begin{document}
 
 
-%% ------------------------------------------------------------------------ %%
-%  Title
-%
-% (A title should be specific, informative, and brief. Use
-% abbreviations only if they are defined in the abstract. Titles that
-% start with general keywords then specific terms are optimized in
-% searches)
-%
-%% ------------------------------------------------------------------------ %%
-
-% Example: \title{This is a test title}
-
-\title{Supplementary Information for Beyond Equilibrium: Kinetic
+\title{Supplementary Information for "Beyond Equilibrium: Kinetic
 Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in
-Slab Regions}
+Slab Regions"}
 
-%% ------------------------------------------------------------------------ %%
-%
-%  AUTHORS AND AFFILIATIONS
-%
-%% ------------------------------------------------------------------------ %%
-
-% Authors are individuals who have significantly contributed to the
-% research and preparation of the article. Group authors are allowed, if
-% each author in the group is separately identified in an appendix.)
-
-% List authors by first name or initial followed by last name and
-% separated by commas. Use \affil{} to number affiliations, and
-% \thanks{} for author notes.
-% Additional author notes should be indicated with \thanks{} (for
-% example, for current addresses).
-
-% Example: \authors{A. B. Author\affil{1}\thanks{Current address, Antartica}, B. C. Author\affil{2,3}, and D. E.
-% Author\affil{3,4}\thanks{Also funded by Monsanto.}}
-
-\authors{
-Buchanan Kerswell
-\affil{1}
-John Wheeler
-\affil{1}
-Rene Gassmöller
-\affil{2}
-J. Huw Davies
-\affil{3}
-Isabel Papanagnou
-\affil{4}
-Sanne Cottaar
-\affil{4}
-}
-
-
-% \affiliation{1}{First Affiliation}
-% \affiliation{2}{Second Affiliation}
-% \affiliation{3}{Third Affiliation}
-% \affiliation{4}{Fourth Affiliation}
+\authors{Buchanan Kerswell\affil{1}, John Wheeler\affil{1}, Rene
+Gassmöller\affil{2}, J. Huw Davies\affil{3}, Isabel
+Papanagnou\affil{4}, Sanne Cottaar\affil{4}}
 
 \affiliation{1}{Department of Earth, Oceans and Ecological Sciences,
 University of Liverpool, Liverpool L69 3BX, UK}
@@ -189,18 +121,9 @@ Germany}
 University, Park Place, Cardiff, CF10 3AT, UK}
 \affiliation{4}{Bullard Laboratories, Department of Earth Sciences,
 University of Cambridge, Cambridge CB3 0EZ, UK}
-%(repeat as many times as is necessary)
 
-%% Corresponding Author:
-% Corresponding author mailing address and e-mail address:
-
-% (include name and email addresses of the corresponding author.  More
-% than one corresponding author is allowed in this LaTeX file and for
-% publication; but only one corresponding author is allowed in our
-% editorial system.)
-
-% Example: \correspondingauthor{First and Last Name}{email@address.edu}
 \correspondingauthor{Buchanan Kerswell}{b.kerswell@liverpool.ac.uk}
+
 \clearpage
 
 \section*{Measuring 410 Displacement and
@@ -634,7 +557,6 @@ column).}\label{fig:plume-Z7.0e7-composition-set2}
 \end{figure}
 
 \clearpage
-
 
 
 \end{document}

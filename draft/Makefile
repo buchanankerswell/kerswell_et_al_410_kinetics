@@ -13,12 +13,10 @@ ifeq ($(TEMPLATE_NAME),agu.tex)
     CFG_YAML      := $(DRAFT)/agu.yaml
     CFG_SI_YAML   := $(DRAFT)/agu-si.yaml
     CFG_SI_TPL    := $(DRAFT)/agu-si.tex
-    CFG_EXTRA     := --natbib
 else ifeq ($(TEMPLATE_NAME),eisvogel.tex)
     CFG_YAML      := $(DRAFT)/eisvogel.yaml
     CFG_SI_YAML   := $(DRAFT)/eisvogel.yaml
     CFG_SI_TPL    := $(TEMPLATE)
-    CFG_EXTRA     := --citeproc --csl=$(DRAFT)/agu.csl --pdf-engine=pdflatex
 endif
 
 # Configure pandoc
@@ -27,6 +25,7 @@ BASE_PANDOC_FLAGS := --from markdown --filter pandoc-crossref $(PANDOC_FLAGS)
 $(DRAFT)/manuscript.%: TPL                      := $(TEMPLATE)
 $(DRAFT)/manuscript.%: META                     := $(CFG_YAML)
 $(DRAFT)/manuscript.%: BIB_FLAG                 := --bibliography=$(BIB)
+$(DRAFT)/manuscript.%: CFG_EXTRA                := --citeproc --csl=$(DRAFT)/agu.csl --pdf-engine=pdflatex
 
 $(DRAFT)/supplementary-information.%: TPL       := $(CFG_SI_TPL)
 $(DRAFT)/supplementary-information.%: META      := $(CFG_SI_YAML)
@@ -70,14 +69,7 @@ diff: all $(DRAFT)/diff-manuscript.pdf $(DRAFT)/diff-supplementary-information.p
 
 $(DRAFT)/%.pdf: $(DRAFT)/%.tex
 	@echo " -> $@"
-	@if [ "$(TEMPLATE_NAME)" = "eisvogel.tex" ]; then \
-	  @pandoc $(subst .tex,.md,$<) -o $@ $(PANDOC_FLAGS); \
-	else \
-	  $(PDFLATEX) $< > /dev/null 2>&1; \
-	  cd $(DRAFT) && bibtex $(notdir $*) > /dev/null 2>&1; \
-	  $(PDFLATEX) $< > /dev/null 2>&1; \
-	  $(PDFLATEX) $< > /dev/null 2>&1; \
-	fi
+	@pandoc $(subst .tex,.md,$<) -o $@ $(PANDOC_FLAGS)
 
 $(DRAFT)/bak/%.tex: ;
 
@@ -93,8 +85,6 @@ $(DRAFT)/diff-%.pdf: $(DRAFT)/bak/%-$(BACKUP_DATE).tex $(DRAFT)/%.tex
 	  exit 1; \
 	fi
 	@latexdiff $(DIFF_FLAGS) $< $(word 2,$^) > $(DRAFT)/diff-$*.tex
-	@cp $(DRAFT)/$*.bbl $(DRAFT)/diff-$*.bbl || true
-	@cp $(DRAFT)/$*.aux $(DRAFT)/diff-$*.aux || true
 	@$(PDFLATEX) $(DRAFT)/diff-$*.tex > /dev/null 2>&1
 	@$(PDFLATEX) $(DRAFT)/diff-$*.tex > /dev/null 2>&1
 

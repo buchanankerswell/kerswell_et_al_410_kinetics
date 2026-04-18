@@ -375,7 +375,7 @@ This work was funded by the UKRI NERC Large Grant no. NE/V018477/1. All computat
 
 # Data Availability {.unnumbered #sec:data-availability}
 
-All data, code, and relevant information for reproducing this work can be found at [https://github.com/buchanankerswell/kerswell_et_al_410_kinetics](https://github.com/buchanankerswell/kerswell_et_al_410_kinetics), and at [https://doi.org/10.17605/OSF.IO/9PHWC](https://doi.org/10.17605/OSF.IO/9PHWC), the official Open Science Framework data repository. All code within these repositories is MIT Licensed and free for use and distribution (see license details). ASPECT version 3.0.0, [@aspect-doi-v3.0.0; @aspectmanual; @heister2017; @kronbichler2012; @gassmoller2018; @clevenger2021; @fraters2019; @fraters2020] used in these computations is freely available under the GPL v2.0 or later license through its software landing page [https://geodynamics.org/resources/aspect](https://geodynamics.org/resources/aspect) or [https://aspect.geodynamics.org](https://aspect.geodynamics.org) and is being actively developed on GitHub and can be accessed via [https://github.com/geodynamics/aspect](https://github.com/geodynamics/aspect).
+All data, code, and relevant information for reproducing this work are archived on the OSF [@kerswell2026a] and Zenodo [@kerswell2026b] repositories. All code within these repositories is MIT Licensed and free for use and distribution (see license details). ASPECT version 3.0.0 [@aspect-doi-v3.0.0] was used for the computations in this study and is freely available under the GPL v2.0 or later license.
 
 # Conflict of Interest {.unnumbered #sec:conflict-of-interest}
 

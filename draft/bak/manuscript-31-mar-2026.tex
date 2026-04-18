@@ -1,94 +1,68 @@
-%% March 2018
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% AGUJournalTemplate.tex: this template file is for articles formatted with LaTeX
-%
-% This file includes commands and instructions
-% given in the order necessary to produce a final output that will
-% satisfy AGU requirements, including customized APA reference formatting.
-%
-% You may copy this file and give it your
-% article name, and enter your text.
-%
-%
-% Step 1: Set the \documentclass
-%
-% There are two options for article format:
-%
-% PLEASE USE THE DRAFT OPTION TO SUBMIT YOUR PAPERS.
-% The draft option produces double spaced output.
-%
+\documentclass[draft,linenumbers]{agujournal2019}
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{soul}
 
-%% To submit your paper:
-\documentclass[draft,linenumbers]{agujournal2018}
-\usepackage{apacite}
-\usepackage{url} %this package should fix any errors with URLs in refs.
-%%%%%%%
-% As of 2018 we recommend use of the TrackChanges package to mark revisions.
-% The trackchanges package adds five new LaTeX commands:
-%
-%  \note[editor]{The note}
-%  \annote[editor]{Text to annotate}{The note}
-%  \add[editor]{Text to add}
-%  \remove[editor]{Text to remove}
-%  \change[editor]{Text to remove}{Text to add}
-%
-% complete documentation is here: http://trackchanges.sourceforge.net/
-%%%%%%%
+\usepackage{xcolor}
+\definecolor{default-linkcolor}{HTML}{A50000}
+\definecolor{default-filecolor}{HTML}{A50000}
+\definecolor{default-citecolor}{HTML}{4077C0}
+\definecolor{default-urlcolor}{HTML}{4077C0}
+
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks,
+  breaklinks=true
+}
 
 
-%% Enter journal name below.
-%% Choose from this list of Journals:
-%
-% JGR: Atmospheres
-% JGR: Biogeosciences
-% JGR: Earth Surface
-% JGR: Oceans
-% JGR: Planets
-% JGR: Solid Earth
-% JGR: Space Physics
-% Global Biogeochemical Cycles
-% Geophysical Research Letters
-% Paleoceanography and Paleoclimatology
-% Radio Science
-% Reviews of Geophysics
-% Tectonics
-% Space Weather
-% Water Resources Research
-% Geochemistry, Geophysics, Geosystems
-% Journal of Advances in Modeling Earth Systems (JAMES)
-% Earth's Future
-% Earth and Space Science
-% Geohealth
-%
-% ie, \journalname{Water Resources Research}
-
-\journalname{JGR: Solid Earth}
-
-
-% tightlist command for lists without linebreak
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-
-% From pandoc table feature
-\usepackage{longtable,booktabs,array}
-\usepackage{calc} % for calculating minipage widths
-% Correct order of tables after \paragraph or \subparagraph
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
-\makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
-
-
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \providecommand{\listfigurename}{List of Figures}
 \providecommand{\listtablename}{List of Tables}
 \newcounter{none}
 \setcounter{none}{0}
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{\begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ \let\@cite@ofmt\@firstofone
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2]
+ {\begin{list}{}{
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-\cslhangindent}
+  \fi
+  \setlength{\itemsep}{#2\baselineskip}
+  }
+  \item\relax}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\usepackage{amssymb}
 \makeatletter
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -124,63 +98,17 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 
+\journalname{JGR: Solid Earth}
+
 \begin{document}
 
-
-%% ------------------------------------------------------------------------ %%
-%  Title
-%
-% (A title should be specific, informative, and brief. Use
-% abbreviations only if they are defined in the abstract. Titles that
-% start with general keywords then specific terms are optimized in
-% searches)
-%
-%% ------------------------------------------------------------------------ %%
-
-% Example: \title{This is a test title}
 
 \title{Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks
 Create a Potentially Complex 410 in Slab Regions}
 
-%% ------------------------------------------------------------------------ %%
-%
-%  AUTHORS AND AFFILIATIONS
-%
-%% ------------------------------------------------------------------------ %%
-
-% Authors are individuals who have significantly contributed to the
-% research and preparation of the article. Group authors are allowed, if
-% each author in the group is separately identified in an appendix.)
-
-% List authors by first name or initial followed by last name and
-% separated by commas. Use \affil{} to number affiliations, and
-% \thanks{} for author notes.
-% Additional author notes should be indicated with \thanks{} (for
-% example, for current addresses).
-
-% Example: \authors{A. B. Author\affil{1}\thanks{Current address, Antartica}, B. C. Author\affil{2,3}, and D. E.
-% Author\affil{3,4}\thanks{Also funded by Monsanto.}}
-
-\authors{
-Buchanan Kerswell
-\affil{1}
-John Wheeler
-\affil{1}
-Rene Gassmöller
-\affil{2}
-J. Huw Davies
-\affil{3}
-Isabel Papanagnou
-\affil{4}
-Sanne Cottaar
-\affil{4}
-}
-
-
-% \affiliation{1}{First Affiliation}
-% \affiliation{2}{Second Affiliation}
-% \affiliation{3}{Third Affiliation}
-% \affiliation{4}{Fourth Affiliation}
+\authors{Buchanan Kerswell\affil{1}, John Wheeler\affil{1}, Rene
+Gassmöller\affil{2}, J. Huw Davies\affil{3}, Isabel
+Papanagnou\affil{4}, Sanne Cottaar\affil{4}}
 
 \affiliation{1}{Department of Earth, Oceans and Ecological Sciences,
 University of Liverpool, Liverpool L69 3BX, UK}
@@ -190,31 +118,8 @@ Germany}
 University, Park Place, Cardiff, CF10 3AT, UK}
 \affiliation{4}{Bullard Laboratories, Department of Earth Sciences,
 University of Cambridge, Cambridge CB3 0EZ, UK}
-%(repeat as many times as is necessary)
 
-%% Corresponding Author:
-% Corresponding author mailing address and e-mail address:
-
-% (include name and email addresses of the corresponding author.  More
-% than one corresponding author is allowed in this LaTeX file and for
-% publication; but only one corresponding author is allowed in our
-% editorial system.)
-
-% Example: \correspondingauthor{First and Last Name}{email@address.edu}
 \correspondingauthor{Buchanan Kerswell}{b.kerswell@liverpool.ac.uk}
-
-%% Keypoints, final entry on title page.
-
-%  List up to three key points (at least one is required)
-%  Key Points summarize the main points and conclusions of the article
-%  Each must be 100 characters or less with no special characters or punctuation
-
-% Example:
-% \begin{keypoints}
-% \item	List up to three key points (at least one is required)
-% \item	Key Points summarize the main points and conclusions of the article
-% \item	Each must be 100 characters or less with no special characters or punctuation
-% \end{keypoints}
 
 \begin{keypoints}
 \item Plumes produce sharp 410s regardless of reaction rates; slabs show
@@ -225,18 +130,6 @@ metastability
 \item Seismic observations of 410 structure in subduction zones can
 constrain reaction rates but require independent rheological constraints
 \end{keypoints}
-
-%% ------------------------------------------------------------------------ %%
-%
-%  ABSTRACT
-%
-% A good abstract will begin with a short description of the problem
-% being addressed, briefly describe the new data or analyses, then
-% briefly states the main conclusion(s) and how they are supported and
-% uncertainties.
-%% ------------------------------------------------------------------------ %%
-
-%% \begin{abstract} starts the second page
 
 \begin{abstract}
 The seismic expression of Earth's 410 km discontinuity varies across
@@ -268,15 +161,15 @@ potential seismological constraint on upper mantle kinetic processes,
 particularly in cold environments where disequilibrium effects are
 amplified.
 \end{abstract}
-\noindent{\bf Plain language summary}\vskip-\parskip
 
-\noindent{Seismic imaging reveals that Earth's 410 km discontinuity---a
-boundary in Earth's mantle where olivine transforms into a denser form
-called wadsleyite---varies significantly, sometimes appearing sharp and
-other times as a broad zone. While often explained through temperature
-and compositional differences, laboratory experiments show that this
-mineral transformation takes time to complete, suggesting that reaction
-speed (kinetics) is important. We simulated rising mantle plumes and
+\section*{Plain Language Summary}
+Seismic imaging reveals that Earth's 410 km discontinuity---a boundary
+in Earth's mantle where olivine transforms into a denser form called
+wadsleyite---varies significantly, sometimes appearing sharp and other
+times as a broad zone. While often explained through temperature and
+compositional differences, laboratory experiments show that this mineral
+transformation takes time to complete, suggesting that reaction speed
+(kinetics) is important. We simulated rising mantle plumes and
 descending slabs to explore how kinetics and rock strength affect the
 410 km discontinuity. Our models reveal striking differences. In hot
 plumes, high temperatures allow fast reactions, maintaining a
@@ -288,8 +181,8 @@ that slow downward slab motion. Extremely slow reactions cause slabs to
 stagnate with sharp 410 km discontinuities that are shifted downwards by
 up to 100 km. These findings suggest that observations of the 410 km
 discontinuity, particularly in subduction zones, could provide valuable
-constraints on reaction rates deep within Earth's mantle.}
-\vskip18pt
+constraints on reaction rates deep within Earth's mantle.
+
 \clearpage
 
 \section*{Definition of Symbols}\label{sec:symbols}
@@ -405,52 +298,53 @@ Water content exponent & \(n\) & - & \ref{eq:growth-rate} \\
 
 Earth's mantle transition zone hosts two prominent seismic
 discontinuities near 410 and 660 km depth, attributed to polymorphic
-phase transitions of olivine \citep{ringwood1975, katsura2004}. While
-these discontinuities are observed globally, their detailed seismic
-characteristics---depth, sharpness, amplitude, and lateral
-continuity---vary substantially between tectonic settings
-\citep{deuss2009, lawrence2008, schmerr2007, fukao2013}. Some regions
-display sharp, high-amplitude reflectors consistent with abrupt
-mineralogical boundaries, while others exhibit broad, weakened, or
-laterally variable signals. Such heterogeneity cannot be explained by
-equilibrium thermodynamics alone, which relates discontinuity topography
-mainly to temperature-dependent phase boundaries
-\citep[e.g.,][]{cottaar2016, jenkins2016}. Additional physical
-processes, including reaction kinetics and dynamic pressure effects
-\citep{rubie1994, faccenda2017}, or compositional heterogeneities,
-including variations in water content
-\citep{karato2011, smyth1987, smyth2002} or bulk composition
-\citep{glasgow2024, goes2022, saikia2008, schmerr2007, tauzin2017}
-likely contribute to observed variability.
+phase transitions of olivine ({Katsura et al.}, 2004; Ringwood, 1975).
+While these discontinuities are observed globally, their detailed
+seismic characteristics---depth, sharpness, amplitude, and lateral
+continuity---vary substantially between tectonic settings (Deuss, 2009;
+Fukao \& Obayashi, 2013; Lawrence \& Shearer, 2008; Schmerr \& Garnero,
+2007). Some regions display sharp, high-amplitude reflectors consistent
+with abrupt mineralogical boundaries, while others exhibit broad,
+weakened, or laterally variable signals. Such heterogeneity cannot be
+explained by equilibrium thermodynamics alone, which relates
+discontinuity topography mainly to temperature-dependent phase
+boundaries (e.g., Cottaar \& Deuss, 2016; Jenkins et al., 2016).
+Additional physical processes, including reaction kinetics and dynamic
+pressure effects (Faccenda \& Dal Zilio, 2017; Rubie \& Ross, 1994), or
+compositional heterogeneities, including variations in water content
+(Karato, 2011; Smyth, 1987; Smyth \& Frost, 2002) or bulk composition
+(Glasgow et al., 2024; Goes et al., 2022; Saikia et al., 2008; Schmerr
+\& Garnero, 2007; Tauzin et al., 2017) likely contribute to observed
+variability.
 
 Laboratory studies demonstrate that the olivine \(\Leftrightarrow\)
 wadsleyite phase transition at 410 km depth (the ``410'') occurs over
 finite time scales rather than instantaneously, with kinetics governed
 by temperature, pressure, water content, bulk chemical composition,
-grain size, and microstructural evolution
-\citep{rubie1994, liu1998, kubo2004, hosoya2005, perrillat2013, ledoux2023}.
-In cold subducting slabs, sluggish reaction rates can allow metastable
-olivine to persist tens of kilometers below its thermodynamic stability
-limit, promoting slab stagnation and potentially triggering deep
-earthquakes via transformational faulting
-\citep{rubie1994, green1995, kirby1996, ishii2021, ohuchi2022, sindhusuta2025}.
-In hot upwellings, slow kinetics may broaden and uplift the
-discontinuity, possibly explaining reduced seismic amplitudes beneath
-some hotspots \citep{chambers2005}. However, published kinetic models
-remain poorly constrained, with parameters spanning several orders of
-magnitude \citep[e.g.,][]{hosoya2005}, leaving the effects of
-micro-scale kinetic processes on flow dynamics and seismic observables
-ambiguous.
+grain size, and microstructural evolution (Hosoya et al., 2005; Kubo et
+al., 2004; {Ledoux et al.}, 2023; Liu et al., 1998; Perrillat et al.,
+2013; Rubie \& Ross, 1994). In cold subducting slabs, sluggish reaction
+rates can allow metastable olivine to persist tens of kilometers below
+its thermodynamic stability limit, promoting slab stagnation and
+potentially triggering deep earthquakes via transformational faulting
+(Green \& Houston, 1995; Ishii \& Ohtani, 2021; Kirby et al., 1996;
+Ohuchi et al., 2022; Rubie \& Ross, 1994; Sindhusuta et al., 2025). In
+hot upwellings, slow kinetics may broaden and uplift the discontinuity,
+possibly explaining reduced seismic amplitudes beneath some hotspots
+(Chambers et al., 2005). However, published kinetic models remain poorly
+constrained, with parameters spanning several orders of magnitude (e.g.,
+Hosoya et al., 2005), leaving the effects of micro-scale kinetic
+processes on flow dynamics and seismic observables ambiguous.
 
 Bridging the gap between laboratory-derived kinetic rate laws and
 mantle-scale seismic observations requires numerical models that couple
 reaction kinetics to realistic treatments of mantle convection. Previous
 modeling efforts have demonstrated that kinetics can strongly influence
-mantle flow
-\citep{dassler1996a, dassler1996b, schmeling1999, guest2004, agrusta2017, faccenda2017},
-but investigations quantifying the sensitivity of 410 structure to
-kinetic parameters remain limited. Moreover, most prior studies impose
-kinematic restrictions and/or employ simplified treatments of
+mantle flow (Agrusta et al., 2017; Däßler et al., 1996; Däßler \& Yuen,
+1996; Faccenda \& Dal Zilio, 2017; Guest et al., 2004; Schmeling et al.,
+1999), but investigations quantifying the sensitivity of 410 structure
+to kinetic parameters remain limited. Moreover, most prior studies
+impose kinematic restrictions and/or employ simplified treatments of
 compressibility or kinetic rate laws that may inadequately capture
 feedbacks between kinetically controlled phase transitions and flow
 dynamics. Additionally, the role of rheology in modulating kinetic
@@ -459,7 +353,7 @@ been thoroughly explored.
 
 This study aims to clarify these issues by implementing a grain-scale
 interface-controlled olivine \(\Leftrightarrow\) wadsleyite growth model
-\citep[after][]{hosoya2005} within compressible mantle flow simulations
+(after Hosoya et al., 2005) within compressible mantle flow simulations
 using the open-source geodynamic modeling software ASPECT. We
 systematically explore how reaction kinetics and rheological strength
 jointly influence 410 structure and address three specific questions:
@@ -493,9 +387,11 @@ dynamics and interpreting seismic structures.
 Flow}\label{sec:governing-equations}
 
 Mantle flow is simulated using the finite-element geodynamic code ASPECT
-\citep[v3.0.0,][]{aspect-doi-v3.0.0, aspectmanual, heister2017, kronbichler2012, gassmoller2018, clevenger2021, fraters2019, fraters2020}
-to find the velocity \(\vec{u}\), pressure \(P\), and temperature \(T\)
-fields that satisfy the following equations:
+(v3.0.0, Bangerth et al., 2024, 2018; Clevenger \& Heister, 2021;
+{Fraters et al.}, 2019; Fraters, 2020; Gassmöller et al., 2018; Heister
+et al., 2017; Kronbichler et al., 2012) to find the velocity
+\(\vec{u}\), pressure \(P\), and temperature \(T\) fields that satisfy
+the following equations:
 
 \begin{equation}
   \nabla P - \nabla \cdot \sigma^{\prime} = \rho\, g
@@ -522,7 +418,7 @@ transitions. Equations \ref{eq:navier-stokes-no-inertia} and
 \ref{eq:continuity-compressible} together describe the buoyancy-driven
 flow of an isotropic fluid with negligible inertia and Equation
 \ref{eq:energy} describes the conduction, advection, and production (or
-consumption) of thermal energy \citep{schubert2001}. Note that the
+consumption) of thermal energy (Schubert et al., 2001). Note that the
 pressure \(P\) in this context is equal to the mean normal stress and is
 positive under compression:
 \(P = - \frac{\sigma_{xx} + \sigma_{yy} + \sigma_{zz}}{3}\).
@@ -535,7 +431,7 @@ contrast to simplified formulations such as the Boussinesq approximation
 or anelastic liquid approximation, which either neglect the time
 derivative of density (\(\frac{\partial \rho}{\partial t}\)) entirely or
 impose restrictions on where density variations can appear in the
-governing equations \citep{gassmoller2020}. By retaining
+governing equations (Gassmöller et al., 2020). By retaining
 \(\frac{\partial \rho}{\partial t}\), the compressible continuity
 equation enables density changes from kinetically-controlled phase
 transitions to influence the flow field anywhere within the model
@@ -546,11 +442,10 @@ simulating systems where phase transitions occur over finite timescales
 comparable to advective timescales.
 
 To solve Equation \ref{eq:continuity-compressible} numerically we adopt
-the \emph{projected density approximation}
-\citep[PDA,][]{gassmoller2020}, which reformulates the continuity
-equation by applying the product rule to
-\(\nabla \cdot (\rho\, \vec{u})\) and multiplying both sides by
-\(\frac{1}{\rho}\):
+the \emph{projected density approximation} (PDA, Gassmöller et al.,
+2020), which reformulates the continuity equation by applying the
+product rule to \(\nabla \cdot (\rho\, \vec{u})\) and multiplying both
+sides by \(\frac{1}{\rho}\):
 
 \begin{equation}
   \frac{1}{\rho} \frac{\partial \rho}{\partial t} + \nabla \cdot \vec{u} + \left(\frac{1}{\rho} \nabla \rho \right) \cdot \vec{u} = 0
@@ -578,26 +473,27 @@ with reasonable estimates of the pressure-temperature (PT) fields and
 material properties in Earth's upper mantle. We began by evaluating
 entropy changes over a PT range of 1573--1973 K and 0.001--25 GPa
 (Figure \ref{fig:isentrope}) using the Gibbs free energy minimization
-software Perple\_X \citep[v.7.0.9,][]{connolly2009}. We assumed a dry
-pyrolitic bulk composition after \citet{green1979} and phase equilibria
-were evaluated in the Na\(_2\)O-CaO-FeO-MgO-Al\(_2\)O\(_3\)-SiO\(_2\)
+software Perple\_X (v.7.0.9, Connolly, 2009). We assumed a dry pyrolitic
+bulk composition after Green et al. (1979) and phase equilibria were
+evaluated in the Na\(_2\)O-CaO-FeO-MgO-Al\(_2\)O\(_3\)-SiO\(_2\)
 (NCFMAS) chemical system with thermodynamic data and solution models of
-\citet{stixrude2022}. Equations of state were included for solid
-solution phases: olivine, plagioclase, spinel, clinopyroxene,
+Stixrude \& Lithgow-Bertelloni (2022). Equations of state were included
+for solid solution phases: olivine, plagioclase, spinel, clinopyroxene,
 wadsleyite, ringwoodite, perovskite, ferropericlase, high‐pressure C2/c
 pyroxene, orthopyroxene, akimotoite, post‐perovskite, Ca‐ferrite,
 garnet, and Na-Al phase.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.65\linewidth,height=\textheight,keepaspectratio,alt={Entropy (left) and density (right) changes in Earth's upper mantle under thermodynamic equilibrium and hydrostatic stress conditions. Material properties were computed with Perple\_X using the equations of state and thermodynamic data of {[}@stixrude2022{]}. The black box indicates the approximate PT range of our ASPECT simulations, while the white line indicates the isentropic adiabat used to calculate reference material properties.}]{../figs/PYR-material-table.png}
+\includegraphics[width=0.65\linewidth,height=\textheight,keepaspectratio,alt={Entropy (left) and density (right) changes in Earth's upper mantle under thermodynamic equilibrium and hydrostatic stress conditions. Material properties were computed with Perple\_X using the equations of state and thermodynamic data of Stixrude \& Lithgow-Bertelloni (2022). The black box indicates the approximate PT range of our ASPECT simulations, while the white line indicates the isentropic adiabat used to calculate reference material properties.}]{../figs/PYR-material-table.png}
 \caption{Entropy (left) and density (right) changes in Earth's upper
 mantle under thermodynamic equilibrium and hydrostatic stress
 conditions. Material properties were computed with Perple\_X using the
-equations of state and thermodynamic data of \citet{stixrude2022}. The
-black box indicates the approximate PT range of our ASPECT simulations,
-while the white line indicates the isentropic adiabat used to calculate
-reference material properties.}\label{fig:isentrope}
+equations of state and thermodynamic data of Stixrude \&
+Lithgow-Bertelloni (2022). The black box indicates the approximate PT
+range of our ASPECT simulations, while the white line indicates the
+isentropic adiabat used to calculate reference material
+properties.}\label{fig:isentrope}
 \end{figure}
 
 We then determined the mantle adiabat by applying the Newton-Raphson
@@ -619,12 +515,12 @@ reference conditions.
 
 \begin{figure}
 \centering
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Reference material properties used in our ASPECT simulations. Profiles were computed using the BurnMan software {[}@cottaar2014; @myhill2023{]} and were based on the equations of state and thermodynamic data of {[}@stixrude2022{]} for pure Mg olivine (ol) and wadsleyite (wd).}]{../figs/material-property-profile.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Reference material properties used in our ASPECT simulations. Profiles were computed using the BurnMan software (Cottaar et al., 2014; Myhill et al., 2023) and were based on the equations of state and thermodynamic data of Stixrude \& Lithgow-Bertelloni (2022) for pure Mg olivine (ol) and wadsleyite (wd).}]{../figs/material-property-profile.png}
 \caption{Reference material properties used in our ASPECT simulations.
-Profiles were computed using the BurnMan software
-\citep{cottaar2014, myhill2023} and were based on the equations of state
-and thermodynamic data of \citet{stixrude2022} for pure Mg olivine (ol)
-and wadsleyite (wd).}\label{fig:material-property-profile}
+Profiles were computed using the BurnMan software (Cottaar et al., 2014;
+Myhill et al., 2023) and were based on the equations of state and
+thermodynamic data of Stixrude \& Lithgow-Bertelloni (2022) for pure Mg
+olivine (ol) and wadsleyite (wd).}\label{fig:material-property-profile}
 \end{figure}
 
 \subsubsection{Initialization and Boundary
@@ -707,7 +603,8 @@ referencing the adiabatic reference conditions shown in Figure
 properties received no PT corrections, effectively assuming that
 deviations from the adiabatic reference conditions were negligible. For
 density, however, we applied a dynamic PT correction through a
-first-order Taylor expansion \citep{jarvis1980, gassmoller2020}:
+first-order Taylor expansion (Gassmöller et al., 2020; Jarvis \&
+Mckenzie, 1980):
 
 \begin{equation}
   \rho \approx \bar{\rho} + \left(\frac{\partial \bar{\rho}}{\partial P} \right)_T \Delta P + \left(\frac{\partial \bar{\rho}}{\partial T} \right)_P \Delta T
@@ -738,8 +635,8 @@ is constant in all our numerical experiments.
 The kinetics of the olivine \(\Leftrightarrow\) wadsleyite phase
 transition were governed entirely by interface-controlled growth, as
 nucleation was assumed to saturate rapidly and did not limit the
-reaction \citep{cahn1956}. Following \citet{cahn1956}, the transformed
-volume fraction is given by:
+reaction (Cahn, 1956). Following Cahn (1956), the transformed volume
+fraction is given by:
 
 \begin{equation}
   X = 1 - \exp\!\left(-N\, \dot{x}\, t \right)
@@ -753,7 +650,7 @@ after site saturation. For inter-crystalline grain-boundary controlled
 growth, \(N = 6.67/d\), where \(d\) is grain size.
 
 Since we assumed interface-controlled growth kinetics, the following
-expression determined the overall reaction rate \citep{hosoya2005}:
+expression determined the overall reaction rate (Hosoya et al., 2005):
 
 \begin{equation}
   \dot{x} = \Gamma\, T\, C_\mathrm{OH}^n\, \exp\!\left(-\frac{H^{\ast} + P V^{\ast}}{R\, T}\right) \left(1 - \exp\!\left[-\frac{\Delta G}{R\, T}\right] \right)
@@ -782,19 +679,19 @@ This formulation represents a significant thermodynamic simplification.
 We define Gibbs free energy based on mean normal stress (pressure), even
 though our simulations involve non-hydrostatic stress conditions where
 deviatoric stresses and normal stresses at individual grain interfaces
-directly influence reaction pathways and chemical potentials
-\citep{wheeler2015, wheeler2020}. Mean stress can provide a reasonable
-approximation under certain conditions \citep{wheeler2015b}. A rigorous
-treatment will require consideration of stress-dependent chemical
-potentials that account for the full stress tensor's influence on phase
-stability and reaction kinetics (work in progress).
+directly influence reaction pathways and chemical potentials (Wheeler,
+2015a, 2020). Mean stress can provide a reasonable approximation under
+certain conditions (Wheeler, 2015b). A rigorous treatment will require
+consideration of stress-dependent chemical potentials that account for
+the full stress tensor's influence on phase stability and reaction
+kinetics (work in progress).
 
 Setting aside these important microstructural effects for now, the time
 evolution of the olivine \(\Leftrightarrow\) wadsleyite phase transition
 is fully described by the interplay of pressure, temperature, and
 kinetic parameters applied to the interface-controlled growth model,
-without explicit consideration of nucleation kinetics
-\citep{hosoya2005, faccenda2017}. The macro-scale olivine
+without explicit consideration of nucleation kinetics (Faccenda \& Dal
+Zilio, 2017; Hosoya et al., 2005). The macro-scale olivine
 \(\Leftrightarrow\) wadsleyite reaction rate was therefore computed by
 taking the time derivative of Equation \ref{eq:volume-fraction}:
 
@@ -825,14 +722,14 @@ ppm\(_\mathrm{OH}^{-n}\), \(H^{\ast}\) = 274 kJ mol\(^{-1}\),
 \(V^{\ast}\) = 3.0e-6 m\(^3\) mol\(^{-1}\), and \(n\) = 3.2 constant,
 while varying water content \(C_\mathrm{OH}\) from 50--5000 ppm and
 grain size \(d\) from 1--10 mm. These water contents and grain sizes are
-consistent with the experimental conditions of \citet{hosoya2005},
-previous numerical studies of metastable olivine wedges
-\citep{rubie1994}, and typical grain sizes of upper mantle xenoliths
-\citep[\textasciitilde3--10 mm,][]{karato1984, karato2008}. Thus, our
-experiments approximate kinetic conditions ranging from slow kinetics in
-dry rocks with large grain sizes (50 ppm OH; 10 mm; \(Z\) = 3.0e0 K
-s\(^{-1}\)) to fast kinetics in hydrated rocks with small grain sizes
-(5000 ppm OH; 1 mm; \(Z\) = 7.0e7 K s\(^{-1}\)).
+consistent with the experimental conditions of Hosoya et al. (2005),
+previous numerical studies of metastable olivine wedges (Rubie \& Ross,
+1994), and typical grain sizes of upper mantle xenoliths
+(\textasciitilde3--10 mm, Karato, 1984, 2008). Thus, our experiments
+approximate kinetic conditions ranging from slow kinetics in dry rocks
+with large grain sizes (50 ppm OH; 10 mm; \(Z\) = 3.0e0 K s\(^{-1}\)) to
+fast kinetics in hydrated rocks with small grain sizes (5000 ppm OH; 1
+mm; \(Z\) = 7.0e7 K s\(^{-1}\)).
 
 \begin{figure}
 \centering
@@ -877,9 +774,9 @@ within each overall time step \(\Delta t\):
 \end{enumerate}
 
 In our simulations, the reaction step was solved using the ARKODE
-package of the SUNDIALS library \citep{reynolds2023, hindmarsh2005},
-which employs an adaptive-step additive Runge-Kutta method
-\citep{aspectmanual}. The reaction substep size \(\delta t\) was
+package of the SUNDIALS library (Hindmarsh et al., 2005; Reynolds et
+al., 2023), which employs an adaptive-step additive Runge-Kutta method
+(Bangerth et al., 2018). The reaction substep size \(\delta t\) was
 determined dynamically by ARKODE to satisfy a specified relative
 tolerance during the reaction step (set to \(10^{-6}\) in this study).
 As a result, the reaction operator was subcycled as needed within each
@@ -923,19 +820,19 @@ with thermal perturbations about an adiabatic reference profile:
 \end{equation}
 
 In our simulations, we prescribed a uniform background viscosity
-\(\bar{\eta}\) = 10\(^{21}\) Pa s throughout the upper mantle
-\citep[e.g.,][]{karato2008, ranalli1995}, implicitly assuming that
-\(E^{\ast}\) was temperature-dependent and varied slightly with depth
-(Equation \ref{eq:background-viscosity}). We varied the rheological
-activation factor \(B\) between 2 (low thermal sensitivity) and 10 (high
-thermal sensitivity). For our prescribed thermal anomalies of
-\(\hat{T}\) = \(\pm\) 500 K, these \(B\) values correspond to
-approximately 2--20\(\times\) stronger slabs or 2--20\(\times\) weaker
-plumes relative to the background mantle for \(B\) = 2 and 10,
-respectively. Thus, our numerical experiments explore a range of
-viscosity contrasts between thermal anomalies and background adiabatic
-reference conditions, with the exponential rheological model creating
-symmetric viscosity variations for heating and cooling.
+\(\bar{\eta}\) = 10\(^{21}\) Pa s throughout the upper mantle (e.g.,
+Karato, 2008; Ranalli, 1995), implicitly assuming that \(E^{\ast}\) was
+temperature-dependent and varied slightly with depth (Equation
+\ref{eq:background-viscosity}). We varied the rheological activation
+factor \(B\) between 2 (low thermal sensitivity) and 10 (high thermal
+sensitivity). For our prescribed thermal anomalies of \(\hat{T}\) =
+\(\pm\) 500 K, these \(B\) values correspond to approximately
+2--20\(\times\) stronger slabs or 2--20\(\times\) weaker plumes relative
+to the background mantle for \(B\) = 2 and 10, respectively. Thus, our
+numerical experiments explore a range of viscosity contrasts between
+thermal anomalies and background adiabatic reference conditions, with
+the exponential rheological model creating symmetric viscosity
+variations for heating and cooling.
 
 \subsubsection{Numerical Stabilization of Dynamic Pressure
 Oscillations}\label{sec:numerical-stability}
@@ -956,15 +853,15 @@ which in turn drives the reverse reaction. This positive feedback loop
 manifests as spurious pressure waves propagating through the slab
 interior.
 
-To address this issue, we adopt an approach similar to
-\citet{gassmoller2020} and exclude the dynamic pressure contribution
-from the Gibbs free energy calculation (Equation \ref{eq:gibbs}) while
-retaining it in the Arrhenius term in Equation \ref{eq:reaction-rate}
-and density formulation (Equation \ref{eq:density-ala}). In practice,
-this means replacing
+To address this issue, we adopt an approach similar to Gassmöller et al.
+(2020) and exclude the dynamic pressure contribution from the Gibbs free
+energy calculation (Equation \ref{eq:gibbs}) while retaining it in the
+Arrhenius term in Equation \ref{eq:reaction-rate} and density
+formulation (Equation \ref{eq:density-ala}). In practice, this means
+replacing
 \(\Delta G \approx \Delta \bar{G} + \hat{P}\, \Delta \bar{V} - \hat{T}\, \Delta \bar{S}\)
 with \(\Delta G \approx \Delta \bar{G} - \hat{T}\, \Delta \bar{S}\) in
-our kinetic rate law. As discussed by \citet{gassmoller2020}, this
+our kinetic rate law. As discussed by Gassmöller et al. (2020), this
 approximation is justified because density variations from dynamic
 pressure are typically small compared to those from compositional
 heterogeneities and temperature variations in mantle convection.
@@ -1215,20 +1112,20 @@ reflecting variable water contents (50--5000 ppm) and grain sizes (1--10
 mm). Laboratory studies also reveal large uncertainties in kinetic
 parameters \(n\), \(\Gamma\), \(H^{\ast}\), and \(V^{\ast}\) that depend
 strongly on water content, grain size, Mg-Fe composition, and
-microstructural evolution
-\citep{rubie1994, liu1998, kubo2004, hosoya2005, perrillat2013, ledoux2023}.
-Our simulations therefore explore only a limited subset of potential
-reaction rates in Earth's upper mantle.
+microstructural evolution (Hosoya et al., 2005; Kubo et al., 2004;
+{Ledoux et al.}, 2023; Liu et al., 1998; Perrillat et al., 2013; Rubie
+\& Ross, 1994). Our simulations therefore explore only a limited subset
+of potential reaction rates in Earth's upper mantle.
 
 Our kinetic model also assumes instantaneous nucleation site saturation
 followed by interface-controlled growth (Equations
 \ref{eq:volume-fraction}--\ref{eq:reaction-rate}), thereby neglecting
 nucleation kinetics. While often justified because nucleation rates
-occur too rapidly for reliable measurement
-\citep{hosoya2005, kubo2004, faccenda2017, perrillat2016}, recent
-in-situ X-ray and acoustic studies \citep{ohuchi2022, ledoux2023}
-document complex nucleation-growth microstructures that can limit net
-reaction rates under some PT conditions. By assuming saturated
+occur too rapidly for reliable measurement (Faccenda \& Dal Zilio, 2017;
+Hosoya et al., 2005; Kubo et al., 2004; Perrillat et al., 2016), recent
+in-situ X-ray and acoustic studies ({Ledoux et al.}, 2023; Ohuchi et
+al., 2022) document complex nucleation-growth microstructures that can
+limit net reaction rates under some PT conditions. By assuming saturated
 nucleation, we generally overestimate reaction rates and consequently
 underestimate the degree of olivine metastability and its influence on
 flow dynamics and 410 structure.
@@ -1237,10 +1134,10 @@ Beyond these kinetic uncertainties, our simulations incorporate several
 compositional and rheological simplifications. Assuming pure Mg
 endmembers neglects Fe-partitioning and minor element effects that can
 shift equilibrium depths by \textasciitilde10--20 km and alter kinetics
-\citep{katsura2004, perrillat2013, perrillat2016}. We also neglect
+({Katsura et al.}, 2004; Perrillat et al., 2013, 2016). We also neglect
 non-hydrostatic stress effects on microstructures and solid-state
-reactions \citep{wheeler2014, wheeler2018, wheeler2020}. Our simple
-temperature-dependent viscosity (Equations
+reactions (Wheeler, 2014, 2018, 2020). Our simple temperature-dependent
+viscosity (Equations
 \ref{eq:arrhenius-viscosity}--\ref{eq:rheological-model}) omits several
 strain-dependent processes that could affect both flow dynamics and
 reaction kinetics. Notably, accumulated strain could influence 410
@@ -1251,14 +1148,14 @@ could similarly create zones of enhanced reaction rates, and
 strain-weakening could modify slab descent trajectory and residence time
 in the transition zone. While incorporating strain-weakening rheologies,
 grain-size evolution, and plastic deformation would provide a more
-complete treatment \citep{karato2001}, such additions would
+complete treatment (Karato et al., 2001), such additions would
 substantially expand an already large parameter space and introduce
 additional uncertainties in constitutive relationships.
 
 Finally, our 2D simulations neglect 3D slab geometry and dynamics. While
 we expect the same kinetic regimes to occur in 3D, the transitions
 between regimes will likely shift as slabs behave differently in 3D
-versus 2D \citep{sime2024}. Despite these combined limitations in
+versus 2D (Sime et al., 2024). Despite these combined limitations in
 kinetic parameters, compositional complexity, rheological formulation,
 and dimensionality, our results capture first-order effects governing
 410 structure.
@@ -1271,31 +1168,30 @@ simulations---quasi-equilibrium, intermediate, and
 ultra-sluggish---emerge from feedbacks between kinetically controlled
 phase transitions and slab strength (Figure
 \ref{fig:410-structure-comp}). However, seismic tomography shows little
-to no evidence for widespread slab ponding at the 410 \citep{fukao2013},
-providing an observational constraint on plausible kinetic behavior in
-natural systems. In particular, the ultra-sluggish regime (\(\dot{X}\)
-\(\lesssim\) 0.07 Ma\(^{-1}\)), which leads to complete slab stagnation
-at the 410 in our simulations, is inconsistent with global seismic
-observations of continuous slab descent through the 410. This implies
-that most subduction zones experience sufficiently rapid olivine
-\(\Leftrightarrow\) wadsleyite transformation to avoid long-lived
-stagnation and ponding at the 410.
+to no evidence for widespread slab ponding at the 410 (Fukao \&
+Obayashi, 2013), providing an observational constraint on plausible
+kinetic behavior in natural systems. In particular, the ultra-sluggish
+regime (\(\dot{X}\) \(\lesssim\) 0.07 Ma\(^{-1}\)), which leads to
+complete slab stagnation at the 410 in our simulations, is inconsistent
+with global seismic observations of continuous slab descent through the
+410. This implies that most subduction zones experience sufficiently
+rapid olivine \(\Leftrightarrow\) wadsleyite transformation to avoid
+long-lived stagnation and ponding at the 410.
 
 Meanwhile, the occurrence of deep earthquakes often attributed to
 transformational faulting could indicate metastable olivine persistence
-in various subduction zones
-\citep{green1995, kirby1996, ishii2021, ohuchi2022, sindhusuta2025} and
-thus be compatible with the intermediate kinetic regime in our
+in various subduction zones (Green \& Houston, 1995; Ishii \& Ohtani,
+2021; Kirby et al., 1996; Ohuchi et al., 2022; Sindhusuta et al., 2025)
+and thus be compatible with the intermediate kinetic regime in our
 simulations (0.07 \(\lesssim\) \(\dot{X}\) \(\lesssim\) 2.2
 Ma\(^{-1}\)). This regime would generate localized buoyant regions that
 resist but do not prevent downward flow. Assuming that transformational
 faulting is primarily responsible for deep earthquakes, rather than
-alternative mechanisms \citep[e.g.,][]{zhan2020}, our simulations
-suggest that coexistence of deep seismicity with continuous slab descent
-through the 410 requires a delicate balance: olivine \(\Leftrightarrow\)
-wadsleyite reaction rates must be slow enough to sustain metastable
-volumes for transformational faulting, yet fast enough to permit 410
-penetration.
+alternative mechanisms (e.g., Zhan, 2020), our simulations suggest that
+coexistence of deep seismicity with continuous slab descent through the
+410 requires a delicate balance: olivine \(\Leftrightarrow\) wadsleyite
+reaction rates must be slow enough to sustain metastable volumes for
+transformational faulting, yet fast enough to permit 410 penetration.
 
 Rheological contrasts further modulate these kinetic effects by
 controlling slab trajectory and descent rate. Strong slabs (\(B\)
@@ -1306,9 +1202,9 @@ completely. Weaker slabs (\(B\) \(\lesssim\) 6, viscosity contrast
 \textasciitilde2--6\(\times\)) deform internally and descend vertically,
 traversing the transition zone quickly with less time for sluggish
 reactions. This morphological dependence on slab strength is consistent
-with previous numerical studies without reaction kinetics
-\citep{garel2014}, indicating that rheological control of slab geometry
-operates independently of kinetic effects.
+with previous numerical studies without reaction kinetics (Garel et al.,
+2014), indicating that rheological control of slab geometry operates
+independently of kinetic effects.
 
 Considering both kinetic and rheological influences can produce
 counterintuitive subduction dynamics, however. Under equivalent kinetic
@@ -1316,16 +1212,16 @@ conditions, our simulations show stronger slabs descending through the
 410, while weaker slabs accumulate more metastable olivine, amplifying
 buoyancy forces that slow or arrest downward slab motion. This outcome
 appears contradictory to previous work linking deep earthquakes with
-colder, stronger slabs \citep{green1995, houston2015, zhan2020},
-suggesting that other factors---such as overriding plate forcing or
-subduction geometry \citep[e.g.,][]{agrusta2017}---may dominate over
+colder, stronger slabs (Green \& Houston, 1995; Houston, 2015; Zhan,
+2020), suggesting that other factors---such as overriding plate forcing
+or subduction geometry (e.g., Agrusta et al., 2017)---may dominate over
 kinetics in natural systems.
 
 Our slab simulations also reveal a systematic departure from observed
 descent rates across the current global subduction system. Simulated
 slabs descend at 1.3--2.0 cm/yr (interquartile range excluding fully
 stagnated cases; see Supplementary Information), roughly half of the
-range compiled by \citet{lallemand2005} for natural systems
+range compiled by Lallemand et al. (2005) for natural systems
 (interquartile range: 2.6--4.8 cm/yr). This discrepancy suggests that
 buoyancy forces from metastable olivine accumulation may be exaggerated
 in our simulations relative to Earth, although faster descent rates
@@ -1341,23 +1237,22 @@ reaction rates that would stall weaker slabs (Figure
 \ref{fig:410-structure-comp}). These dynamic sensitivities suggest
 individual subduction zones could oscillate between penetration and
 temporary stagnation at the 410 as kinematic and PT conditions evolve,
-with plate forcing and slab deformation behavior
-\citep[e.g.,][]{agrusta2017} potentially modulating this critical
-kinetic threshold.
+with plate forcing and slab deformation behavior (e.g., Agrusta et al.,
+2017) potentially modulating this critical kinetic threshold.
 
-Regional variability in slab behavior \citep{fukao2013} could therefore
-reflect diversity in both kinetics and rheology, in addition to slab age
-and convergence rate. In our simulations, young, hot slabs with lower
-viscosity contrasts descend steeply and accumulate moderate metastable
-olivine despite warm thermal structures, while old, cold slabs with high
-viscosity contrasts flatten and sink slowly, allowing near-complete
-transformation under moderately sluggish kinetics. These patterns
-distinguish slabs from plumes. In hot upwellings, elevated temperatures
-suppress sensitivity to both kinetics and rheology, while in cold slabs,
-kinetics govern reaction rates and rheology dictates reaction duration
-by regulating slab kinematics. Accurately modeling slab morphology,
-material exchange, and deep stress conditions in geodynamic simulations
-therefore requires incorporating both effects.
+Regional variability in slab behavior (Fukao \& Obayashi, 2013) could
+therefore reflect diversity in both kinetics and rheology, in addition
+to slab age and convergence rate. In our simulations, young, hot slabs
+with lower viscosity contrasts descend steeply and accumulate moderate
+metastable olivine despite warm thermal structures, while old, cold
+slabs with high viscosity contrasts flatten and sink slowly, allowing
+near-complete transformation under moderately sluggish kinetics. These
+patterns distinguish slabs from plumes. In hot upwellings, elevated
+temperatures suppress sensitivity to both kinetics and rheology, while
+in cold slabs, kinetics govern reaction rates and rheology dictates
+reaction duration by regulating slab kinematics. Accurately modeling
+slab morphology, material exchange, and deep stress conditions in
+geodynamic simulations therefore requires incorporating both effects.
 
 \subsection{Implications for 410 Detectability and Constraining Kinetics
 and Rheology from Seismic Observations}\label{sec:410-detectability}
@@ -1365,38 +1260,40 @@ and Rheology from Seismic Observations}\label{sec:410-detectability}
 The 410 discontinuity is readily detected using underside reflections
 (precursors to SS, PP, and ScS reverberated phases), as well as
 converted phases, (receiver functions), and top-side triplicated phases
-\citep[e.g.,][]{flanagan1999, shearer2000, chambers2005, schmerr2007, deuss2009, houser2010, cottaar2016, jenkins2016, wang2017, han2021, glasgow2024, miao2024, parera2024, waszek2024}.
-The majority of studies focus on mapping 410 topography, and typically
-assume a sharp near-horizontal interface. Resolving the width of the
-phase transition zone requires more challenging analyses, including
-constraints on impedance contrast. The trade-off between phase
-transition width, impedance contrast, and small-scale topography depends
-strongly on the wavelengths of the seismic phases employed
-\citep{chambers2005}.
+(e.g., Flanagan \& Shearer, 1999; Chambers et al., 2005; Cottaar \&
+Deuss, 2016; Deuss, 2009; Glasgow et al., 2024; Han et al., 2021; Houser
+\& Williams, 2010; Jenkins et al., 2016; Miao et al., 2024;
+Parera-Portell et al., 2024; Schmerr \& Garnero, 2007; Shearer, 2000;
+Wang et al., 2017; Waszek et al., 2024). The majority of studies focus
+on mapping 410 topography, and typically assume a sharp near-horizontal
+interface. Resolving the width of the phase transition zone requires
+more challenging analyses, including constraints on impedance contrast.
+The trade-off between phase transition width, impedance contrast, and
+small-scale topography depends strongly on the wavelengths of the
+seismic phases employed (Chambers et al., 2005).
 
 Previous studies targeting the width of discontinuities have exploited
-the frequency dependence of observed amplitudes
-\citep[e.g.,][]{vandermeijde2003, bonatto2020}, the detectability of
-discontinuities at higher frequencies
-\citep[e.g.,][]{rost2002, day2013}, gradient-based inversions
-\citep{schmandt2012}, and joint analyses of top- and bottom-side
-reflections \citep{vinnik2020}. In many of these approaches, the
-transition is parameterized as a simple linear gradient, whereas our
-models predict a more complex depth-dependent gradient, consistent with
-results from gradient-based inversions \citep{schmandt2012}. While many
-of these studies infer a sharp 410, locally broader phase transitions,
-up to 35 km, are observed and are commonly attributed to elevated water
-content in the mantle
-\citep[e.g.,][]{vandermeijde2003, schmandt2012, vinnik2020}.
+the frequency dependence of observed amplitudes (e.g., Van der Meijde et
+al., 2003; Bonatto et al., 2020), the detectability of discontinuities
+at higher frequencies (e.g., Rost \& Weber, 2002; Day \& Deuss, 2013),
+gradient-based inversions (Schmandt, 2012), and joint analyses of top-
+and bottom-side reflections (Vinnik et al., 2020). In many of these
+approaches, the transition is parameterized as a simple linear gradient,
+whereas our models predict a more complex depth-dependent gradient,
+consistent with results from gradient-based inversions (Schmandt, 2012).
+While many of these studies infer a sharp 410, locally broader phase
+transitions, up to 35 km, are observed and are commonly attributed to
+elevated water content in the mantle (e.g., Van der Meijde et al., 2003;
+Schmandt, 2012; Vinnik et al., 2020).
 
 The presence of water is expected to significantly widen the olivine
 \(\Leftrightarrow\) wadsleyite transition width, similar to effects
 observed in our simulations. However, a hydrous 410 transition would
-likely occur at lower pressures \citep{smyth2002}, while our simulation
-results show a deepening of the discontinuity for the intermediate
-kinetic regime with an inhibited olivine \(\Leftrightarrow\) wadsleyite
-transformation. Therefore, resolving topography could be a means to
-distinguish these two scenarios.
+likely occur at lower pressures (Smyth \& Frost, 2002), while our
+simulation results show a deepening of the discontinuity for the
+intermediate kinetic regime with an inhibited olivine
+\(\Leftrightarrow\) wadsleyite transformation. Therefore, resolving
+topography could be a means to distinguish these two scenarios.
 
 Our plume simulations predict consistently thin 410 discontinuities
 (2--3 km widths, \textasciitilde24 km displacements) across large
@@ -1404,7 +1301,7 @@ rheological variations and seven orders of magnitude in \(\dot{X}\),
 except under ultra-sluggish kinetics where widths broaden up to 21 km.
 These sharp discontinuities should be readily detectable, consistent
 with observations of well-defined 410s with strong deflections in
-various hotspot locations \citep{deuss2009, lawrence2008}.
+various hotspot locations (Deuss, 2009; Lawrence \& Shearer, 2008).
 
 Slab simulations, in contrast, imply that 410 detectability strongly
 depends on joint kinetic and rheological influences (Figure
@@ -1416,12 +1313,11 @@ signals due to near-complete olivine \(\Leftrightarrow\) wadsleyite
 transformation. Weak slabs (\(B\) \(\lesssim\) 6, viscosity contrast
 \textasciitilde2--6\(\times\)) descending steeply with reduced residence
 times amplify kinetic inhibition, producing broader reaction fronts.
-Weakened 410 signals beneath some subduction zones
-\citep{vanstiphout2019}, or observations of low velocity regions
-possibly representing metastable olivine
-\citep{jiang2015, shen2020, han2021}, align with intermediate kinetic
-conditions and relatively weak slabs, where steep, rapid descent
-amplifies metastability.
+Weakened 410 signals beneath some subduction zones (Van Stiphout et al.,
+2019), or observations of low velocity regions possibly representing
+metastable olivine (Han et al., 2021; Jiang et al., 2015; Shen \& Zhan,
+2020), align with intermediate kinetic conditions and relatively weak
+slabs, where steep, rapid descent amplifies metastability.
 
 Understanding the joint influence of rheological and kinetic factors on
 the geometry and dynamics of slab descent and phase transition width
@@ -1431,8 +1327,8 @@ extended phase transition zones, but these anomalies are predicted to
 occur over narrow regions where slabs interact with the 410 (Figure
 \ref{fig:slab-composition-set2}). Thus, finer-scale topographic mapping
 with higher frequency phases, such as receiver functions, is likely
-needed to localize sharp topography or non-detectability
-\citep{vanstiphout2019}.
+needed to localize sharp topography or non-detectability (Van Stiphout
+et al., 2019).
 
 In principle, regional variations in both 410 topography and phase
 transition width could reflect variations in kinetics (through
@@ -1442,15 +1338,15 @@ compensating variations in both. Without multiple independent
 constraints, seismic observations of 410 structure alone cannot uniquely
 separate these effects. Examples for independent constraints may include
 the presence of deep seismicity, as well as variations in slab thermal
-structure, age, and hydration across subduction zones
-\citep{agius2017, vanstiphout2019, schmandt2012}.
+structure, age, and hydration across subduction zones (Agius et al.,
+2017; Schmandt, 2012; Van Stiphout et al., 2019).
 
 Forward modeling of seismically observable 410 width and topography
 enables testing of whether specific parameter combinations match
 observed 410 structure from receiver functions or precursors. However,
-until mineral physics experiments
-\citep[e.g.,][]{hosoya2005, kubo2004, perrillat2013, perrillat2016, ledoux2023}
-reduce uncertainties and the issue of parameter degeneracy has been
+until mineral physics experiments (e.g., Hosoya et al., 2005; Kubo et
+al., 2004; {Ledoux et al.}, 2023; Perrillat et al., 2013, 2016) reduce
+uncertainties and the issue of parameter degeneracy has been
 sufficiently mitigated through independent constraints, seismic
 observations provide order-of-magnitude estimates of effective
 \(\dot{X}\) and relative rheological strength. Nevertheless, the
@@ -1481,8 +1377,8 @@ regimes---quasi-equilibrium, intermediate, and ultra-sluggish---that are
 further modulated by viscosity contrasts controlling slab geometry and
 transit time through the phase transition zone.
 
-Widespread slab penetration of the 410 in seismic tomography
-\citep{fukao2013} requires effective reaction rates exceeding the
+Widespread slab penetration of the 410 in seismic tomography (Fukao \&
+Obayashi, 2013) requires effective reaction rates exceeding the
 ultra-sluggish kinetic regime (\(\dot{X}\) \(\gtrsim\) 0.07
 Ma\(^{-1}\)). This critical threshold shifts systematically with
 rheological strength, revealing that modest variations in either
@@ -1525,10 +1421,11 @@ be found at
 and at \url{https://doi.org/10.17605/OSF.IO/9PHWC}, the official Open
 Science Framework data repository. All code within these repositories is
 MIT Licensed and free for use and distribution (see license details).
-ASPECT version 3.0.0,
-\citep{aspect-doi-v3.0.0, aspectmanual, heister2017, kronbichler2012, gassmoller2018, clevenger2021, fraters2019, fraters2020}
-used in these computations is freely available under the GPL v2.0 or
-later license through its software landing page
+ASPECT version 3.0.0, (Bangerth et al., 2018, 2024; Clevenger \&
+Heister, 2021; {Fraters et al.}, 2019; Fraters, 2020; Gassmöller et al.,
+2018; Heister et al., 2017; Kronbichler et al., 2012) used in these
+computations is freely available under the GPL v2.0 or later license
+through its software landing page
 \url{https://geodynamics.org/resources/aspect} or
 \url{https://aspect.geodynamics.org} and is being actively developed on
 GitHub and can be accessed via
@@ -1542,7 +1439,461 @@ manuscript.
 
 \clearpage
 
-\bibliography{/Users/bck/Working/manuscripts/kerswell_et_al_410_kinetics/draft/main.bib}
+\section*{References}\label{sec:references}
+\addcontentsline{toc}{section}{References}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-agius2017}
+Agius, M., Rychert, C., Harmon, N., \& Laske, G. (2017). Mapping the
+mantle transition zone beneath hawaii from ps receiver functions:
+Evidence for a hot plume and cold mantle downwellings. \emph{Earth and
+Planetary Science Letters}, \emph{474}, 226--236.
+
+\bibitem[\citeproctext]{ref-agrusta2017}
+Agrusta, R., Goes, S., \& Van Hunen, J. (2017). Subducting-slab
+transition-zone interaction: Stagnation, penetration and mode switches.
+\emph{Earth and Planetary Science Letters}, \emph{464}, 10--23.
+
+\bibitem[\citeproctext]{ref-aspectmanual}
+Bangerth, W., Dannberg, J., Fraters, M., Gassmöller, R., Glerum, A.,
+Heister, T., et al. (2018, May). {ASPECT: Advanced Solver for Planetary
+Evolution, Convection, and Tectonics {[}User Manual{]}} (Version 12).
+Figshare. \url{https://doi.org/10.6084/m9.figshare.4865333}
+
+\bibitem[\citeproctext]{ref-aspect-doi-v3.0.0}
+Bangerth, W., Dannberg, J., Fraters, M., Gassmöller, R., Glerum, A.,
+Heister, T., et al. (2024, December). {ASPECT v3.0.0 {[}Software{]}}
+(Version v3.0.0). Zenodo. \url{https://doi.org/10.5281/zenodo.14371679}
+
+\bibitem[\citeproctext]{ref-bonatto2020}
+Bonatto, L., Piromallo, C., \& Cottaar, S. (2020). The transition zone
+beneath west argentina-central chile using p-to-s converted waves.
+\emph{Journal of Geophysical Research: Solid Earth}, \emph{125}(8),
+e2020JB019446.
+
+\bibitem[\citeproctext]{ref-cahn1956}
+Cahn, J. (1956). The kinetics of grain boundary nucleated reactions.
+\emph{Acta Metallurgica}, \emph{4}(5), 449--459.
+
+\bibitem[\citeproctext]{ref-chambers2005}
+Chambers, K., Deuss, A., \& Woodhouse, J. (2005). Reflectivity of the
+410-km discontinuity from PP and SS precursors. \emph{Journal of
+Geophysical Research: Solid Earth}, \emph{110}(B2).
+
+\bibitem[\citeproctext]{ref-clevenger2021}
+Clevenger, T., \& Heister, T. (2021). Comparison between algebraic and
+matrix-free geometric multigrid for a stokes problem on adaptive meshes
+with variable viscosity. \emph{Numerical Linear Algebra with
+Applications}, \emph{28}(5), e2375.
+
+\bibitem[\citeproctext]{ref-connolly2009}
+Connolly, J. (2009). The geodynamic equation of state: What and how.
+\emph{Geochemistry, Geophysics, Geosystems}, \emph{10}(10).
+
+\bibitem[\citeproctext]{ref-cottaar2016}
+Cottaar, S., \& Deuss, A. (2016). Large-scale mantle discontinuity
+topography beneath europe: Signature of akimotoite in subducting slabs.
+\emph{Journal of Geophysical Research: Solid Earth}, \emph{121}(1),
+279--292.
+
+\bibitem[\citeproctext]{ref-cottaar2014}
+Cottaar, S., Heister, T., Rose, I., \& Unterborn, C. (2014). BurnMan: A
+lower mantle mineral physics toolkit. \emph{Geochemistry, Geophysics,
+Geosystems}, \emph{15}(4), 1164--1179.
+
+\bibitem[\citeproctext]{ref-dassler1996a}
+Däßler, R., \& Yuen, D. (1996). The metastable olivine wedge in fast
+subducting slabs: Constraints from thermo-kinetic coupling. \emph{Earth
+and Planetary Science Letters}, \emph{137}(1-4), 109--118.
+
+\bibitem[\citeproctext]{ref-dassler1996b}
+Däßler, R., Yuen, D., Karato, S., \& Riedel, M. (1996). Two-dimensional
+thermo-kinetic model for the olivine-spinel phase transition in
+subducting slabs. \emph{Physics of the Earth and Planetary Interiors},
+\emph{94}(3-4), 217--239.
+
+\bibitem[\citeproctext]{ref-day2013}
+Day, E., \& Deuss, A. (2013). Reconciling PP and {\(P^\prime P^\prime\)}
+precursor observations of a complex 660 km seismic discontinuity.
+\emph{Geophysical Journal International}, \emph{194}(2), 834--838.
+
+\bibitem[\citeproctext]{ref-deuss2009}
+Deuss, A. (2009). Global observations of mantle discontinuities using SS
+and PP precursors. \emph{Surveys in Geophysics}, \emph{30}(4), 301--326.
+
+\bibitem[\citeproctext]{ref-faccenda2017}
+Faccenda, M., \& Dal Zilio, L. (2017). The role of solid--solid phase
+transitions in mantle convection. \emph{Lithos}, \emph{268}, 198--224.
+
+\bibitem[\citeproctext]{ref-flanagan1999}
+Flanagan, M., \& Shearer, P. (1999). A map of topography on the 410-km
+discontinuity from PP precursors. \emph{Geophysical Research Letters},
+\emph{26}(5), 549--552.
+
+\bibitem[\citeproctext]{ref-fraters2020}
+Fraters, M. (2020, June). The geodynamic world builder (Version v0.3.0).
+Zenodo. \url{https://doi.org/10.5281/zenodo.3900603}
+
+\bibitem[\citeproctext]{ref-fraters2019}
+{Fraters, M., Thieulot, C., van den Berg, A., \& Spakman, W.} (2019).
+The geodynamic world builder: A solution for complex initial conditions
+in numerical modeling. \emph{Solid Earth}, \emph{10}(5), 1785--1807.
+
+\bibitem[\citeproctext]{ref-fukao2013}
+Fukao, Y., \& Obayashi, M. (2013). Subducted slabs stagnant above,
+penetrating through, and trapped below the 660 km discontinuity.
+\emph{Journal of Geophysical Research: Solid Earth}, \emph{118}(11),
+5920--5938.
+
+\bibitem[\citeproctext]{ref-garel2014}
+Garel, F., Goes, S., Davies, D., Davies, J., Kramer, S., \& Wilson, C.
+(2014). Interaction of subducted slabs with the mantle transition-zone:
+A regime diagram from 2-d thermo-mechanical models with a mobile trench
+and an overriding plate. \emph{Geochemistry, Geophysics, Geosystems},
+\emph{15}(5), 1739--1765.
+
+\bibitem[\citeproctext]{ref-gassmoller2018}
+Gassmöller, R., Lokavarapu, H., Heien, E., Puckett, E., \& Bangerth, W.
+(2018). Flexible and scalable particle-in-cell methods with adaptive
+mesh refinement for geodynamic computations. \emph{Geochemistry,
+Geophysics, Geosystems}, \emph{19}(9), 3596--3604.
+
+\bibitem[\citeproctext]{ref-gassmoller2020}
+Gassmöller, R., Dannberg, J., Bangerth, W., Heister, T., \& Myhill, R.
+(2020). On formulations of compressible mantle convection.
+\emph{Geophysical Journal International}, \emph{221}(2), 1264--1280.
+
+\bibitem[\citeproctext]{ref-glasgow2024}
+Glasgow, M., Zhang, H., Schmandt, B., Zhou, W., \& Zhang, J. (2024).
+Global variability of the composition and temperature at the 410-km
+discontinuity from receiver function analysis of dense arrays.
+\emph{Earth and Planetary Science Letters}, \emph{643}, 118889.
+
+\bibitem[\citeproctext]{ref-goes2022}
+Goes, S., Yu, C., Ballmer, M., Yan, J., \& Hilst, R. van der. (2022).
+Compositional heterogeneity in the mantle transition zone. \emph{Nature
+Reviews Earth \& Environment}, \emph{3}(8), 533--550.
+
+\bibitem[\citeproctext]{ref-green1979}
+Green, D., Jaques, L., \& Hibberson, W. (1979). Petrogenesis of
+mid-ocean ridge basalts. In \emph{The earth: Its origin, structure and
+evolution} (pp. 265--300). Academic Press.
+
+\bibitem[\citeproctext]{ref-green1995}
+Green, H., \& Houston, H. (1995). The mechanics of deep earthquakes.
+\emph{Annual Review Of Earth And Planetary Sciences, Volume 23, Pp.
+169-214.}, \emph{23}, 169--214.
+
+\bibitem[\citeproctext]{ref-guest2004}
+Guest, A., Schubert, G., \& Gable, C. (2004). Stresses along the
+metastable wedge of olivine in a subducting slab: Possible explanation
+for the tonga double seismic layer. \emph{Physics of the Earth and
+Planetary Interiors}, \emph{141}(4), 253--267.
+
+\bibitem[\citeproctext]{ref-han2021}
+Han, G., Li, J., Guo, G., Mooney, W., Karato, S., \& Yuen, D. (2021).
+Pervasive low-velocity layer atop the 410-km discontinuity beneath the
+northwest pacific subduction zone: Implications for rheology and
+geodynamics. \emph{Earth and Planetary Science Letters}, \emph{554},
+116642.
+
+\bibitem[\citeproctext]{ref-heister2017}
+Heister, T., Dannberg, J., Gassmöller, R., \& Bangerth, W. (2017). High
+accuracy mantle convection simulation through modern numerical
+methods--II: Realistic models and problems. \emph{Geophysical Journal
+International}, \emph{210}(2), 833--851.
+
+\bibitem[\citeproctext]{ref-hindmarsh2005}
+Hindmarsh, A., Brown, P., Grant, K., Lee, S., Serban, R., Shumaker, D.,
+\& Woodward, C. (2005). SUNDIALS: Suite of nonlinear and
+differential/algebraic equation solvers. \emph{ACM Transactions on
+Mathematical Software (TOMS)}, \emph{31}(3), 363--396.
+
+\bibitem[\citeproctext]{ref-hosoya2005}
+Hosoya, T., Kubo, T., Ohtani, E., Sano, A., \& Funakoshi, K. (2005).
+Water controls the fields of metastable olivine in cold subducting
+slabs. \emph{Geophysical Research Letters}, \emph{32}(17).
+
+\bibitem[\citeproctext]{ref-houser2010}
+Houser, C., \& Williams, Q. (2010). Reconciling pacific 410 and 660 km
+discontinuity topography, transition zone shear velocity patterns, and
+mantle phase transitions. \emph{Earth and Planetary Science Letters},
+\emph{296}(3-4), 255--266.
+
+\bibitem[\citeproctext]{ref-houston2015}
+Houston, H. (2015). Deep earthquakes.
+
+\bibitem[\citeproctext]{ref-ishii2021}
+Ishii, T., \& Ohtani, E. (2021). Dry metastable olivine and slab
+deformation in a wet subducting slab. \emph{Nature Geoscience},
+\emph{14}(7), 526--530.
+
+\bibitem[\citeproctext]{ref-jarvis1980}
+Jarvis, G., \& Mckenzie, D. (1980). Convection in a compressible fluid
+with infinite prandtl number. \emph{Journal of Fluid Mechanics},
+\emph{96}(3), 515--583.
+
+\bibitem[\citeproctext]{ref-jenkins2016}
+Jenkins, J., Cottaar, S., White, R., \& Deuss, A. (2016). Depressed
+mantle discontinuities beneath iceland: Evidence of a garnet controlled
+660 km discontinuity? \emph{Earth and Planetary Science Letters},
+\emph{433}, 159--168.
+
+\bibitem[\citeproctext]{ref-jiang2015}
+Jiang, G., Zhao, D., \& Zhang, G. (2015). Detection of metastable
+olivine wedge in the western pacific slab and its geodynamic
+implications. \emph{Physics of the Earth and Planetary Interiors},
+\emph{238}, 1--7.
+
+\bibitem[\citeproctext]{ref-karato1984}
+Karato, S. (1984). Grain-size distribution and rheology of the upper
+mantle. \emph{Tectonophysics}, \emph{104}(1-2), 155--176.
+
+\bibitem[\citeproctext]{ref-karato2008}
+Karato, S. (2008). Deformation of earth materials. \emph{An Introduction
+to the Rheology of Solid Earth}, \emph{463}.
+
+\bibitem[\citeproctext]{ref-karato2011}
+Karato, S. (2011). Water distribution across the mantle transition zone
+and its implications for global material circulation. \emph{Earth and
+Planetary Science Letters}, \emph{301}(3-4), 413--423.
+
+\bibitem[\citeproctext]{ref-karato2001}
+Karato, S., Riedel, M., \& Yuen, D. (2001). Rheological structure and
+deformation of subducted slabs in the mantle transition zone:
+Implications for mantle circulation and deep earthquakes. \emph{Physics
+of the Earth and Planetary Interiors}, \emph{127}(1-4), 83--108.
+
+\bibitem[\citeproctext]{ref-katsura2004}
+{Katsura, T., Yamada, H., Nishikawa, O., Song, M., Kubo, A., Shinmei,
+T., et al.} (2004). Olivine-wadsleyite transition in the system (mg, fe)
+2SiO4. \emph{Journal of Geophysical Research: Solid Earth},
+\emph{109}(B2).
+
+\bibitem[\citeproctext]{ref-kirby1996}
+Kirby, S., Stein, S., Okal, E., \& Rubie, D. (1996). Metastable mantle
+phase transformations and deep earthquakes in subducting oceanic
+lithosphere. \emph{Reviews of Geophysics}, \emph{34}(2), 261--306.
+
+\bibitem[\citeproctext]{ref-kronbichler2012}
+Kronbichler, M., Heister, T., \& Bangerth, W. (2012). High accuracy
+mantle convection simulation through modern numerical methods.
+\emph{Geophysical Journal International}, \emph{191}(1), 12--29.
+
+\bibitem[\citeproctext]{ref-kubo2004}
+Kubo, T., Ohtani, E., \& Funakoshi, K. (2004). Nucleation and growth
+kinetics of the \(\alpha\)-\(\beta\) transformation in Mg2SiO4determined
+by in situ synchrotron powder x-ray diffraction. \emph{American
+Mineralogist}, \emph{89}(2-3), 285--293.
+
+\bibitem[\citeproctext]{ref-lallemand2005}
+Lallemand, S., Heuret, A., \& Boutelier, D. (2005). On the relationships
+between slab dip, back-arc stress, upper plate absolute motion, and
+crustal nature in subduction zones. \emph{Geochemistry, Geophysics,
+Geosystems}, \emph{6}(9).
+
+\bibitem[\citeproctext]{ref-lawrence2008}
+Lawrence, J., \& Shearer, P. (2008). Imaging mantle transition zone
+thickness with SdS-SS finite-frequency sensitivity kernels.
+\emph{Geophysical Journal International}, \emph{174}(1), 143--158.
+
+\bibitem[\citeproctext]{ref-ledoux2023}
+{Ledoux, E., Krug, M., Gay, J., Chantel, J., Hilairet, N., Bykov, M., et
+al.} (2023). In-situ study of microstructures induced by the olivine to
+wadsleyite transformation at conditions of the 410 km depth
+discontinuity. \emph{American Mineralogist}, \emph{108}(12), 2283--2293.
+
+\bibitem[\citeproctext]{ref-liu1998}
+Liu, M., Kerschhofer, L., Mosenfelder, J., \& Rubie, D. (1998). The
+effect of strain energy on growth rates during the olivine-spinel
+transformation and implications for olivine metastability in subducting
+slabs. \emph{Journal of Geophysical Research: Solid Earth},
+\emph{103}(B10), 23897--23909.
+
+\bibitem[\citeproctext]{ref-miao2024}
+Miao, Z., Gao, S., Sun, M., \& Liu, K. (2024). Topography of the 410 and
+660 km discontinuities beneath the tibetan plateau and adjacent areas.
+\emph{Earth and Planetary Science Letters}, \emph{644}, 118947.
+
+\bibitem[\citeproctext]{ref-myhill2023}
+Myhill, R., Cottaar, S., Heister, T., Rose, I., Unterborn, C., Dannberg,
+J., \& Gassmöller, R. (2023). BurnMan--a python toolkit for planetary
+geophysics, geochemistry and thermodynamics.
+
+\bibitem[\citeproctext]{ref-ohuchi2022}
+Ohuchi, T., Higo, Y., Tange, Y., Sakai, T., Matsuda, K., \& Irifune, T.
+(2022). In situ x-ray and acoustic observations of deep seismic faulting
+upon phase transitions in olivine. \emph{Nature Communications},
+\emph{13}(1), 5213.
+
+\bibitem[\citeproctext]{ref-parera2024}
+Parera-Portell, J., Mancilla, F., Morales, J., \& Díaz, J. (2024).
+High-resolution mapping of the mantle transition zone and its
+interaction with subducted slabs in the ibero-maghrebian region.
+\emph{Earth and Planetary Science Letters}, \emph{640}, 118798.
+
+\bibitem[\citeproctext]{ref-perrillat2013}
+Perrillat, J., Daniel, I., Bolfan-Casanova, N., Chollet, M., Morard, G.,
+\& Mezouar, M. (2013). Mechanism and kinetics of the
+\(\alpha\)--\(\beta\) transition in san carlos olivine Mg1. 8Fe0. 2SiO4.
+\emph{Journal of Geophysical Research: Solid Earth}, \emph{118}(1),
+110--119.
+
+\bibitem[\citeproctext]{ref-perrillat2016}
+Perrillat, J., Chollet, M., Durand, S., De Moortele, B. van, Chambat,
+F., Mezouar, M., \& Daniel, I. (2016). Kinetics of the
+olivine--ringwoodite transformation and seismic attenuation in the
+earth's mantle transition zone. \emph{Earth and Planetary Science
+Letters}, \emph{433}, 360--369.
+
+\bibitem[\citeproctext]{ref-ranalli1995}
+Ranalli, G. (1995). \emph{Rheology of the earth}. Springer Science \&
+Business Media.
+
+\bibitem[\citeproctext]{ref-reynolds2023}
+Reynolds, D., Gardner, D., Woodward, C., \& Chinomona, R. (2023).
+ARKODE: A flexible IVP solver infrastructure for one-step methods.
+\emph{ACM Transactions on Mathematical Software}, \emph{49}(2), 1--26.
+
+\bibitem[\citeproctext]{ref-ringwood1975}
+Ringwood, A. (1975). Composition and petrology of the earth's mantle.
+\emph{MacGraw-Hill}, \emph{618}.
+
+\bibitem[\citeproctext]{ref-rost2002}
+Rost, S., \& Weber, M. (2002). The upper mantle transition zone
+discontinuities in the pacific as determined by short-period array data.
+\emph{Earth and Planetary Science Letters}, \emph{204}(3-4), 347--361.
+
+\bibitem[\citeproctext]{ref-rubie1994}
+Rubie, D., \& Ross, C. (1994). Kinetics of the olivine-spinel
+transformation in subducting lithosphere: Experimental constraints and
+implications for deep slab processes. \emph{Physics of the Earth and
+Planetary Interiors}, \emph{86}(1-3), 223--243.
+
+\bibitem[\citeproctext]{ref-saikia2008}
+Saikia, A., Frost, D., \& Rubie, D. (2008). Splitting of the
+520-kilometer seismic discontinuity and chemical heterogeneity in the
+mantle. \emph{Science}, \emph{319}(5869), 1515--1518.
+
+\bibitem[\citeproctext]{ref-schmandt2012}
+Schmandt, B. (2012). Mantle transition zone shear velocity gradients
+beneath USArray. \emph{Earth and Planetary Science Letters}, \emph{355},
+119--130.
+
+\bibitem[\citeproctext]{ref-schmeling1999}
+Schmeling, H., Monz, R., \& Rubie, D. (1999). The influence of olivine
+metastability on the dynamics of subduction. \emph{Earth and Planetary
+Science Letters}, \emph{165}(1), 55--66.
+
+\bibitem[\citeproctext]{ref-schmerr2007}
+Schmerr, N., \& Garnero, E. (2007). Upper mantle discontinuity
+topography from thermal and chemical heterogeneity. \emph{Science},
+\emph{318}(5850), 623--626.
+
+\bibitem[\citeproctext]{ref-schubert2001}
+Schubert, G., Turcotte, D., \& Olson, P. (2001). \emph{Mantle convection
+in the earth and planets}. Cambridge University Press.
+
+\bibitem[\citeproctext]{ref-shearer2000}
+Shearer, P. (2000). Upper mantle seismic discontinuities.
+\emph{Geophysical Monograph-American Geophysical Union}, \emph{117},
+115--132.
+
+\bibitem[\citeproctext]{ref-shen2020}
+Shen, Z., \& Zhan, Z. (2020). Metastable olivine wedge beneath the japan
+sea imaged by seismic interferometry. \emph{Geophysical Research
+Letters}, \emph{47}(6), e2019GL085665.
+
+\bibitem[\citeproctext]{ref-sime2024}
+Sime, N., Wilson, C., \& Keken, P. van. (2024). Thermal modeling of
+subduction zones with prescribed and evolving 2D and 3D slab geometries.
+\emph{Progress in Earth and Planetary Science}, \emph{11}(1), 14.
+
+\bibitem[\citeproctext]{ref-sindhusuta2025}
+Sindhusuta, S., Chi, S., Foster, C., Officer, T., \& Wang, Y. (2025).
+Numerical investigation into mechanical behavior of metastable olivine
+during phase transformation: Implications for deep-focus earthquakes.
+\emph{Journal of Geophysical Research: Solid Earth}, \emph{130}(2),
+e2024JB030557.
+
+\bibitem[\citeproctext]{ref-smyth1987}
+Smyth, J. (1987). Beta-Mg2 SiO4; a potential host for water in the
+mantle? \emph{American Mineralogist}, \emph{72}(11-12), 1051--1055.
+
+\bibitem[\citeproctext]{ref-smyth2002}
+Smyth, J., \& Frost, D. (2002). The effect of water on the 410-km
+discontinuity: An experimental study. \emph{Geophysical Research
+Letters}, \emph{29}(10), 123--1.
+
+\bibitem[\citeproctext]{ref-stixrude2022}
+Stixrude, L., \& Lithgow-Bertelloni, C. (2022). Thermal expansivity,
+heat capacity and bulk modulus of the mantle. \emph{Geophysical Journal
+International}, \emph{228}(2), 1119--1149.
+
+\bibitem[\citeproctext]{ref-tauzin2017}
+Tauzin, B., Kim, S., \& Kennett, B. (2017). Pervasive seismic
+low-velocity zones within stagnant plates in the mantle transition zone:
+Thermal or compositional origin? \emph{Earth and Planetary Science
+Letters}, \emph{477}, 1--13.
+
+\bibitem[\citeproctext]{ref-vandermeijde2003}
+Van der Meijde, M., Marone, F., Giardini, D., \& Van der Lee, S. (2003).
+Seismic evidence for water deep in earth's upper mantle. \emph{Science},
+\emph{300}(5625), 1556--1558.
+
+\bibitem[\citeproctext]{ref-vanstiphout2019}
+Van Stiphout, A., Cottaar, S., \& Deuss, A. (2019). Receiver function
+mapping of mantle transition zone discontinuities beneath alaska using
+scaled 3-d velocity corrections. \emph{Geophysical Journal
+International}, \emph{219}(2), 1432--1446.
+
+\bibitem[\citeproctext]{ref-vinnik2020}
+Vinnik, L., Deng, Y., Kosarev, G., Oreshin, S., Zhang, Z., \& Makeyeva,
+L. (2020). Sharpness of the 410-km discontinuity from the P410s and
+P2p410s seismic phases. \emph{Geophysical Journal International},
+\emph{220}(2), 1208--1214.
+
+\bibitem[\citeproctext]{ref-wang2017}
+Wang, X., Li, J., \& Chen, Q. (2017). Topography of the 410 km and 660
+km discontinuities beneath the japan sea and adjacent regions by
+analysis of multiple-ScS waves. \emph{Journal of Geophysical Research:
+Solid Earth}, \emph{122}(2), 1264--1283.
+
+\bibitem[\citeproctext]{ref-waszek2024}
+Waszek, L., Anandawansha, R., Sexton, J., \& Tauzin, B. (2024).
+Thermochemistry of the mantle transition zone beneath the western
+pacific. \emph{Geophysical Research Letters}, \emph{51}(18),
+e2024GL110852.
+
+\bibitem[\citeproctext]{ref-wheeler2014}
+Wheeler, J. (2014). Dramatic effects of stress on metamorphic reactions.
+\emph{Geology}, \emph{42}(8), 647--650.
+
+\bibitem[\citeproctext]{ref-wheeler2015}
+Wheeler, J. (2015a). Dramatic effects of stress on metamorphic
+reactions: reply. \emph{Geology}, \emph{43}(11), e373--e373.
+
+\bibitem[\citeproctext]{ref-wheeler2015b}
+Wheeler, J. (2015b). Dramatic effects of stress on metamorphic
+reactions: reply. \emph{Geology}, \emph{43}(11), e373--e373.
+
+\bibitem[\citeproctext]{ref-wheeler2018}
+Wheeler, J. (2018). The effects of stress on reactions in the earth:
+Sometimes rather mean, usually normal, always important. \emph{Journal
+of Metamorphic Geology}, \emph{36}(4), 439--461.
+
+\bibitem[\citeproctext]{ref-wheeler2020}
+Wheeler, J. (2020). A unifying basis for the interplay of stress and
+chemical processes in the earth: Support from diverse experiments.
+\emph{Contributions to Mineralogy and Petrology}, \emph{175}(12), 116.
+
+\bibitem[\citeproctext]{ref-zhan2020}
+Zhan, Z. (2020). Mechanisms and implications of deep earthquakes.
+\emph{Annual Review of Earth and Planetary Sciences}, \emph{48}(1),
+147--174.
+
+\end{CSLReferences}
 
 
 \end{document}

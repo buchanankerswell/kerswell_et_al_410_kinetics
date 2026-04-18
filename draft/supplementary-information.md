@@ -1,138 +1,16 @@
-<!--
+# Contents of this file {.unnumbered #sec:contents}
 
-## Stress, Pressure, and The Momentum Equation {.unnumbered #sec:momentum-derivation}
-
-The momentum equation in the following form is referred to as the Navier-Stokes equation and describes the flow of a compressible viscous fluid primarily by buoyancy forces:
-
-\begin{equation}
-  \rho \left(\frac{\partial \vec{u}}{\partial t} \right) = \nabla \cdot \sigma^{\prime} - \nabla P + \rho g
-  \label{eq:navier-stokes-compressible}
-\end{equation}
-
-where $\rho$ is density, $\vec{u}$ is velocity, $P$ is pressure, $\sigma^{\prime}$ is the deviatoric stress tensor, and $g$ is gravitational acceleration. In terms of classical mechanics, the left-hand side is analogous to mass times acceleration $ma$, and the right-hand side are the forces $F$ that are acting on the fluid. Hence, the equation describes a balance between force and momentum $ma = F$ [@gerya2019].
-
-The forces in Equation \ref{eq:navier-stokes-compressible} include the pressure gradient $\nabla P$ which acts to drive the fluid from high pressure to low pressure, the viscous forces $\nabla \cdot \sigma^{\prime}$ that dissipate energy by resisting flow, and the buoyancy forces $\rho g$ that drive convection (denser fluids sink while lighter fluids rise). Because the flow of Earth's mantle occurs at such slow rates, however, the inertial term $\left(\frac{\partial \vec{u}}{\partial t} \right)$ on the left-hand side of Equation \ref{eq:navier-stokes-compressible} can be ignored, and the momentum equation simplifies to:
-
-\begin{equation}
-  \nabla P - \nabla \cdot \sigma^{\prime} = \rho g
-  \label{eq:navier-stokes-no-inertia-appendix}
-\end{equation}
-
-Equation \ref{eq:navier-stokes-no-inertia-appendix} describes a balance between the buoyancy force and the pressure gradient minus the energy dissipation due to deformation. Since the deviatoric stress tensor $\sigma^{\prime}$ can be described in terms of velocity (see Equation \ref{eq:stress-deviatoric-component}), the primary unknowns in Equation \ref{eq:navier-stokes-compressible} are pressure and velocity.
-
-The complete stress tensor can be written as:
-
-\begin{equation}
-  \sigma_{ij} = \sigma^{\prime}_{ij} - P \delta_{ij}
-  \label{eq:stress-complete}
-\end{equation}
-
-where $\sigma_{ij}$ is total stress, $\sigma^{\prime}_{ij}$ is the deviatoric (non-hydrostatic) component of stress, $P = - \frac{\sigma_{xx} + \sigma_{yy} + \sigma_{zz}}{3}$ is the hydrostatic component of stress, and $\delta_{ij}$ is the Kronecker delta:
-
-\begin{equation}
-  \delta_{ij} =
-  \begin{cases}
-    1, & \text{if} i = j \\
-    0, & \text{if} i \neq j
-  \end{cases}
-\end{equation}
-
-The hydrostatic component of stress acts equally in all directions and therefore affects the fluid's volume (density) but does not change its shape or cause it to flow. Note that the negative sign in Equation \ref{eq:stress-complete} implies that pressure is positive under compression (negative normal stress). This is a convention used in geodynamics that differs from material sciences and other fields.
-
-The deviatoric part of the stress tensor is responsible for deformation and flow of the fluid and is equal to the total stress without the hydrostatic stress component, $\sigma^{\prime}_{ij} = \sigma_{ij} + P \delta_{ij}$, or in full matrix form:
-
-\begin{equation}
-  \begin{pmatrix}
-  \sigma^{\prime}_{xx} & \sigma^{\prime}_{xy} & \sigma^{\prime}_{xz} \\
-  \sigma^{\prime}_{yx} & \sigma^{\prime}_{yy} & \sigma^{\prime}_{yz} \\
-  \sigma^{\prime}_{zx} & \sigma^{\prime}_{zy} & \sigma^{\prime}_{zz}
-  \end{pmatrix} =
-  \begin{pmatrix}
-  \sigma_{xx} & \sigma_{xy} & \sigma_{xz} \\
-  \sigma_{yx} & \sigma_{yy} & \sigma_{yz} \\
-  \sigma_{zx} & \sigma_{zy} & \sigma_{zz}
-  \end{pmatrix} +
-  \begin{pmatrix}
-  -\frac{\sigma_{xx} + \sigma_{yy} + \sigma_{zz}}{3} & 0 & 0 \\
-  0 & -\frac{\sigma_{xx} + \sigma_{yy} + \sigma_{zz}}{3} & 0 \\
-  0 & 0 & -\frac{\sigma_{xx} + \sigma_{yy} + \sigma_{zz}}{3}
-  \end{pmatrix}
-  \label{eq:stress-deviatoric}
-\end{equation}
-
-In practice, the deviatoric stress tensor $\sigma^{\prime}$ is computed by applying a constitutive relationship between stress and strain to express $\sigma^{\prime}$ in terms of velocity. In the present case, we apply a generalized linear model that combines shear deformation without rotation and volumetric deformation (dilation):
-
-\begin{equation}
-  \sigma^{\prime} = \eta \left(\nabla \vec{u} + \left(\nabla \vec{u} \right)^\intercal \right) - \left(\frac{2}{3} \eta - \zeta \right) \left(\nabla \cdot \vec{u} \right) I
-\end{equation}
-
-where $\vec{u}$ is velocity, $\eta$ is shear viscosity, and $\zeta$ is bulk viscosity. For nearly-incompressible fluids (very small $\zeta$), the expression for deviatoric stress simplifies to:
-
-\begin{equation}
-  \sigma^{\prime} = 2 \eta \dot{\epsilon}^{\prime}
-\end{equation}
-
-where $\dot{\epsilon}^{\prime} = \frac{1}{2} \left(\nabla \vec{u} + \left(\nabla \vec{u} \right)^\intercal \right) - \frac{1}{3} \left(\nabla \cdot \vec{u} \right) I$ is the deviatoric strain rate tensor. In full component form the deviatoric stress tensor is:
-
-\begin{equation}
-  \sigma^{\prime}_{ij} = \eta \left(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i} \right) - \frac{2}{3} \eta \left(\frac{\partial u_x}{\partial x} + \frac{\partial u_y}{\partial y} + \frac{\partial u_z}{\partial z} \right) \delta_{ij}
-  \label{eq:stress-deviatoric-component}
-\end{equation}
-
-Note that the deviatoric stress and strain rate tensors are symmetric such that $\sigma^{\prime}_{ij} = \sigma^{\prime}_{ji}$ and $\dot{\epsilon}^{\prime}_{ij} = \dot{\epsilon}^{\prime}_{ji}$, which by definition means that there is no rotational deformation in the fluid flow, only rigid-body rotation. Because of this symmetry, the full matrix form the deviatoric stress tensor can be written as:
-
-\begin{equation}
-  \sigma^{\prime} = \begin{pmatrix}
-  2 \eta \frac{\partial u_x}{\partial x} - \frac{2}{3} \eta \left(\frac{\partial u_x}{\partial x} + \frac{\partial u_y}{\partial y} + \frac{\partial u_z}{\partial z} \right) & \eta \left(\frac{\partial u_x}{\partial y} + \frac{\partial u_y}{\partial x} \right) & \eta \left(\frac{\partial u_x}{\partial z} + \frac{\partial u_z}{\partial x} \right) \\
-  \eta \left(\frac{\partial u_y}{\partial x} + \frac{\partial u_x}{\partial y} \right) & 2 \eta \frac{\partial u_y}{\partial y} - \frac{2}{3} \eta \left(\frac{\partial u_x}{\partial x} + \frac{\partial u_y}{\partial y} + \frac{\partial u_z}{\partial z} \right) & \eta \left(\frac{\partial u_y}{\partial z} + \frac{\partial u_z}{\partial y} \right) \\
-  \eta \left(\frac{\partial u_z}{\partial x} + \frac{\partial u_x}{\partial z} \right) & \eta \left(\frac{\partial u_z}{\partial y} + \frac{\partial u_y}{\partial z} \right) & 2 \eta \frac{\partial u_z}{\partial z} - \frac{2}{3} \eta \left(\frac{\partial u_x}{\partial x} + \frac{\partial u_y}{\partial y} + \frac{\partial u_z}{\partial z} \right)
-  \end{pmatrix}
-\end{equation}
-
-It is often useful to visualize the *second invariant* of the deviatoric stress tensor, which is independent of the coordinate reference frame and quantifies the local deviation of stress from a hydrostatic (non-convecting) state:
-
-\begin{equation}
-  \sigma_{\text{II}} = \sqrt{\frac{1}{2} \left(\text{tr}(\sigma^{\prime 2}) - \text{tr}(\sigma^{\prime})^2 \right)}
-  \label{eq:second-invariant-definition}
-\end{equation}
-
-where $\text{tr}(\sigma^{\prime 2}) = \Sigma \sigma^{\prime 2}_{ij}$ and $\text{tr}(\sigma^{\prime})^2 = (\sigma^{\prime}_{xx} + \sigma^{\prime}_{yy} + \sigma^{\prime}_{zz})^2$. Note that Equation \ref{eq:second-invariant-definition} uses the convention that compressive stress is positive. It follows from Equation \ref{eq:stress-complete} that the normal deviatoric stresses are:
-
-\begin{equation}
-  \begin{aligned}
-    \sigma^{\prime}_{xx} &= \sigma_{xx} + P \\
-    \sigma^{\prime}_{yy} &= \sigma_{yy} + P \\
-    \sigma^{\prime}_{zz} &= \sigma_{zz} + P
-  \end{aligned}
-\end{equation}
-
-and thus by definition $\text{tr}(\sigma^{\prime}) = \text{tr}(\sigma) + 3P = 0$, since $\text{tr}(\sigma) = -3P$. By this definition, Equation \ref{eq:second-invariant-definition} can be written as:
-
-\begin{equation}
-  \begin{aligned}
-    \sigma_{\text{II}} &= \sqrt{\frac{1}{2} \left(\text{tr}(\sigma^{\prime 2}) - 0 \right)} = \sqrt{\frac{1}{2} \text{tr}(\sigma^{\prime 2})} = \sqrt{\frac{1}{2} \sum_{i, j}\sigma^{\prime 2}_{ij}} \\
-    \sigma_{\text{II}} &= \sqrt{\frac{1}{2} (\sigma^{\prime 2}_{xx} + \sigma^{\prime 2}_{yy} + \sigma^{\prime 2}_{zz} + \sigma^{\prime 2}_{xy} + \sigma^{\prime 2}_{yx} + \sigma^{\prime 2}_{xz} + \sigma^{\prime 2}_{zx} + \sigma^{\prime 2}_{yz} + \sigma^{\prime 2}_{zy})} \\
-    \sigma_{\text{II}} &= \sqrt{\frac{1}{2} (\sigma^{\prime 2}_{xx} + \sigma^{\prime 2}_{yy} + \sigma^{\prime 2}_{zz}) + \sigma^{\prime 2}_{xy} + \sigma^{\prime 2}_{xz} + \sigma^{\prime 2}_{yz}}
-  \end{aligned}
-\end{equation}
-
-Note also that many engineering applications use the von Mises stress:
-
-\begin{equation}
-  \sigma_{\text{vm}} = \sqrt{\frac{3}{2} \sum_{i, j}\sigma^{\prime 2}_{ij}}
-\end{equation}
-
-which is proportional to the second invariant of the deviatoric stress tensor by a factor of $\sqrt{3}$:
-
-\begin{equation}
-  \sigma_{\text{vm}} = \sqrt{3} \, \sigma_{\text{II}}
-\end{equation}
-
--->
+1. Text S1 to S2
+2. Table S1
+3. Figures S1 to S8
 
 \clearpage
 
-# Measuring 410 Displacement and Width {.unnumbered #sec:measuring-displacement-width}
+# Introduction {.unnumbered #sec:introduction}
+
+This supplementary information provides additional methodological details, quantitative results, and simulation snapshots that support the findings presented in the main text. Text \ref{sec:measuring-displacement-width} describes the procedures used to measure 410 discontinuity displacement and width from the simulated volume fraction fields, including examples of vertical profile selection across all three kinetic regimes in both slab and plume settings (Figures \ref{fig:slab-composition-set1} and \ref{fig:plume-composition-set1}). Text \ref{sec:rheological-strength-contrasts} documents the effects of rheological strength contrasts on flow dynamics and 410 structure, illustrating how the rheological activation factor $B$ modulates slab geometry and reaction progress across the full range of kinetic prefactors $Z$ explored in this study. Table \ref{tbl:depth-profile-summary} provides a complete summary of all simulation results, reporting 410 displacement, width, maximum vertical velocity, and maximum reaction rate for every combination of $Z$ and $B$ tested in both plume and slab configurations after 100 Ma of evolution. Figures \ref{fig:slab-Z3.0e0-composition-set2}--\ref{fig:plume-Z7.0e7-composition-set2} present simulation snapshots showing dynamic temperature, dynamic density, and pressure-wave velocity fields for representative kinetic and rheological parameter combinations, complementing the composite figures shown in the main text.
+
+# Measuring 410 Displacement and Width {#sec:measuring-displacement-width}
 
 Structure of the 410 was evaluated from the volume fraction field $X$ along vertical profiles that intersected either: 1) the widest phase transition zone or 2) the largest displacement of the olivine $\Leftrightarrow$ wadsleyite reaction found within the model domain. The phase transition zone width was defined as the difference between the depths at $X$ = 0.9 and $X$ = 0.1, while the olivine $\Leftrightarrow$ wadsleyite reaction displacement was defined as the offset between the nominal equilibrium reaction depth and the depth at $X$ = 0.9. The exact vertical profile position was chosen heuristically by "best fit" criteria based on structural characteristics of the phase transition zone. The maximum reaction rate $\dot{X}$ and vertical velocity $\vec{u}_y$ were evaluated along the selected vertical profile, within the upper and lower bounds of the phase transition zone, after 100 Ma of evolution. Selected examples of vertical profile picking in slab and plume simulations are shown in Figures \ref{fig:slab-composition-set1} and \ref{fig:plume-composition-set1}.
 
@@ -363,7 +241,7 @@ Table: Summary of the kinetic prefactor $Z$, rheological activation factor $B$, 
 
 \clearpage
 
-# Effects of Rheological Strength Contrasts on Flow Dynamics {.unnumbered #sec:rheological-strength-contrasts}
+# Effects of Rheological Strength Contrasts on Flow Dynamics {#sec:rheological-strength-contrasts}
 
 The following simulation snapshots demonstrate the effect of the rheological activation factor $B$ on 410 structure after 100 Ma of evolution. Across all three kinetic regimes, increasing $B$ produces a progressively more coherent, sub-horizontally descending slab that spends more time within the phase transition zone. This longer residence time allows greater reaction progress even under sluggish kinetics, effectively shifting the slab toward a higher kinetic regime relative to a weaker slab with the same $Z$. Plume simulations show the opposite sign of viscosity contrast---higher $B$ produces a weaker, slower plumes---but in all plume simulations the 410 structure remains largely insensitive to $B$, consistent with the thermally dominated behavior described in the main text.
 
@@ -390,8 +268,6 @@ The following simulation snapshots demonstrate the effect of the rheological act
 \clearpage
 
 ![Plume simulations with quasi-equilibrium kinetics ($Z$ = 7.0e7 K s$^{-1}$) demonstrating the effect of high (top row: $B$ = 2, viscosity contrast $\sim$ 1/2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 1/6$\times$), and low (bottom row: $B$ = 10, viscosity contrast $\sim$ 1/20$\times$) plume strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). At quasi-equilibrium kinetics, plume 410 structure is indistinguishable across all $B$ values, with sharp, narrow discontinuities and strong seismic contrasts in all cases. Together with Figures \ref{fig:plume-Z3.0e0-composition-set2} and \ref{fig:plume-Z4.7e2-composition-set2}, these results confirm that neither $Z$ nor $B$ substantially modifies 410 structure in plume environments, in contrast to the complex kinetic and rheological dependence observed in slab simulations.](../figs/simulation/compositions/plume-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:plume-Z7.0e7-composition-set2 width=100%}
-
-\clearpage
 
 <!--
 # References {.unnumbered #sec:references}
