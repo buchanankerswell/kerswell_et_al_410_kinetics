@@ -6,7 +6,7 @@
 
 ## Repository
 
-This repository provides all materials for the manuscript *Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in Slab Regions* (Kerswell et al., 2026; in revision at JGR: Solid Earth), including all datasets required to compile the study and scripts to reproduce all results and figures.
+This repository provides all materials for the manuscript *Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in Slab Regions* ([Kerswell et al., 2026](https://doi.org/10.1029/2026JB033781)), including all datasets required to compile the study and scripts to reproduce all results and figures.
 
 ## Prerequisite software
 
@@ -51,7 +51,7 @@ This work was funded by the UKRI NERC Large Grant no. NE/V018477/1. All computat
 
 ## Data Availability
 
-All data, code, and relevant information for reproducing this work can be found at [https://github.com/buchanankerswell/kerswell_et_al_410_kinetics](https://github.com/buchanankerswell/kerswell_et_al_410_kinetics), and at [https://doi.org/10.17605/OSF.IO/9PHWC](https://doi.org/10.17605/OSF.IO/9PHWC), the official Open Science Framework data repository. All code within these repositories is MIT Licensed and free for use and distribution (see license details). ASPECT version 3.0.0, (Bangerth et al., 2024a, 2024b; Clevenger & Heister, 2021; Fraters et al., 2019; Fraters, 2020; Gassmöller et al., 2018; Heister et al., 2017; Kronbichler et al., 2012) used in these computations is freely available under the GPL v2.0 or later license through its software landing page [https://geodynamics.org/resources/aspect](https://geodynamics.org/resources/aspect) or [https://aspect.geodynamics.org](https://aspect.geodynamics.org) and is being actively developed on GitHub and can be accessed via [https://github.com/geodynamics/aspect](https://github.com/geodynamics/aspect).
+All data, code, and relevant information for reproducing this work are archived on the OSF ([Kerswell, 2026a](https://doi.org/10.17605/OSF.IO/9PHWC)) and Zenodo ([Kerswell, 2026b](https://doi.org/10.5281/zenodo.19662566)) repositories. All code within these repositories is MIT Licensed and free for use and distribution (see license details). ASPECT version 3.0.0 ([Bangerth et al., 2024](https://doi.org/10.5281/zenodo.14371679)) was used for the computations in this study and is freely available under the GPL v2.0 or later license.
 
 ## Abstract
 
