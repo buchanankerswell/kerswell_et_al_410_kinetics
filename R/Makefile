@@ -28,7 +28,7 @@ CLEAN :=
 DEEP_CLEAN :=
 
 # Targets
-.PHONY: all visualize adiabat simulation download clean deep-clean help
+.PHONY: all visualize adiabat simulation download erratum clean deep-clean help
 
 all: visualize
 
@@ -39,6 +39,9 @@ adiabat:
 
 simulation:
 	@Rscript $(R)/simulation.R $(UTILS) $(PYTHON)/simulation/data $(FIGS)
+
+erratum:
+	@Rscript $(R)/erratum.R $(UTILS) $(FIGS)
 
 download:
 	@Rscript $(R)/download.R $(UTILS) $(PYTHON)/simulation/data $(SIMULATION)/results
@@ -78,6 +81,7 @@ help:
 	@echo "    visualize      Visualize all results"
 	@echo "    adiabat        Visualize adiabatic profiles"
 	@echo "    simulation     Visualize simulation results"
+	@echo "    erratum        Visualize erratum parameter ranges"
 	@echo "    download       Download ASPECT results from OSF repo"
 	@echo "    environment    Prepare R environment"
 	@echo "    clean          Cleanup unnecessary files and directories (safe)"

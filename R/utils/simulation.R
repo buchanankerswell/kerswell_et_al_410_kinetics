@@ -4,7 +4,12 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 read_410_data <- function(filepath) {
   suppressWarnings(df <- read_csv(filepath, show_col_types = FALSE))
-  df |> mutate(displacement = displacement / 1e3, width = width / 1e3)
+  df |>
+    mutate(
+      displacement = displacement / 1e3,
+      width = width / 1e3,
+      Z_factor = Z_factor / 3.15e7 # ASPECT time in years -> effective Z
+    )
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -26,6 +31,9 @@ visualize_410_structure <- function(in_path, out_path) {
     mutate(model_id = str_replace_all(model_id, "plume-", "")) |>
     mutate(model_id = str_replace_all(model_id, "-", " ")) |>
     mutate(width = abs(width))
+
+  sec_per_year <- 3.15e7
+  z_eff <- function(z) z / sec_per_year
 
   calculate_tile_boundaries <- function(data_frame) {
     z_unique <- sort(unique(data_frame$Z_factor))
@@ -62,7 +70,7 @@ visualize_410_structure <- function(in_path, out_path) {
 
   plume_breaks_rxn <- c(1e-1, 1e1, 1e3, 1e5)
   slab_breaks_rxn <- c(1e-1, 1e1, 1e3, 1e5)
-  breaks_z <- c(1e1, 1e3, 1e5, 1e7)
+  breaks_z <- c(1e-7, 1e-5, 1e-3, 1e-1)
 
   draw_composition <- function(b) {
     out_pth <- str_replace(out_path, ".png", paste0("-B", b, ".png"))
@@ -168,7 +176,7 @@ visualize_410_structure <- function(in_path, out_path) {
     z_unique <- sort(unique(df_slab$Z_factor))
     z_step_factor <- sqrt(z_unique[2] / z_unique[1])
     geom_rect(
-      aes(xmin = zmin / z_step_factor, xmax = zmax * z_step_factor, ymin = b_row - 1.0, ymax = b_row + 1.0),
+      aes(xmin = z_eff(zmin) / z_step_factor, xmax = z_eff(zmax) * z_step_factor, ymin = b_row - 1.0, ymax = b_row + 1.0),
       fill = NA,
       color = color,
       alpha = alpha,
@@ -230,14 +238,14 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_reaction_rate)) +
     geom_rect() +
     rects_slab_w +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold", color = "white") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold", color = "white") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold", color = "white") +
+    annotate("text", x = z_eff(3.5e6), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold", color = "white") +
+    annotate("text", x = z_eff(4.0e3), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold", color = "white") +
+    annotate("text", x = z_eff(1.6e1), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold", color = "white") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(trans = "log10", option = "viridis", labels = label_log(), limits = rate_range_slab) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma" ^-1 * ")")) +
+    labs(x = bquote("Z (" * K^-1 * s^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma" ^-1 * ")")) +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text.x = element_blank(), axis.title.x = element_blank(), legend.box.margin = margin(0, 0, 2, 0))
@@ -246,14 +254,14 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = displacement)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
+    annotate("text", x = z_eff(3.5e6), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
+    annotate("text", x = z_eff(4.0e3), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
+    annotate("text", x = z_eff(1.6e1), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_gradient2(low = "#A50026", mid = "white", high = "#313695", limits = displacement_range_slab) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Displacement (km)") +
+    labs(x = bquote("Z (" * K^-1 * s^-1 * ")"), y = "B", fill = "Displacement (km)") +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text.y = element_blank(), axis.title.y = element_blank())
@@ -262,14 +270,14 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = width)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
+    annotate("text", x = z_eff(3.5e6), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
+    annotate("text", x = z_eff(4.0e3), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
+    annotate("text", x = z_eff(1.6e1), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(option = "mako", limits = width_range_slab, direction = -1) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Width (km)") +
+    labs(x = bquote("Z (" * K^-1 * s^-1 * ")"), y = "B", fill = "Width (km)") +
     theme_bw(base_size = 14) +
     theme_2()
 
@@ -277,14 +285,14 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_velocity)) +
     geom_rect() +
     rects_slab_w +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", color = "white", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", color = "white", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", color = "white", fontface = "bold") +
+    annotate("text", x = z_eff(3.5e6), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", color = "white", fontface = "bold") +
+    annotate("text", x = z_eff(4.0e3), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", color = "white", fontface = "bold") +
+    annotate("text", x = z_eff(1.6e1), y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", color = "white", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(option = "rocket", limits = max_velocity_range_slab) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(u)[y] * " (cm/yr)")) +
+    labs(x = bquote("Z (" * K^-1 * s^-1 * ")"), y = "B", fill = bquote("Max " * italic(u)[y] * " (cm/yr)")) +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text = element_blank(), axis.title = element_blank(), legend.title = element_text(margin = margin(0, 0, 2, 0)))

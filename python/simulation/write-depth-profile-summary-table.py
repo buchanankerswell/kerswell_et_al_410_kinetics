@@ -8,6 +8,14 @@ from typing import cast
 import numpy as np
 import pandas as pd
 
+SEC_PER_YEAR = 3.15e7  # ASPECT time was in years; effective Z = Z_factor / SEC_PER_YEAR
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def format_z(value: float) -> str:
+    mantissa, exponent = f"{value:.1e}".split("e")
+    return f"{mantissa}e{int(exponent)}"
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def parse_arguments() -> Namespace:
@@ -42,6 +50,7 @@ def main():
     df = pd.read_csv(in_path)
     df_100 = cast(pd.DataFrame, df[df["timestep"] == 10])
     df_100 = df_100.drop_duplicates(subset=["model_id", "timestep"], keep="first")
+    df_100["Z_factor"] = df_100["Z_factor"] / SEC_PER_YEAR
 
     df_100["model_id"] = df_100["model_id"].str.extract(r"^(plume|slab)").astype(str)
     df_100["displacement"] = (df_100["displacement"] / 1e3).round(0)
@@ -53,7 +62,7 @@ def main():
     df_100 = df_100[cols]
 
     df_100 = df_100.sort_values(by=["model_id", "Z_factor", "B_factor"], ascending=[True, True, True])
-    df_100["Z_factor"] = df_100["Z_factor"].apply(lambda x: f"`{x:.1e}`")
+    df_100["Z_factor"] = df_100["Z_factor"].apply(lambda x: f"`{format_z(x)}`")
     df_100 = df_100.rename(  # pyright: ignore
         columns={
             "model_id": "Simulation",

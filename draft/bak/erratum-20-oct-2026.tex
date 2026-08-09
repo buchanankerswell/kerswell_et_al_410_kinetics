@@ -1,0 +1,280 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\usepackage{caption}
+\captionsetup[table]{skip=6pt}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\makeatletter
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\captionsetup[subfigure]{margin=0.5em}
+\AtBeginDocument{%
+\renewcommand*\figurename{Figure}
+\renewcommand*\tablename{Table}
+}
+\AtBeginDocument{%
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+}
+\newcounter{pandoccrossref@subfigures@footnote@counter}
+\newenvironment{pandoccrossrefsubfigures}{%
+\setcounter{pandoccrossref@subfigures@footnote@counter}{0}
+\begin{figure}\centering%
+\gdef\global@pandoccrossref@subfigures@footnotes{}%
+\DeclareRobustCommand{\footnote}[1]{\footnotemark%
+\stepcounter{pandoccrossref@subfigures@footnote@counter}%
+\ifx\global@pandoccrossref@subfigures@footnotes\empty%
+\gdef\global@pandoccrossref@subfigures@footnotes{{##1}}%
+\else%
+\g@addto@macro\global@pandoccrossref@subfigures@footnotes{, {##1}}%
+\fi}}%
+{\end{figure}%
+\addtocounter{footnote}{-\value{pandoccrossref@subfigures@footnote@counter}}
+\@for\f:=\global@pandoccrossref@subfigures@footnotes\do{\stepcounter{footnote}\footnotetext{\f}}%
+\gdef\global@pandoccrossref@subfigures@footnotes{}}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section*{Correction to 10.1029/2026JB033781}\label{sec:correction}
+\addcontentsline{toc}{section}{Correction to 10.1029/2026JB033781}
+
+The kinetic prefactor \(Z\) in the interface-controlled olivine
+\(\Leftrightarrow\) wadsleyite rate law (Equation 13 in
+10.1029/2026JB033781) was reported with units of K\(^{-1}\) s\(^{-1}\):
+
+\begin{equation}\protect\phantomsection\label{eq:reaction-rate}{\dot{X} = Z\, T\, \exp\!\left(-\frac{H^{\ast} + P V^{\ast}}{R T}\right) \left(1 - \exp\!\left[-\frac{\Delta G}{R T}\right]\right) \left(1 - X\right)}\end{equation}
+
+Because our ASPECT simulations were set to use time in years, \(Z\) was
+inadvertently scaled by a factor of 3.15e7. This was user error in
+parameter passing, not a bug in ASPECT. The published range \(Z\) =
+3.0e0--7.0e7 K\(^{-1}\) s\(^{-1}\) effectively ran as \(Z^{\prime}\) =
+9.5e-8--2.2e0 K\(^{-1}\) s\(^{-1}\).
+
+The \(Z\) values have been corrected everywhere they appear in
+10.1029/2026JB033781 and the Supplementary Information. We have edited
+two passages in Sections 2.2.3.2 and 4.1 to contextualize the correction
+in terms of the experimental constraints of Hosoya et al. (2005). The
+accompanying dataset on OSF (Kerswell, 2026a) is read-only and has not
+changed. The latest code release on Zenodo (Kerswell, 2026b) reproduces
+the corrected manuscript directly from the archived OSF dataset (by
+dividing \(Z\) by 3.15e7). All else remains unchanged.
+
+Every result comes directly from the simulation output, so all figures,
+regime thresholds, and conclusions stand as published in
+10.1029/2026JB033781. However, they reflect slower, drier kinetics than
+the original text implied.
+
+Hosoya et al. (2005) reports \(\ln \Gamma\) = -18.0 \(\pm\) 3.8 (assumed
+1\(\sigma\)). With \(Z = \frac{6.67}{d}\, \Gamma\, C_\mathrm{OH}^n\) and
+\(n\) = 3.2, \(C_\mathrm{OH}\) = 50--5000 ppm, \(d\) = 1--10 mm, the
+permitted \(Z\) range across \(\pm 2\sigma\) runs from 1.4e-3 K\(^{-1}\)
+s\(^{-1}\) (10-mm grains, 50 ppm OH at \(-2\sigma\)) to 1.4e11
+K\(^{-1}\) s\(^{-1}\) (1-mm grains, 5000 ppm OH at \(+2\sigma\)).
+Extending to 1 ppm OH widens the full \(\pm 2\sigma\) range to
+5.1e-09--1.4e11 K\(^{-1}\) s\(^{-1}\). The published (3.0e0--7.0e7
+K\(^{-1}\) s\(^{-1}\)) and effective (9.5e-8--2.2e0 K\(^{-1}\)
+s\(^{-1}\)) ranges both fall inside the extended dry conditions (Figure
+\ref{fig:erratum-parameter-ranges}). Our simulations therefore
+effectively sampled conditions from nominally dry, coarse-grains to
+relatively dry (hundreds of ppm OH), fine-grains. This is consistent
+with Ishii \& Ohtani (2021), who showed that olivine and wadsleyite can
+remain kinetically dry even in hydrated slabs.
+
+Under ambient mantle conditions at the top of the domain (\(P\) = 10
+GPa, \(T\) = 1706 K, \(H^{\ast}\) = 274 kJ mol\(^{-1}\), \(V^{\ast}\) =
+3.0e-6 m\(^3\) mol\(^{-1}\)), published \(Z\) values give transformation
+times of milliseconds to days, and effective \(Z^{\prime}\) values give
+0.02 yr to 0.4 Ma. Our simulations therefore retain metastable olivine
+at warmer slab temperatures (1350--1400 K at 15 GPa, or 500 K colder
+than the ambient mantle) due to sluggish kinetics. This contrasts with
+earlier work that used different kinetics and attributed metastable
+olivine to much colder slab temperatures (773--923 K at 15 GPa, Rubie \&
+Ross, 1994; Däßler et al., 1996; Devaux et al., 1997; Hosoya et al.,
+2005).
+
+\floatplacement{figure}{H}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={Published
+Z range (red) and effective Z\^{}\{\textbackslash prime\} range passed
+to ASPECT (blue). The thin solid box marks the experimental conditions
+of Hosoya et al. (2005); the dashed box marks extended dry conditions
+(down to 1 ppm OH). Dashed contours are calculated Z values. Thick solid
+contours mark the permitted minimum (left panel, 5.1e-09 K\^{}\{-1\}
+s\^{}\{-1\}) and maximum (right panel, 1.4e11 K\^{}\{-1\} s\^{}\{-1\}) Z
+values for the extended dry conditions. The blue and red ranges overlap
+at the 95\% confidence interval (\textbackslash pm 2\textbackslash sigma
+\textbackslash ln \textbackslash Gamma). The arrow (middle panel) marks
+the accidental 3.15e7 scaling in Z.}]{../figs/erratum-kinetics.png}
+\caption{Published \(Z\) range (red) and effective \(Z^{\prime}\) range
+passed to ASPECT (blue). The thin solid box marks the experimental
+conditions of Hosoya et al. (2005); the dashed box marks extended dry
+conditions (down to 1 ppm OH). Dashed contours are calculated \(Z\)
+values. Thick solid contours mark the permitted minimum (left panel,
+5.1e-09 K\(^{-1}\) s\(^{-1}\)) and maximum (right panel, 1.4e11
+K\(^{-1}\) s\(^{-1}\)) \(Z\) values for the extended dry conditions. The
+blue and red ranges overlap at the 95\% confidence interval
+(\(\pm 2\sigma \ln \Gamma\)). The arrow (middle panel) marks the
+accidental 3.15e7 scaling in \(Z\).}\label{fig:erratum-parameter-ranges}
+\end{figure}
+
+\section*{References}\label{sec:references}
+\addcontentsline{toc}{section}{References}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-dassler1996b}
+Däßler, R., Yuen, D., Karato, S., \& Riedel, M. (1996). Two-dimensional
+thermo-kinetic model for the olivine-spinel phase transition in
+subducting slabs. \emph{Physics of the Earth and Planetary Interiors},
+\emph{94}(3-4), 217--239.
+
+\bibitem[\citeproctext]{ref-devaux1997}
+Devaux, J., Schubert, G., \& Anderson, C. (1997). Formation of a
+metastable olivine wedge in a descending slab. \emph{Journal of
+Geophysical Research: Solid Earth}, \emph{102}(B11), 24627--24637.
+
+\bibitem[\citeproctext]{ref-hosoya2005}
+Hosoya, T., Kubo, T., Ohtani, E., Sano, A., \& Funakoshi, K. (2005).
+Water controls the fields of metastable olivine in cold subducting
+slabs. \emph{Geophysical Research Letters}, \emph{32}(17).
+
+\bibitem[\citeproctext]{ref-ishii2021}
+Ishii, T., \& Ohtani, E. (2021). Dry metastable olivine and slab
+deformation in a wet subducting slab. \emph{Nature Geoscience},
+\emph{14}(7), 526--530.
+
+\bibitem[\citeproctext]{ref-kerswell2026a}
+Kerswell, B. (2026a, April).
+{buchanankerswell/kerswell\_et\_al\_410\_kinetics: Publication Release
+{[}Dataset{]}} (Version v.1.0.0). OSF.
+\url{https://doi.org/10.17605/OSF.IO/9PHWC}
+
+\bibitem[\citeproctext]{ref-kerswell2026c}
+Kerswell, B. (2026b, October).
+{buchanankerswell/kerswell\_et\_al\_410\_kinetics: Publication Release
+{[}Software{]}} (Version v.1.1.0). Zenodo.
+\url{https://doi.org/10.5281/zenodo.19661753}
+
+\bibitem[\citeproctext]{ref-rubie1994}
+Rubie, D., \& Ross, C. (1994). Kinetics of the olivine-spinel
+transformation in subducting lithosphere: Experimental constraints and
+implications for deep slab processes. \emph{Physics of the Earth and
+Planetary Interiors}, \emph{86}(1-3), 223--243.
+
+\end{CSLReferences}
+
+\end{document}
