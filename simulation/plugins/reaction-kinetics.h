@@ -242,7 +242,7 @@ namespace aspect
          * The kinetic factor '$Z$' that combines the site nucleation, kinetic prefactor, and water content terms: $(6.67 / d) A C_{OH}^n$
          * $\frac{dX}{dt} = Z T \exp\left(-H_a + PV_a/RT\right) \left(1 - \exp\left(\DeltaG/RT\right)\right) \left(1 - X\right)$
          *
-         * Units: 1/s K
+         * Units: 1/yr K
          */
         double kinetic_factor;
 
