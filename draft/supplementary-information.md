@@ -16,228 +16,228 @@ Structure of the 410 was evaluated from the volume fraction field $X$ along vert
 
 \clearpage
 
-![Slab simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K yr$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K yr$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K yr$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). The white arrows (right column) indicate where the 410 structure was measured. In the ultra-sluggish regime (top row), the profile passes through the deeply displaced, re-sharpened 410 where the stagnant slab has been pushed to maximum depth. In the intermediate regime (middle row), the profile intersects the widest part of the diffuse phase transition zone within the partially stagnated slab. In the quasi-equilibrium regime (bottom row), the profile passes through the narrow, uplifted 410 within the cold slab core.](../figs/simulation/compositions/slab-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:slab-composition-set1 width=100%}
+![Slab simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 9.5e-8 K$^{-1}$ s$^{-1}$), intermediate (middle row: $Z$ = 1.5e-5 K$^{-1}$ s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 2.2e0 K$^{-1}$ s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). The white arrows (right column) indicate where the 410 structure was measured. In the ultra-sluggish regime (top row), the profile passes through the deeply displaced, re-sharpened 410 where the stagnant slab has been pushed to maximum depth. In the intermediate regime (middle row), the profile intersects the widest part of the diffuse phase transition zone within the partially stagnated slab. In the quasi-equilibrium regime (bottom row), the profile passes through the narrow, uplifted 410 within the cold slab core.](../figs/simulation/compositions/slab-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:slab-composition-set1 width=100%}
 
 \clearpage
 
-![Plume simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 3.0e0 K yr$^{-1}$), intermediate (middle row: $Z$ = 4.7e2 K yr$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 7.0e7 K yr$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). The white arrows (right column) indicate where the 410 structure was measured. In plume simulations, the 410 displacement and width change little across all kinetic regimes, and profiles are placed to pass through the region of maximum width (top row) or displacement (middle and bottom rows). The consistently compact bounding boxes across all three rows reflect the weak dependence of plume 410 structure on the kinetic prefactor $Z$, in contrast to the large variation seen in slab simulations (Figure \ref{fig:slab-composition-set1}).](../figs/simulation/compositions/plume-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:plume-composition-set1 width=100%}
+![Plume simulations with intermediate strength contrasts ($B$ = 4) demonstrating ultra-sluggish (top row: $Z$ = 9.5e-8 K$^{-1}$ s$^{-1}$), intermediate (middle row: $Z$ = 1.5e-5 K$^{-1}$ s$^{-1}$), and quasi-equilibrium (bottom row: $Z$ = 2.2e0 K$^{-1}$ s$^{-1}$) kinetic regimes after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), reaction rate $\dot{X}$ (middle column), and volume fraction of wadsleyite $X$ (right column). The white arrows (right column) indicate where the 410 structure was measured. In plume simulations, the 410 displacement and width change little across all kinetic regimes, and profiles are placed to pass through the region of maximum width (top row) or displacement (middle and bottom rows). The consistently compact bounding boxes across all three rows reflect the weak dependence of plume 410 structure on the kinetic prefactor $Z$, in contrast to the large variation seen in slab simulations (Figure \ref{fig:slab-composition-set1}).](../figs/simulation/compositions/plume-Z3.0e0-B4-Z4.7e2-B4-Z7.0e7-B4-set1-composition-0010.png){#fig:plume-composition-set1 width=100%}
 
 \clearpage
 
-| Simulation   | $Z$   |   $B$ |   Displacement |   Width |   Max $\vec{u}_y$ |   log$_{10}$ Max $\dot{X}$ |
-|:-------------|------:|------:|---------------:|--------:|------------------:|---------------------------:|
-| plume        | 3.0e0 |     2 |             20 |      19 |              1.71 |                      -0.01 |
-| plume        | 3.0e0 |     4 |             20 |      19 |              1.78 |                      -0.01 |
-| plume        | 3.0e0 |     6 |             19 |      20 |              1.85 |                      -0.01 |
-| plume        | 3.0e0 |     8 |             19 |      21 |              1.91 |                      -0.01 |
-| plume        | 3.0e0 |    10 |             18 |      21 |              1.96 |                      -0.01 |
-| plume        | 7.0e0 |     2 |             21 |      14 |              2.06 |                       0.2  |
-| plume        | 7.0e0 |     4 |             21 |      15 |              2.19 |                       0.21 |
-| plume        | 7.0e0 |     6 |             20 |      15 |              2.32 |                       0.22 |
-| plume        | 7.0e0 |     8 |             20 |      16 |              2.45 |                       0.22 |
-| plume        | 7.0e0 |    10 |             19 |      17 |              2.58 |                       0.22 |
-| plume        | 1.6e1 |     2 |             22 |      10 |              2.29 |                       0.39 |
-| plume        | 1.6e1 |     4 |             22 |      11 |              2.46 |                       0.41 |
-| plume        | 1.6e1 |     6 |             21 |      12 |              2.65 |                       0.42 |
-| plume        | 1.6e1 |     8 |             21 |      12 |              2.84 |                       0.42 |
-| plume        | 1.6e1 |    10 |             20 |      12 |              3.04 |                       0.44 |
-| plume        | 3.7e1 |     2 |             23 |       8 |              2.42 |                       0.59 |
-| plume        | 3.7e1 |     4 |             23 |       8 |              2.62 |                       0.61 |
-| plume        | 3.7e1 |     6 |             22 |       8 |              2.85 |                       0.61 |
-| plume        | 3.7e1 |     8 |             22 |       9 |              3.09 |                       0.61 |
-| plume        | 3.7e1 |    10 |             21 |       9 |              3.34 |                       0.64 |
-| plume        | 8.7e1 |     2 |             24 |       6 |              2.53 |                       0.76 |
-| plume        | 8.7e1 |     4 |             24 |       6 |              2.76 |                       0.75 |
-| plume        | 8.7e1 |     6 |             23 |       7 |              3    |                       0.8  |
-| plume        | 8.7e1 |     8 |             23 |       7 |              3.29 |                       0.84 |
-| plume        | 8.7e1 |    10 |             22 |       7 |              3.58 |                       0.86 |
-| plume        | 2.0e2 |     2 |             24 |       4 |              2.57 |                       0.97 |
-| plume        | 2.0e2 |     4 |             24 |       5 |              2.84 |                       0.94 |
-| plume        | 2.0e2 |     6 |             24 |       6 |              3.07 |                       0.89 |
-| plume        | 2.0e2 |     8 |             24 |       6 |              3.38 |                       0.98 |
-| plume        | 2.0e2 |    10 |             23 |       6 |              3.72 |                       1.04 |
-| plume        | 4.7e2 |     2 |             24 |       3 |              2.59 |                       1.19 |
-| plume        | 4.7e2 |     4 |             24 |       4 |              2.85 |                       1.13 |
-| plume        | 4.7e2 |     6 |             24 |       4 |              3.14 |                       1.07 |
-| plume        | 4.7e2 |     8 |             24 |       4 |              3.48 |                       1.04 |
-| plume        | 4.7e2 |    10 |             24 |       5 |              3.74 |                       1.1  |
-| plume        | 1.1e3 |     2 |             24 |       3 |              2.65 |                       1.42 |
-| plume        | 1.1e3 |     4 |             24 |       3 |              2.87 |                       1.3  |
-| plume        | 1.1e3 |     6 |             24 |       3 |              3.15 |                       1.26 |
-| plume        | 1.1e3 |     8 |             24 |       4 |              3.51 |                       1.19 |
-| plume        | 1.1e3 |    10 |             24 |       4 |              3.86 |                       1.14 |
-| plume        | 2.6e3 |     2 |             24 |       3 |              2.79 |                       1.6  |
-| plume        | 2.6e3 |     4 |             24 |       3 |              2.91 |                       1.5  |
-| plume        | 2.6e3 |     6 |             24 |       3 |              3.23 |                       1.44 |
-| plume        | 2.6e3 |     8 |             24 |       3 |              3.46 |                       1.5  |
-| plume        | 2.6e3 |    10 |             24 |       4 |              3.92 |                       1.27 |
-| plume        | 6.0e3 |     2 |             24 |       2 |              2.5  |                       1.63 |
-| plume        | 6.0e3 |     4 |             24 |       3 |              2.88 |                       1.93 |
-| plume        | 6.0e3 |     6 |             24 |       3 |              3.29 |                       1.65 |
-| plume        | 6.0e3 |     8 |             24 |       3 |              3.47 |                       1.86 |
-| plume        | 6.0e3 |    10 |             24 |       4 |              3.88 |                       1.63 |
-| plume        | 1.4e4 |     2 |             24 |       2 |              2.51 |                       1.7  |
-| plume        | 1.4e4 |     4 |             24 |       3 |              2.82 |                       2.03 |
-| plume        | 1.4e4 |     6 |             24 |       2 |              3.09 |                       1.68 |
-| plume        | 1.4e4 |     8 |             24 |       3 |              3.55 |                       2.11 |
-| plume        | 1.4e4 |    10 |             24 |       4 |              3.89 |                       2.02 |
-| plume        | 3.3e4 |     2 |             24 |       2 |              2.42 |                       1.82 |
-| plume        | 3.3e4 |     4 |             24 |       2 |              2.63 |                       1.66 |
-| plume        | 3.3e4 |     6 |             24 |       3 |              2.99 |                       2.3  |
-| plume        | 3.3e4 |     8 |             24 |       3 |              3.63 |                       2.36 |
-| plume        | 3.3e4 |    10 |             24 |       3 |              4.03 |                       2.21 |
-| plume        | 7.8e4 |     2 |             24 |       2 |              2.06 |                       1.64 |
-| plume        | 7.8e4 |     4 |             24 |       3 |              2.9  |                       2.67 |
-| plume        | 7.8e4 |     6 |             24 |       2 |              2.89 |                       2.06 |
-| plume        | 7.8e4 |     8 |             24 |       3 |              3.53 |                       2.9  |
-| plume        | 7.8e4 |    10 |             24 |       3 |              5.33 |                       2.44 |
-| plume        | 1.8e5 |     2 |             24 |       2 |              2.06 |                       1.96 |
-| plume        | 1.8e5 |     4 |             24 |       3 |              2.88 |                       3.08 |
-| plume        | 1.8e5 |     6 |             24 |       2 |              2.93 |                       2.52 |
-| plume        | 1.8e5 |     8 |             24 |       3 |              3.51 |                       3.28 |
-| plume        | 1.8e5 |    10 |             24 |       2 |              4.26 |                       2.65 |
-| plume        | 4.3e5 |     2 |             24 |       2 |              2.06 |                       2.34 |
-| plume        | 4.3e5 |     4 |             24 |       3 |              2.87 |                       3.48 |
-| plume        | 4.3e5 |     6 |             24 |       2 |              3.24 |                       2.93 |
-| plume        | 4.3e5 |     8 |             24 |       3 |              3.51 |                       3.66 |
-| plume        | 4.3e5 |    10 |             24 |       3 |              4.18 |                       3.13 |
-| plume        | 1.0e6 |     2 |             24 |       2 |              2.06 |                       2.71 |
-| plume        | 1.0e6 |     4 |             24 |       3 |              2.87 |                       3.85 |
-| plume        | 1.0e6 |     6 |             24 |       2 |              3.23 |                       3.31 |
-| plume        | 1.0e6 |     8 |             24 |       3 |              3.51 |                       4.03 |
-| plume        | 1.0e6 |    10 |             24 |       3 |              4.19 |                       3.48 |
-| plume        | 2.4e6 |     2 |             24 |       2 |              2.06 |                       3.09 |
-| plume        | 2.4e6 |     4 |             24 |       3 |              2.87 |                       4.24 |
-| plume        | 2.4e6 |     6 |             24 |       2 |              3.22 |                       3.7  |
-| plume        | 2.4e6 |     8 |             24 |       3 |              3.51 |                       4.41 |
-| plume        | 2.4e6 |    10 |             24 |       3 |              4.21 |                       3.83 |
-| plume        | 5.6e6 |     2 |             24 |       2 |              2.06 |                       3.46 |
-| plume        | 5.6e6 |     4 |             24 |       3 |              2.86 |                       4.61 |
-| plume        | 5.6e6 |     6 |             24 |       2 |              3.22 |                       4.08 |
-| plume        | 5.6e6 |     8 |             24 |       3 |              3.51 |                       4.77 |
-| plume        | 5.6e6 |    10 |             24 |       2 |              4.24 |                       4.17 |
-| plume        | 1.3e7 |     2 |             24 |       2 |              2.05 |                       3.83 |
-| plume        | 1.3e7 |     4 |             24 |       3 |              2.86 |                       4.98 |
-| plume        | 1.3e7 |     6 |             24 |       2 |              3.22 |                       4.45 |
-| plume        | 1.3e7 |     8 |             24 |       3 |              3.51 |                       5.14 |
-| plume        | 1.3e7 |    10 |             24 |       2 |              4.31 |                       4.45 |
-| plume        | 3.0e7 |     2 |             24 |       2 |              2.05 |                       4.19 |
-| plume        | 3.0e7 |     4 |             24 |       3 |              2.86 |                       5.34 |
-| plume        | 3.0e7 |     6 |             24 |       2 |              3.21 |                       4.82 |
-| plume        | 3.0e7 |     8 |             24 |       3 |              3.51 |                       5.5  |
-| plume        | 3.0e7 |    10 |             24 |       2 |              3.71 |                       4.05 |
-| plume        | 7.0e7 |     2 |             24 |       2 |              2.05 |                       4.56 |
-| plume        | 7.0e7 |     4 |             24 |       3 |              2.86 |                       5.71 |
-| plume        | 7.0e7 |     6 |             24 |       2 |              3.21 |                       5.18 |
-| plume        | 7.0e7 |     8 |             24 |       3 |              3.51 |                       5.87 |
-| plume        | 7.0e7 |    10 |             24 |       2 |              3.7  |                       4.4  |
-| slab         | 3.0e0 |     2 |             83 |       7 |              0.09 |                      -2    |
-| slab         | 3.0e0 |     4 |             85 |       8 |              0.08 |                      -1.92 |
-| slab         | 3.0e0 |     6 |             88 |      10 |              0.1  |                      -1.85 |
-| slab         | 3.0e0 |     8 |             91 |      14 |              0.13 |                      -1.8  |
-| slab         | 3.0e0 |    10 |             95 |      20 |              0.16 |                      -1.74 |
-| slab         | 7.0e0 |     2 |             66 |       9 |              0.09 |                      -1.74 |
-| slab         | 7.0e0 |     4 |             69 |      11 |              0.11 |                      -1.71 |
-| slab         | 7.0e0 |     6 |             73 |      14 |              0.13 |                      -1.66 |
-| slab         | 7.0e0 |     8 |             78 |      20 |              0.15 |                      -1.6  |
-| slab         | 7.0e0 |    10 |             84 |      32 |              0.23 |                      -1.58 |
-| slab         | 1.6e1 |     2 |             50 |      11 |              0.11 |                      -1.56 |
-| slab         | 1.6e1 |     4 |             54 |      13 |              0.12 |                      -1.53 |
-| slab         | 1.6e1 |     6 |             60 |      18 |              0.16 |                      -1.49 |
-| slab         | 1.6e1 |     8 |            144 |     150 |              0.72 |                      -1.53 |
-| slab         | 1.6e1 |    10 |            167 |     172 |              0.84 |                      -1.39 |
-| slab         | 3.7e1 |     2 |             38 |      13 |              0.13 |                      -1.37 |
-| slab         | 3.7e1 |     4 |             45 |      18 |              0.18 |                      -1.37 |
-| slab         | 3.7e1 |     6 |            144 |     155 |              1    |                      -1.38 |
-| slab         | 3.7e1 |     8 |            169 |     179 |              1.09 |                      -1.23 |
-| slab         | 3.7e1 |    10 |            145 |     154 |              0.99 |                      -1.17 |
-| slab         | 8.7e1 |     2 |             48 |      32 |              0.29 |                      -1.5  |
-| slab         | 8.7e1 |     4 |             60 |      49 |              0.46 |                      -1.46 |
-| slab         | 8.7e1 |     6 |            169 |     183 |              1.34 |                      -1.11 |
-| slab         | 8.7e1 |     8 |             88 |     101 |              0.91 |                      -0.99 |
-| slab         | 8.7e1 |    10 |             57 |      70 |              0.72 |                      -0.97 |
-| slab         | 2.0e2 |     2 |            158 |     184 |              1.11 |                      -1.69 |
-| slab         | 2.0e2 |     4 |            139 |     158 |              1.09 |                      -1.17 |
-| slab         | 2.0e2 |     6 |             48 |      64 |              0.68 |                      -0.83 |
-| slab         | 2.0e2 |     8 |             32 |      49 |              0.56 |                      -0.93 |
-| slab         | 2.0e2 |    10 |             27 |      43 |              0.57 |                      -0.9  |
-| slab         | 4.7e2 |     2 |            143 |     167 |              1.35 |                      -1.21 |
-| slab         | 4.7e2 |     4 |             89 |     106 |              1.15 |                      -0.52 |
-| slab         | 4.7e2 |     6 |             25 |      45 |              0.54 |                      -0.78 |
-| slab         | 4.7e2 |     8 |             14 |      35 |              0.52 |                      -0.81 |
-| slab         | 4.7e2 |    10 |              9 |      29 |              0.54 |                      -0.75 |
-| slab         | 1.1e3 |     2 |            102 |     124 |              1.54 |                      -0.51 |
-| slab         | 1.1e3 |     4 |             56 |      75 |              1.17 |                      -0.32 |
-| slab         | 1.1e3 |     6 |             16 |      40 |              0.65 |                      -0.69 |
-| slab         | 1.1e3 |     8 |             -1 |      24 |              0.47 |                      -0.73 |
-| slab         | 1.1e3 |    10 |             -4 |      19 |              0.5  |                      -0.61 |
-| slab         | 2.6e3 |     2 |             64 |      87 |              1.75 |                      -0.32 |
-| slab         | 2.6e3 |     4 |             33 |      56 |              1.35 |                      -0.29 |
-| slab         | 2.6e3 |     6 |              7 |      33 |              0.92 |                      -0.48 |
-| slab         | 2.6e3 |     8 |             -8 |      20 |              0.59 |                      -0.54 |
-| slab         | 2.6e3 |    10 |            -15 |      11 |              0.37 |                      -0.45 |
-| slab         | 6.0e3 |     2 |             34 |      61 |              2.01 |                      -0.26 |
-| slab         | 6.0e3 |     4 |             14 |      41 |              1.59 |                      -0.23 |
-| slab         | 6.0e3 |     6 |             -4 |      25 |              1.1  |                      -0.34 |
-| slab         | 6.0e3 |     8 |            -18 |      11 |              0.53 |                      -0.27 |
-| slab         | 6.0e3 |    10 |            -19 |       8 |              0.42 |                      -0.26 |
-| slab         | 1.4e4 |     2 |             12 |      42 |              2.26 |                      -0.17 |
-| slab         | 1.4e4 |     4 |             -2 |      29 |              1.76 |                      -0.17 |
-| slab         | 1.4e4 |     6 |            -14 |      18 |              1.22 |                      -0.19 |
-| slab         | 1.4e4 |     8 |            -21 |       9 |              0.62 |                      -0.11 |
-| slab         | 1.4e4 |    10 |            -22 |       7 |              0.52 |                      -0.08 |
-| slab         | 3.3e4 |     2 |             -5 |      29 |              2.46 |                      -0.05 |
-| slab         | 3.3e4 |     4 |            -14 |      20 |              1.88 |                      -0.02 |
-| slab         | 3.3e4 |     6 |            -22 |      11 |              1.17 |                       0.08 |
-| slab         | 3.3e4 |     8 |            -25 |       7 |              0.73 |                       0.06 |
-| slab         | 3.3e4 |    10 |            -24 |       6 |              0.57 |                       0.08 |
-| slab         | 7.8e4 |     2 |            -17 |      20 |              2.59 |                       0.13 |
-| slab         | 7.8e4 |     4 |            -24 |      11 |              1.87 |                       0.27 |
-| slab         | 7.8e4 |     6 |            -27 |       9 |              1.25 |                       0.21 |
-| slab         | 7.8e4 |     8 |            -27 |       5 |              0.82 |                       0.29 |
-| slab         | 7.8e4 |    10 |            -27 |       4 |              0.6  |                       0.17 |
-| slab         | 1.8e5 |     2 |            -27 |       8 |              2.51 |                       0.53 |
-| slab         | 1.8e5 |     4 |            -28 |      10 |              1.93 |                       0.33 |
-| slab         | 1.8e5 |     6 |            -30 |       6 |              1.32 |                       0.37 |
-| slab         | 1.8e5 |     8 |            -29 |       8 |              0.82 |                       0.57 |
-| slab         | 1.8e5 |    10 |            -28 |       3 |              0.62 |                       0.35 |
-| slab         | 4.3e5 |     2 |            -31 |       8 |              2.6  |                       0.6  |
-| slab         | 4.3e5 |     4 |            -32 |       7 |              1.96 |                       0.52 |
-| slab         | 4.3e5 |     6 |            -32 |       4 |              1.35 |                       0.49 |
-| slab         | 4.3e5 |     8 |            -30 |       7 |              0.82 |                       0.85 |
-| slab         | 4.3e5 |    10 |            -29 |       2 |              0.63 |                       0.51 |
-| slab         | 1.0e6 |     2 |            -34 |       6 |              2.66 |                       0.7  |
-| slab         | 1.0e6 |     4 |            -35 |       5 |              1.97 |                       0.62 |
-| slab         | 1.0e6 |     6 |            -34 |       3 |              1.34 |                       0.78 |
-| slab         | 1.0e6 |     8 |            -30 |       6 |              0.88 |                       1.16 |
-| slab         | 1.0e6 |    10 |            -29 |       2 |              0.63 |                       0.66 |
-| slab         | 2.4e6 |     2 |            -37 |       4 |              2.69 |                       0.85 |
-| slab         | 2.4e6 |     4 |            -37 |       3 |              1.98 |                       0.87 |
-| slab         | 2.4e6 |     6 |            -34 |       7 |              1.34 |                       1.06 |
-| slab         | 2.4e6 |     8 |            -31 |       5 |              0.8  |                       1.26 |
-| slab         | 2.4e6 |    10 |            -29 |       2 |              0.62 |                       0.85 |
-| slab         | 5.6e6 |     2 |            -38 |       4 |              2.7  |                       1.12 |
-| slab         | 5.6e6 |     4 |            -37 |       3 |              1.99 |                       1.07 |
-| slab         | 5.6e6 |     6 |            -35 |       3 |              1.31 |                       1.05 |
-| slab         | 5.6e6 |     8 |            -32 |       5 |              0.78 |                       1.41 |
-| slab         | 5.6e6 |    10 |            -29 |       2 |              0.69 |                       1.13 |
-| slab         | 1.3e7 |     2 |            -39 |       7 |              2.71 |                       1.41 |
-| slab         | 1.3e7 |     4 |            -38 |       2 |              2    |                       1.32 |
-| slab         | 1.3e7 |     6 |            -36 |       1 |              1.31 |                       1.29 |
-| slab         | 1.3e7 |     8 |            -32 |       5 |              0.78 |                       1.78 |
-| slab         | 1.3e7 |    10 |            -29 |       2 |              0.71 |                       1.23 |
-| slab         | 3.0e7 |     2 |            -39 |       7 |              2.72 |                       1.62 |
-| slab         | 3.0e7 |     4 |            -38 |       2 |              2.01 |                       1.65 |
-| slab         | 3.0e7 |     6 |            -36 |       5 |              1.32 |                       1.85 |
-| slab         | 3.0e7 |     8 |            -32 |       5 |              0.79 |                       2.15 |
-| slab         | 3.0e7 |    10 |            -29 |       2 |              0.71 |                       1.59 |
-| slab         | 7.0e7 |     2 |            -39 |       7 |              2.67 |                       2.26 |
-| slab         | 7.0e7 |     4 |            -38 |       2 |              2.01 |                       2.01 |
-| slab         | 7.0e7 |     6 |            -36 |       5 |              1.32 |                       2.24 |
-| slab         | 7.0e7 |     8 |            -32 |       5 |              0.79 |                       2.52 |
-| slab         | 7.0e7 |    10 |            -29 |       1 |              0.56 |                       1.84 |
+| Simulation   | $Z$    |   $B$ |   Displacement |   Width |   Max $\vec{u}_y$ |   log$_{10}$ Max $\dot{X}$ |
+|:-------------|-------:|------:|---------------:|--------:|------------------:|---------------------------:|
+| plume        | 9.5e-8 |     2 |             20 |      19 |              1.71 |                      -0.01 |
+| plume        | 9.5e-8 |     4 |             20 |      19 |              1.78 |                      -0.01 |
+| plume        | 9.5e-8 |     6 |             19 |      20 |              1.85 |                      -0.01 |
+| plume        | 9.5e-8 |     8 |             19 |      21 |              1.91 |                      -0.01 |
+| plume        | 9.5e-8 |    10 |             18 |      21 |              1.96 |                      -0.01 |
+| plume        | 2.2e-7 |     2 |             21 |      14 |              2.06 |                       0.2  |
+| plume        | 2.2e-7 |     4 |             21 |      15 |              2.19 |                       0.21 |
+| plume        | 2.2e-7 |     6 |             20 |      15 |              2.32 |                       0.22 |
+| plume        | 2.2e-7 |     8 |             20 |      16 |              2.45 |                       0.22 |
+| plume        | 2.2e-7 |    10 |             19 |      17 |              2.58 |                       0.22 |
+| plume        | 5.1e-7 |     2 |             22 |      10 |              2.29 |                       0.39 |
+| plume        | 5.1e-7 |     4 |             22 |      11 |              2.46 |                       0.41 |
+| plume        | 5.1e-7 |     6 |             21 |      12 |              2.65 |                       0.42 |
+| plume        | 5.1e-7 |     8 |             21 |      12 |              2.84 |                       0.42 |
+| plume        | 5.1e-7 |    10 |             20 |      12 |              3.04 |                       0.44 |
+| plume        | 1.2e-6 |     2 |             23 |       8 |              2.42 |                       0.59 |
+| plume        | 1.2e-6 |     4 |             23 |       8 |              2.62 |                       0.61 |
+| plume        | 1.2e-6 |     6 |             22 |       8 |              2.85 |                       0.61 |
+| plume        | 1.2e-6 |     8 |             22 |       9 |              3.09 |                       0.61 |
+| plume        | 1.2e-6 |    10 |             21 |       9 |              3.34 |                       0.64 |
+| plume        | 2.8e-6 |     2 |             24 |       6 |              2.53 |                       0.76 |
+| plume        | 2.8e-6 |     4 |             24 |       6 |              2.76 |                       0.75 |
+| plume        | 2.8e-6 |     6 |             23 |       7 |              3    |                       0.8  |
+| plume        | 2.8e-6 |     8 |             23 |       7 |              3.29 |                       0.84 |
+| plume        | 2.8e-6 |    10 |             22 |       7 |              3.58 |                       0.86 |
+| plume        | 6.3e-6 |     2 |             24 |       4 |              2.57 |                       0.97 |
+| plume        | 6.3e-6 |     4 |             24 |       5 |              2.84 |                       0.94 |
+| plume        | 6.3e-6 |     6 |             24 |       6 |              3.07 |                       0.89 |
+| plume        | 6.3e-6 |     8 |             24 |       6 |              3.38 |                       0.98 |
+| plume        | 6.3e-6 |    10 |             23 |       6 |              3.72 |                       1.04 |
+| plume        | 1.5e-5 |     2 |             24 |       3 |              2.59 |                       1.19 |
+| plume        | 1.5e-5 |     4 |             24 |       4 |              2.85 |                       1.13 |
+| plume        | 1.5e-5 |     6 |             24 |       4 |              3.14 |                       1.07 |
+| plume        | 1.5e-5 |     8 |             24 |       4 |              3.48 |                       1.04 |
+| plume        | 1.5e-5 |    10 |             24 |       5 |              3.74 |                       1.1  |
+| plume        | 3.5e-5 |     2 |             24 |       3 |              2.65 |                       1.42 |
+| plume        | 3.5e-5 |     4 |             24 |       3 |              2.87 |                       1.3  |
+| plume        | 3.5e-5 |     6 |             24 |       3 |              3.15 |                       1.26 |
+| plume        | 3.5e-5 |     8 |             24 |       4 |              3.51 |                       1.19 |
+| plume        | 3.5e-5 |    10 |             24 |       4 |              3.86 |                       1.14 |
+| plume        | 8.3e-5 |     2 |             24 |       3 |              2.79 |                       1.6  |
+| plume        | 8.3e-5 |     4 |             24 |       3 |              2.91 |                       1.5  |
+| plume        | 8.3e-5 |     6 |             24 |       3 |              3.23 |                       1.44 |
+| plume        | 8.3e-5 |     8 |             24 |       3 |              3.46 |                       1.5  |
+| plume        | 8.3e-5 |    10 |             24 |       4 |              3.92 |                       1.27 |
+| plume        | 1.9e-4 |     2 |             24 |       2 |              2.5  |                       1.63 |
+| plume        | 1.9e-4 |     4 |             24 |       3 |              2.88 |                       1.93 |
+| plume        | 1.9e-4 |     6 |             24 |       3 |              3.29 |                       1.65 |
+| plume        | 1.9e-4 |     8 |             24 |       3 |              3.47 |                       1.86 |
+| plume        | 1.9e-4 |    10 |             24 |       4 |              3.88 |                       1.63 |
+| plume        | 4.4e-4 |     2 |             24 |       2 |              2.51 |                       1.7  |
+| plume        | 4.4e-4 |     4 |             24 |       3 |              2.82 |                       2.03 |
+| plume        | 4.4e-4 |     6 |             24 |       2 |              3.09 |                       1.68 |
+| plume        | 4.4e-4 |     8 |             24 |       3 |              3.55 |                       2.11 |
+| plume        | 4.4e-4 |    10 |             24 |       4 |              3.89 |                       2.02 |
+| plume        | 1.0e-3 |     2 |             24 |       2 |              2.42 |                       1.82 |
+| plume        | 1.0e-3 |     4 |             24 |       2 |              2.63 |                       1.66 |
+| plume        | 1.0e-3 |     6 |             24 |       3 |              2.99 |                       2.3  |
+| plume        | 1.0e-3 |     8 |             24 |       3 |              3.63 |                       2.36 |
+| plume        | 1.0e-3 |    10 |             24 |       3 |              4.03 |                       2.21 |
+| plume        | 2.5e-3 |     2 |             24 |       2 |              2.06 |                       1.64 |
+| plume        | 2.5e-3 |     4 |             24 |       3 |              2.9  |                       2.67 |
+| plume        | 2.5e-3 |     6 |             24 |       2 |              2.89 |                       2.06 |
+| plume        | 2.5e-3 |     8 |             24 |       3 |              3.53 |                       2.9  |
+| plume        | 2.5e-3 |    10 |             24 |       3 |              5.33 |                       2.44 |
+| plume        | 5.7e-3 |     2 |             24 |       2 |              2.06 |                       1.96 |
+| plume        | 5.7e-3 |     4 |             24 |       3 |              2.88 |                       3.08 |
+| plume        | 5.7e-3 |     6 |             24 |       2 |              2.93 |                       2.52 |
+| plume        | 5.7e-3 |     8 |             24 |       3 |              3.51 |                       3.28 |
+| plume        | 5.7e-3 |    10 |             24 |       2 |              4.26 |                       2.65 |
+| plume        | 1.4e-2 |     2 |             24 |       2 |              2.06 |                       2.34 |
+| plume        | 1.4e-2 |     4 |             24 |       3 |              2.87 |                       3.48 |
+| plume        | 1.4e-2 |     6 |             24 |       2 |              3.24 |                       2.93 |
+| plume        | 1.4e-2 |     8 |             24 |       3 |              3.51 |                       3.66 |
+| plume        | 1.4e-2 |    10 |             24 |       3 |              4.18 |                       3.13 |
+| plume        | 3.2e-2 |     2 |             24 |       2 |              2.06 |                       2.71 |
+| plume        | 3.2e-2 |     4 |             24 |       3 |              2.87 |                       3.85 |
+| plume        | 3.2e-2 |     6 |             24 |       2 |              3.23 |                       3.31 |
+| plume        | 3.2e-2 |     8 |             24 |       3 |              3.51 |                       4.03 |
+| plume        | 3.2e-2 |    10 |             24 |       3 |              4.19 |                       3.48 |
+| plume        | 7.6e-2 |     2 |             24 |       2 |              2.06 |                       3.09 |
+| plume        | 7.6e-2 |     4 |             24 |       3 |              2.87 |                       4.24 |
+| plume        | 7.6e-2 |     6 |             24 |       2 |              3.22 |                       3.7  |
+| plume        | 7.6e-2 |     8 |             24 |       3 |              3.51 |                       4.41 |
+| plume        | 7.6e-2 |    10 |             24 |       3 |              4.21 |                       3.83 |
+| plume        | 1.8e-1 |     2 |             24 |       2 |              2.06 |                       3.46 |
+| plume        | 1.8e-1 |     4 |             24 |       3 |              2.86 |                       4.61 |
+| plume        | 1.8e-1 |     6 |             24 |       2 |              3.22 |                       4.08 |
+| plume        | 1.8e-1 |     8 |             24 |       3 |              3.51 |                       4.77 |
+| plume        | 1.8e-1 |    10 |             24 |       2 |              4.24 |                       4.17 |
+| plume        | 4.1e-1 |     2 |             24 |       2 |              2.05 |                       3.83 |
+| plume        | 4.1e-1 |     4 |             24 |       3 |              2.86 |                       4.98 |
+| plume        | 4.1e-1 |     6 |             24 |       2 |              3.22 |                       4.45 |
+| plume        | 4.1e-1 |     8 |             24 |       3 |              3.51 |                       5.14 |
+| plume        | 4.1e-1 |    10 |             24 |       2 |              4.31 |                       4.45 |
+| plume        | 9.5e-1 |     2 |             24 |       2 |              2.05 |                       4.19 |
+| plume        | 9.5e-1 |     4 |             24 |       3 |              2.86 |                       5.34 |
+| plume        | 9.5e-1 |     6 |             24 |       2 |              3.21 |                       4.82 |
+| plume        | 9.5e-1 |     8 |             24 |       3 |              3.51 |                       5.5  |
+| plume        | 9.5e-1 |    10 |             24 |       2 |              3.71 |                       4.05 |
+| plume        | 2.2e0  |     2 |             24 |       2 |              2.05 |                       4.56 |
+| plume        | 2.2e0  |     4 |             24 |       3 |              2.86 |                       5.71 |
+| plume        | 2.2e0  |     6 |             24 |       2 |              3.21 |                       5.18 |
+| plume        | 2.2e0  |     8 |             24 |       3 |              3.51 |                       5.87 |
+| plume        | 2.2e0  |    10 |             24 |       2 |              3.7  |                       4.4  |
+| slab         | 9.5e-8 |     2 |             83 |       7 |              0.09 |                      -2    |
+| slab         | 9.5e-8 |     4 |             85 |       8 |              0.08 |                      -1.92 |
+| slab         | 9.5e-8 |     6 |             88 |      10 |              0.1  |                      -1.85 |
+| slab         | 9.5e-8 |     8 |             91 |      14 |              0.13 |                      -1.8  |
+| slab         | 9.5e-8 |    10 |             95 |      20 |              0.16 |                      -1.74 |
+| slab         | 2.2e-7 |     2 |             66 |       9 |              0.09 |                      -1.74 |
+| slab         | 2.2e-7 |     4 |             69 |      11 |              0.11 |                      -1.71 |
+| slab         | 2.2e-7 |     6 |             73 |      14 |              0.13 |                      -1.66 |
+| slab         | 2.2e-7 |     8 |             78 |      20 |              0.15 |                      -1.6  |
+| slab         | 2.2e-7 |    10 |             84 |      32 |              0.23 |                      -1.58 |
+| slab         | 5.1e-7 |     2 |             50 |      11 |              0.11 |                      -1.56 |
+| slab         | 5.1e-7 |     4 |             54 |      13 |              0.12 |                      -1.53 |
+| slab         | 5.1e-7 |     6 |             60 |      18 |              0.16 |                      -1.49 |
+| slab         | 5.1e-7 |     8 |            144 |     150 |              0.72 |                      -1.53 |
+| slab         | 5.1e-7 |    10 |            167 |     172 |              0.84 |                      -1.39 |
+| slab         | 1.2e-6 |     2 |             38 |      13 |              0.13 |                      -1.37 |
+| slab         | 1.2e-6 |     4 |             45 |      18 |              0.18 |                      -1.37 |
+| slab         | 1.2e-6 |     6 |            144 |     155 |              1    |                      -1.38 |
+| slab         | 1.2e-6 |     8 |            169 |     179 |              1.09 |                      -1.23 |
+| slab         | 1.2e-6 |    10 |            145 |     154 |              0.99 |                      -1.17 |
+| slab         | 2.8e-6 |     2 |             48 |      32 |              0.29 |                      -1.5  |
+| slab         | 2.8e-6 |     4 |             60 |      49 |              0.46 |                      -1.46 |
+| slab         | 2.8e-6 |     6 |            169 |     183 |              1.34 |                      -1.11 |
+| slab         | 2.8e-6 |     8 |             88 |     101 |              0.91 |                      -0.99 |
+| slab         | 2.8e-6 |    10 |             57 |      70 |              0.72 |                      -0.97 |
+| slab         | 6.3e-6 |     2 |            158 |     184 |              1.11 |                      -1.69 |
+| slab         | 6.3e-6 |     4 |            139 |     158 |              1.09 |                      -1.17 |
+| slab         | 6.3e-6 |     6 |             48 |      64 |              0.68 |                      -0.83 |
+| slab         | 6.3e-6 |     8 |             32 |      49 |              0.56 |                      -0.93 |
+| slab         | 6.3e-6 |    10 |             27 |      43 |              0.57 |                      -0.9  |
+| slab         | 1.5e-5 |     2 |            143 |     167 |              1.35 |                      -1.21 |
+| slab         | 1.5e-5 |     4 |             89 |     106 |              1.15 |                      -0.52 |
+| slab         | 1.5e-5 |     6 |             25 |      45 |              0.54 |                      -0.78 |
+| slab         | 1.5e-5 |     8 |             14 |      35 |              0.52 |                      -0.81 |
+| slab         | 1.5e-5 |    10 |              9 |      29 |              0.54 |                      -0.75 |
+| slab         | 3.5e-5 |     2 |            102 |     124 |              1.54 |                      -0.51 |
+| slab         | 3.5e-5 |     4 |             56 |      75 |              1.17 |                      -0.32 |
+| slab         | 3.5e-5 |     6 |             16 |      40 |              0.65 |                      -0.69 |
+| slab         | 3.5e-5 |     8 |             -1 |      24 |              0.47 |                      -0.73 |
+| slab         | 3.5e-5 |    10 |             -4 |      19 |              0.5  |                      -0.61 |
+| slab         | 8.3e-5 |     2 |             64 |      87 |              1.75 |                      -0.32 |
+| slab         | 8.3e-5 |     4 |             33 |      56 |              1.35 |                      -0.29 |
+| slab         | 8.3e-5 |     6 |              7 |      33 |              0.92 |                      -0.48 |
+| slab         | 8.3e-5 |     8 |             -8 |      20 |              0.59 |                      -0.54 |
+| slab         | 8.3e-5 |    10 |            -15 |      11 |              0.37 |                      -0.45 |
+| slab         | 1.9e-4 |     2 |             34 |      61 |              2.01 |                      -0.26 |
+| slab         | 1.9e-4 |     4 |             14 |      41 |              1.59 |                      -0.23 |
+| slab         | 1.9e-4 |     6 |             -4 |      25 |              1.1  |                      -0.34 |
+| slab         | 1.9e-4 |     8 |            -18 |      11 |              0.53 |                      -0.27 |
+| slab         | 1.9e-4 |    10 |            -19 |       8 |              0.42 |                      -0.26 |
+| slab         | 4.4e-4 |     2 |             12 |      42 |              2.26 |                      -0.17 |
+| slab         | 4.4e-4 |     4 |             -2 |      29 |              1.76 |                      -0.17 |
+| slab         | 4.4e-4 |     6 |            -14 |      18 |              1.22 |                      -0.19 |
+| slab         | 4.4e-4 |     8 |            -21 |       9 |              0.62 |                      -0.11 |
+| slab         | 4.4e-4 |    10 |            -22 |       7 |              0.52 |                      -0.08 |
+| slab         | 1.0e-3 |     2 |             -5 |      29 |              2.46 |                      -0.05 |
+| slab         | 1.0e-3 |     4 |            -14 |      20 |              1.88 |                      -0.02 |
+| slab         | 1.0e-3 |     6 |            -22 |      11 |              1.17 |                       0.08 |
+| slab         | 1.0e-3 |     8 |            -25 |       7 |              0.73 |                       0.06 |
+| slab         | 1.0e-3 |    10 |            -24 |       6 |              0.57 |                       0.08 |
+| slab         | 2.5e-3 |     2 |            -17 |      20 |              2.59 |                       0.13 |
+| slab         | 2.5e-3 |     4 |            -24 |      11 |              1.87 |                       0.27 |
+| slab         | 2.5e-3 |     6 |            -27 |       9 |              1.25 |                       0.21 |
+| slab         | 2.5e-3 |     8 |            -27 |       5 |              0.82 |                       0.29 |
+| slab         | 2.5e-3 |    10 |            -27 |       4 |              0.6  |                       0.17 |
+| slab         | 5.7e-3 |     2 |            -27 |       8 |              2.51 |                       0.53 |
+| slab         | 5.7e-3 |     4 |            -28 |      10 |              1.93 |                       0.33 |
+| slab         | 5.7e-3 |     6 |            -30 |       6 |              1.32 |                       0.37 |
+| slab         | 5.7e-3 |     8 |            -29 |       8 |              0.82 |                       0.57 |
+| slab         | 5.7e-3 |    10 |            -28 |       3 |              0.62 |                       0.35 |
+| slab         | 1.4e-2 |     2 |            -31 |       8 |              2.6  |                       0.6  |
+| slab         | 1.4e-2 |     4 |            -32 |       7 |              1.96 |                       0.52 |
+| slab         | 1.4e-2 |     6 |            -32 |       4 |              1.35 |                       0.49 |
+| slab         | 1.4e-2 |     8 |            -30 |       7 |              0.82 |                       0.85 |
+| slab         | 1.4e-2 |    10 |            -29 |       2 |              0.63 |                       0.51 |
+| slab         | 3.2e-2 |     2 |            -34 |       6 |              2.66 |                       0.7  |
+| slab         | 3.2e-2 |     4 |            -35 |       5 |              1.97 |                       0.62 |
+| slab         | 3.2e-2 |     6 |            -34 |       3 |              1.34 |                       0.78 |
+| slab         | 3.2e-2 |     8 |            -30 |       6 |              0.88 |                       1.16 |
+| slab         | 3.2e-2 |    10 |            -29 |       2 |              0.63 |                       0.66 |
+| slab         | 7.6e-2 |     2 |            -37 |       4 |              2.69 |                       0.85 |
+| slab         | 7.6e-2 |     4 |            -37 |       3 |              1.98 |                       0.87 |
+| slab         | 7.6e-2 |     6 |            -34 |       7 |              1.34 |                       1.06 |
+| slab         | 7.6e-2 |     8 |            -31 |       5 |              0.8  |                       1.26 |
+| slab         | 7.6e-2 |    10 |            -29 |       2 |              0.62 |                       0.85 |
+| slab         | 1.8e-1 |     2 |            -38 |       4 |              2.7  |                       1.12 |
+| slab         | 1.8e-1 |     4 |            -37 |       3 |              1.99 |                       1.07 |
+| slab         | 1.8e-1 |     6 |            -35 |       3 |              1.31 |                       1.05 |
+| slab         | 1.8e-1 |     8 |            -32 |       5 |              0.78 |                       1.41 |
+| slab         | 1.8e-1 |    10 |            -29 |       2 |              0.69 |                       1.13 |
+| slab         | 4.1e-1 |     2 |            -39 |       7 |              2.71 |                       1.41 |
+| slab         | 4.1e-1 |     4 |            -38 |       2 |              2    |                       1.32 |
+| slab         | 4.1e-1 |     6 |            -36 |       1 |              1.31 |                       1.29 |
+| slab         | 4.1e-1 |     8 |            -32 |       5 |              0.78 |                       1.78 |
+| slab         | 4.1e-1 |    10 |            -29 |       2 |              0.71 |                       1.23 |
+| slab         | 9.5e-1 |     2 |            -39 |       7 |              2.72 |                       1.62 |
+| slab         | 9.5e-1 |     4 |            -38 |       2 |              2.01 |                       1.65 |
+| slab         | 9.5e-1 |     6 |            -36 |       5 |              1.32 |                       1.85 |
+| slab         | 9.5e-1 |     8 |            -32 |       5 |              0.79 |                       2.15 |
+| slab         | 9.5e-1 |    10 |            -29 |       2 |              0.71 |                       1.59 |
+| slab         | 2.2e0  |     2 |            -39 |       7 |              2.67 |                       2.26 |
+| slab         | 2.2e0  |     4 |            -38 |       2 |              2.01 |                       2.01 |
+| slab         | 2.2e0  |     6 |            -36 |       5 |              1.32 |                       2.24 |
+| slab         | 2.2e0  |     8 |            -32 |       5 |              0.79 |                       2.52 |
+| slab         | 2.2e0  |    10 |            -29 |       1 |              0.56 |                       1.84 |
 
-Table: Summary of the kinetic prefactor $Z$, rheological activation factor $B$, 410 structure (displacement and width), maximum vertical velocity $\vec{u}_y$, and maximum reaction rate $\dot{X}$ evaluated in plume and slab simulations after 100 Ma of evolution. Units are $Z$: K yr$^{-1}$, $B$: none, displacement: km, width: km, $\vec{u}_y$: cm/yr, log$_{10}$ $\dot{X}$: log$_{10}$ Ma$^{-1}$. Note that displacement values are signed: positive values indicate downward displacement of the 410 below the nominal equilibrium depth (as in the ultra-sluggish slab regime), while negative values indicate upward displacement above the nominal equilibrium depth (as in the quasi-equilibrium slab regime and in all plume simulations). {#tbl:depth-profile-summary}
+Table: Summary of the kinetic prefactor $Z$, rheological activation factor $B$, 410 structure (displacement and width), maximum vertical velocity $\vec{u}_y$, and maximum reaction rate $\dot{X}$ evaluated in plume and slab simulations after 100 Ma of evolution. Units are $Z$: K$^{-1}$ s$^{-1}$, $B$: none, displacement: km, width: km, $\vec{u}_y$: cm/yr, log$_{10}$ $\dot{X}$: log$_{10}$ Ma$^{-1}$. Note that displacement values are signed: positive values indicate downward displacement of the 410 below the nominal equilibrium depth (as in the ultra-sluggish slab regime), while negative values indicate upward displacement above the nominal equilibrium depth (as in the quasi-equilibrium slab regime and in all plume simulations). {#tbl:depth-profile-summary}
 
 \clearpage
 
@@ -247,27 +247,27 @@ The following simulation snapshots demonstrate the effect of the rheological act
 
 \clearpage
 
-![Slab simulations with ultra-sluggish kinetics ($Z$ = 3.0e0 K yr$^{-1}$) demonstrating the effect of low (top row: $B$ = 2, viscosity contrast $\sim$ 2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 6$\times$), and high (bottom row: $B$ = 10, viscosity contrast $\sim$ 20$\times$) slab strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). At all $B$ values, slab stagnation occurs and a deeply displaced, re-sharpened 410 is produced. This insensitivity to $B$ at low $Z$ is consistent with the regime diagram in Figure 8 of the main text, which shows that rheological variations have limited effect on 410 structure at extremely sluggish reaction rates.](../figs/simulation/compositions/slab-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:slab-Z3.0e0-composition-set2 width=100%}
+![Slab simulations with ultra-sluggish kinetics ($Z$ = 9.5e-8 K$^{-1}$ s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2, viscosity contrast $\sim$ 2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 6$\times$), and high (bottom row: $B$ = 10, viscosity contrast $\sim$ 20$\times$) slab strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). At all $B$ values, slab stagnation occurs and a deeply displaced, re-sharpened 410 is produced. This insensitivity to $B$ at low $Z$ is consistent with the regime diagram in Figure 8 of the main text, which shows that rheological variations have limited effect on 410 structure at extremely sluggish reaction rates.](../figs/simulation/compositions/slab-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:slab-Z3.0e0-composition-set2 width=100%}
 
 \clearpage
 
-![Slab simulations with intermediate kinetics ($Z$ = 4.7e2 K yr$^{-1}$) demonstrating the effect of low (top row: $B$ = 2, viscosity contrast $\sim$ 2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 6$\times$), and high (bottom row: $B$ = 10, viscosity contrast $\sim$ 20$\times$) slab strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). At low $B$, the weak slab descends steeply and the 410 is broad and diffuse, characteristic of the intermediate kinetic regime. As $B$ increases, the slab becomes more coherent and sub-horizontal, allowing greater time for reaction progress. At high $B$ the 410 sharpens toward quasi-equilibrium behavior. This progression illustrates how increasing rheological strength can shift the effective kinetic regime of a slab at fixed $Z$, as summarized in Figure 8 of the main text.](../figs/simulation/compositions/slab-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:slab-Z4.7e2-composition-set2 width=100%}
+![Slab simulations with intermediate kinetics ($Z$ = 1.5e-5 K$^{-1}$ s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2, viscosity contrast $\sim$ 2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 6$\times$), and high (bottom row: $B$ = 10, viscosity contrast $\sim$ 20$\times$) slab strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). At low $B$, the weak slab descends steeply and the 410 is broad and diffuse, characteristic of the intermediate kinetic regime. As $B$ increases, the slab becomes more coherent and sub-horizontal, allowing greater time for reaction progress. At high $B$ the 410 sharpens toward quasi-equilibrium behavior. This progression illustrates how increasing rheological strength can shift the effective kinetic regime of a slab at fixed $Z$, as summarized in Figure 8 of the main text.](../figs/simulation/compositions/slab-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:slab-Z4.7e2-composition-set2 width=100%}
 
 \clearpage
 
-![Slab simulations with quasi-equilibrium kinetics ($Z$ = 7.0e7 K yr$^{-1}$) demonstrating the effect of low (top row: $B$ = 2, viscosity contrast $\sim$ 2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 6$\times$), and high (bottom row: $B$ = 10, viscosity contrast $\sim$ 20$\times$) slab strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). When kinetics are fast enough to maintain quasi-equilibrium, all $B$ values produce a narrow, uplifted 410 with strong seismic contrast, and differences between rows are small. This insensitivity to $B$ at high $Z$ is consistent with the regime diagram in Figure 8 of the main text, which shows that once reaction rates are sufficiently fast, rheological variations have limited effect on 410 structure.](../figs/simulation/compositions/slab-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:slab-Z7.0e7-composition-set2 width=100%}
+![Slab simulations with quasi-equilibrium kinetics ($Z$ = 2.2e0 K$^{-1}$ s$^{-1}$) demonstrating the effect of low (top row: $B$ = 2, viscosity contrast $\sim$ 2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 6$\times$), and high (bottom row: $B$ = 10, viscosity contrast $\sim$ 20$\times$) slab strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). When kinetics are fast enough to maintain quasi-equilibrium, all $B$ values produce a narrow, uplifted 410 with strong seismic contrast, and differences between rows are small. This insensitivity to $B$ at high $Z$ is consistent with the regime diagram in Figure 8 of the main text, which shows that once reaction rates are sufficiently fast, rheological variations have limited effect on 410 structure.](../figs/simulation/compositions/slab-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:slab-Z7.0e7-composition-set2 width=100%}
 
 \clearpage
 
-![Plume simulations with ultra-sluggish kinetics ($Z$ = 3.0e0 K yr$^{-1}$) demonstrating the effect of high (top row: $B$ = 2, viscosity contrast $\sim$ 1/2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 1/6$\times$), and low (bottom row: $B$ = 10, viscosity contrast $\sim$ 1/20$\times$) plume strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). Even under ultra-sluggish kinetics, all $B$ values produce a coherent, vertically continuous plume with a consistently sharp 410. The insensitivity of plume 410 structure to both $Z$ and $B$ contrasts strongly with slab behavior shown in Figures \ref{fig:slab-Z3.0e0-composition-set2}--\ref{fig:slab-Z7.0e7-composition-set2}, and reinforces the conclusion that thermal effects dominate in hot upwelling environments regardless of rheological parameterization.](../figs/simulation/compositions/plume-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:plume-Z3.0e0-composition-set2 width=100%}
+![Plume simulations with ultra-sluggish kinetics ($Z$ = 9.5e-8 K$^{-1}$ s$^{-1}$) demonstrating the effect of high (top row: $B$ = 2, viscosity contrast $\sim$ 1/2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 1/6$\times$), and low (bottom row: $B$ = 10, viscosity contrast $\sim$ 1/20$\times$) plume strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). Even under ultra-sluggish kinetics, all $B$ values produce a coherent, vertically continuous plume with a consistently sharp 410. The insensitivity of plume 410 structure to both $Z$ and $B$ contrasts strongly with slab behavior shown in Figures \ref{fig:slab-Z3.0e0-composition-set2}--\ref{fig:slab-Z7.0e7-composition-set2}, and reinforces the conclusion that thermal effects dominate in hot upwelling environments regardless of rheological parameterization.](../figs/simulation/compositions/plume-Z3.0e0-B2-Z3.0e0-B6-Z3.0e0-B10-set2-composition-0010.png){#fig:plume-Z3.0e0-composition-set2 width=100%}
 
 \clearpage
 
-![Plume simulations with intermediate kinetics ($Z$ = 4.7e2 K yr$^{-1}$) demonstrating the effect of high (top row: $B$ = 2, viscosity contrast $\sim$ 1/2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 1/6$\times$), and low (bottom row: $B$ = 10, viscosity contrast $\sim$ 1/20$\times$) plume strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). As in the ultra-sluggish case (Figure \ref{fig:plume-Z3.0e0-composition-set2}), the 410 structure shows little sensitivity to $B$ at intermediate kinetics. Plume morphology varies slightly with $B$---weaker plumes at higher $B$ are narrower and slower---but the 410 width and displacement remain nearly constant, in contrast to the strong $B$-dependence seen in slab simulations at the same $Z$ (Figure \ref{fig:slab-Z4.7e2-composition-set2}).](../figs/simulation/compositions/plume-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:plume-Z4.7e2-composition-set2 width=100%}
+![Plume simulations with intermediate kinetics ($Z$ = 1.5e-5 K$^{-1}$ s$^{-1}$) demonstrating the effect of high (top row: $B$ = 2, viscosity contrast $\sim$ 1/2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 1/6$\times$), and low (bottom row: $B$ = 10, viscosity contrast $\sim$ 1/20$\times$) plume strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). As in the ultra-sluggish case (Figure \ref{fig:plume-Z3.0e0-composition-set2}), the 410 structure shows little sensitivity to $B$ at intermediate kinetics. Plume morphology varies slightly with $B$---weaker plumes at higher $B$ are narrower and slower---but the 410 width and displacement remain nearly constant, in contrast to the strong $B$-dependence seen in slab simulations at the same $Z$ (Figure \ref{fig:slab-Z4.7e2-composition-set2}).](../figs/simulation/compositions/plume-Z4.7e2-B2-Z4.7e2-B6-Z4.7e2-B10-set2-composition-0010.png){#fig:plume-Z4.7e2-composition-set2 width=100%}
 
 \clearpage
 
-![Plume simulations with quasi-equilibrium kinetics ($Z$ = 7.0e7 K yr$^{-1}$) demonstrating the effect of high (top row: $B$ = 2, viscosity contrast $\sim$ 1/2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 1/6$\times$), and low (bottom row: $B$ = 10, viscosity contrast $\sim$ 1/20$\times$) plume strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). At quasi-equilibrium kinetics, plume 410 structure is indistinguishable across all $B$ values, with sharp, narrow discontinuities and strong seismic contrasts in all cases. Together with Figures \ref{fig:plume-Z3.0e0-composition-set2} and \ref{fig:plume-Z4.7e2-composition-set2}, these results confirm that neither $Z$ nor $B$ substantially modifies 410 structure in plume environments, in contrast to the complex kinetic and rheological dependence observed in slab simulations.](../figs/simulation/compositions/plume-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:plume-Z7.0e7-composition-set2 width=100%}
+![Plume simulations with quasi-equilibrium kinetics ($Z$ = 2.2e0 K$^{-1}$ s$^{-1}$) demonstrating the effect of high (top row: $B$ = 2, viscosity contrast $\sim$ 1/2$\times$), intermediate (middle row: $B$ = 6, viscosity contrast $\sim$ 1/6$\times$), and low (bottom row: $B$ = 10, viscosity contrast $\sim$ 1/20$\times$) plume strength after 100 Ma evolution. Panels show dynamic temperature $\hat{T}$ (left column), dynamic density $\hat{\rho}$ (middle column), and pressure-wave velocity $V_p$ (right column). At quasi-equilibrium kinetics, plume 410 structure is indistinguishable across all $B$ values, with sharp, narrow discontinuities and strong seismic contrasts in all cases. Together with Figures \ref{fig:plume-Z3.0e0-composition-set2} and \ref{fig:plume-Z4.7e2-composition-set2}, these results confirm that neither $Z$ nor $B$ substantially modifies 410 structure in plume environments, in contrast to the complex kinetic and rheological dependence observed in slab simulations.](../figs/simulation/compositions/plume-Z7.0e7-B2-Z7.0e7-B6-Z7.0e7-B10-set2-composition-0010.png){#fig:plume-Z7.0e7-composition-set2 width=100%}
 
 <!--
 # References {.unnumbered #sec:references}
