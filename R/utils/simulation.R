@@ -237,7 +237,7 @@ visualize_410_structure <- function(in_path, out_path) {
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(trans = "log10", option = "viridis", labels = label_log(), limits = rate_range_slab) +
-    labs(x = bquote("Z (" * yr^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma" ^-1 * ")")) +
+    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma" ^-1 * ")")) +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text.x = element_blank(), axis.title.x = element_blank(), legend.box.margin = margin(0, 0, 2, 0))
@@ -253,7 +253,7 @@ visualize_410_structure <- function(in_path, out_path) {
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_gradient2(low = "#A50026", mid = "white", high = "#313695", limits = displacement_range_slab) +
-    labs(x = bquote("Z (" * yr^-1 * K^-1 * ")"), y = "B", fill = "Displacement (km)") +
+    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Displacement (km)") +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text.y = element_blank(), axis.title.y = element_blank())
@@ -269,7 +269,7 @@ visualize_410_structure <- function(in_path, out_path) {
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(option = "mako", limits = width_range_slab, direction = -1) +
-    labs(x = bquote("Z (" * yr^-1 * K^-1 * ")"), y = "B", fill = "Width (km)") +
+    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = "Width (km)") +
     theme_bw(base_size = 14) +
     theme_2()
 
@@ -284,7 +284,7 @@ visualize_410_structure <- function(in_path, out_path) {
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(option = "rocket", limits = max_velocity_range_slab) +
-    labs(x = bquote("Z (" * yr^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(u)[y] * " (cm/yr)")) +
+    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(u)[y] * " (cm/yr)")) +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text = element_blank(), axis.title = element_blank(), legend.title = element_text(margin = margin(0, 0, 2, 0)))
