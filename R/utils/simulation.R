@@ -1,10 +1,16 @@
 #######################################################
 ## Visualize 410 structure                       !!! ##
 #######################################################
+# ASPECT simulations ran with "Use years instead of seconds = true"
+# Stored (per-year) Z values are converted to per-second by dividing by this factor
+SECONDS_PER_YEAR <- 3.15e7
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 read_410_data <- function(filepath) {
   suppressWarnings(df <- read_csv(filepath, show_col_types = FALSE))
-  df |> mutate(displacement = displacement / 1e3, width = width / 1e3)
+  df |>
+    mutate(Z_factor = Z_factor / SECONDS_PER_YEAR) |>
+    mutate(displacement = displacement / 1e3, width = width / 1e3)
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,7 +68,7 @@ visualize_410_structure <- function(in_path, out_path) {
 
   plume_breaks_rxn <- c(1e-1, 1e1, 1e3, 1e5)
   slab_breaks_rxn <- c(1e-1, 1e1, 1e3, 1e5)
-  breaks_z <- c(1e1, 1e3, 1e5, 1e7)
+  breaks_z <- c(1e-7, 1e-5, 1e-3, 1e-1)
 
   draw_composition <- function(b) {
     out_pth <- str_replace(out_path, ".png", paste0("-B", b, ".png"))
@@ -167,8 +173,13 @@ visualize_410_structure <- function(in_path, out_path) {
   draw_rect <- function(b_row, zmin, zmax, color = "black", size = 0.3, linetype = 1, alpha = 1.0) {
     z_unique <- sort(unique(df_slab$Z_factor))
     z_step_factor <- sqrt(z_unique[2] / z_unique[1])
+
+    # Clamp values to dataset boundaries
+    xmin_val <- max(zmin / z_step_factor, min(df_slab_tiled$xmin))
+    xmax_val <- min(zmax * z_step_factor, max(df_slab_tiled$xmax))
+
     geom_rect(
-      aes(xmin = zmin / z_step_factor, xmax = zmax * z_step_factor, ymin = b_row - 1.0, ymax = b_row + 1.0),
+      aes(xmin = xmin_val, xmax = xmax_val, ymin = b_row - 1.0, ymax = b_row + 1.0),
       fill = NA,
       color = color,
       alpha = alpha,
@@ -178,66 +189,66 @@ visualize_410_structure <- function(in_path, out_path) {
   }
 
   rects_slab_b <- list(
-    draw_rect(2, 4.3e5, 7.0e7),
-    draw_rect(2, 2.0e2, 1.8e5),
-    draw_rect(2, 3.0e0, 8.7e1),
-    draw_rect(4, 1.8e5, 7.0e7),
-    draw_rect(4, 2.0e2, 7.8e4),
-    draw_rect(4, 3.0e0, 8.7e1),
-    draw_rect(6, 7.8e4, 7.0e7),
-    draw_rect(6, 3.7e1, 3.3e4),
-    draw_rect(6, 3.0e0, 1.6e1),
-    draw_rect(8, 1.4e4, 7.0e7),
-    draw_rect(8, 1.6e1, 6.0e3),
-    draw_rect(8, 3.0e0, 7.0e0),
-    draw_rect(10, 1.4e4, 7.0e7),
-    draw_rect(10, 1.6e1, 6.0e3),
-    draw_rect(10, 3.0e0, 7.0e0)
+    draw_rect(2, 1.4e-2, 2.2e0),
+    draw_rect(2, 6.3e-6, 5.7e-3),
+    draw_rect(2, 9.5e-8, 2.8e-6),
+    draw_rect(4, 5.7e-3, 2.2e0),
+    draw_rect(4, 6.3e-6, 2.5e-3),
+    draw_rect(4, 9.5e-8, 2.8e-6),
+    draw_rect(6, 2.5e-3, 2.2e0),
+    draw_rect(6, 1.2e-6, 1.0e-3),
+    draw_rect(6, 9.5e-8, 5.1e-7),
+    draw_rect(8, 4.4e-4, 2.2e0),
+    draw_rect(8, 5.1e-7, 1.9e-4),
+    draw_rect(8, 9.5e-8, 2.2e-7),
+    draw_rect(10, 4.4e-4, 2.2e0),
+    draw_rect(10, 5.1e-7, 1.9e-4),
+    draw_rect(10, 9.5e-8, 2.2e-7)
   )
   rects_slab_w <- list(
-    draw_rect(2, 4.3e5, 7.0e7, color = "white"),
-    draw_rect(2, 2.0e2, 1.8e5, color = "white"),
-    draw_rect(2, 3.0e0, 8.7e1, color = "white"),
-    draw_rect(4, 1.8e5, 7.0e7, color = "white"),
-    draw_rect(4, 2.0e2, 7.8e4, color = "white"),
-    draw_rect(4, 3.0e0, 8.7e1, color = "white"),
-    draw_rect(6, 7.8e4, 7.0e7, color = "white"),
-    draw_rect(6, 3.7e1, 3.3e4, color = "white"),
-    draw_rect(6, 3.0e0, 1.6e1, color = "white"),
-    draw_rect(8, 1.4e4, 7.0e7, color = "white"),
-    draw_rect(8, 1.6e1, 6.0e3, color = "white"),
-    draw_rect(8, 3.0e0, 7.0e0, color = "white"),
-    draw_rect(10, 1.4e4, 7.0e7, color = "white"),
-    draw_rect(10, 1.6e1, 6.0e3, color = "white"),
-    draw_rect(10, 3.0e0, 7.0e0, color = "white")
+    draw_rect(2, 1.4e-2, 2.2e0, color = "white"),
+    draw_rect(2, 6.3e-6, 5.7e-3, color = "white"),
+    draw_rect(2, 9.5e-8, 2.8e-6, color = "white"),
+    draw_rect(4, 5.7e-3, 2.2e0, color = "white"),
+    draw_rect(4, 6.3e-6, 2.5e-3, color = "white"),
+    draw_rect(4, 9.5e-8, 2.8e-6, color = "white"),
+    draw_rect(6, 2.5e-3, 2.2e0, color = "white"),
+    draw_rect(6, 1.2e-6, 1.0e-3, color = "white"),
+    draw_rect(6, 9.5e-8, 5.1e-7, color = "white"),
+    draw_rect(8, 4.4e-4, 2.2e0, color = "white"),
+    draw_rect(8, 5.1e-7, 1.9e-4, color = "white"),
+    draw_rect(8, 9.5e-8, 2.2e-7, color = "white"),
+    draw_rect(10, 4.4e-4, 2.2e0, color = "white"),
+    draw_rect(10, 5.1e-7, 1.9e-4, color = "white"),
+    draw_rect(10, 9.5e-8, 2.2e-7, color = "white")
   )
   rects_plume_b <- list(
-    draw_rect(2, 3.0e0, 7.0e7),
-    draw_rect(4, 3.0e0, 7.0e7),
-    draw_rect(6, 3.0e0, 7.0e7),
-    draw_rect(8, 3.0e0, 7.0e7),
-    draw_rect(10, 3.0e0, 7.0e7)
+    draw_rect(2, 9.5e-8, 2.2e0),
+    draw_rect(4, 9.5e-8, 2.2e0),
+    draw_rect(6, 9.5e-8, 2.2e0),
+    draw_rect(8, 9.5e-8, 2.2e0),
+    draw_rect(10, 9.5e-8, 2.2e0)
   )
   rects_plume_w <- list(
-    draw_rect(2, 3.0e0, 7.0e7, color = "white"),
-    draw_rect(4, 3.0e0, 7.0e7, color = "white"),
-    draw_rect(6, 3.0e0, 7.0e7, color = "white"),
-    draw_rect(8, 3.0e0, 7.0e7, color = "white"),
-    draw_rect(10, 3.0e0, 7.0e7, color = "white")
+    draw_rect(2, 9.5e-8, 2.2e0, color = "white"),
+    draw_rect(4, 9.5e-8, 2.2e0, color = "white"),
+    draw_rect(6, 9.5e-8, 2.2e0, color = "white"),
+    draw_rect(8, 9.5e-8, 2.2e0, color = "white"),
+    draw_rect(10, 9.5e-8, 2.2e0, color = "white")
   )
 
   p0 <- df_slab_tiled |>
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_reaction_rate)) +
     geom_rect() +
     rects_slab_w +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold", color = "white") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold", color = "white") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold", color = "white") +
+    annotate("text", x = 1.1e-1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold", color = "white") +
+    annotate("text", x = 1.3e-4, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold", color = "white") +
+    annotate("text", x = 5.1e-7, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold", color = "white") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
     scale_fill_viridis_c(trans = "log10", option = "viridis", labels = label_log(), limits = rate_range_slab) +
-    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma" ^-1 * ")")) +
+    labs(x = bquote("Z (" * s^-1 * K^-1 * ")"), y = "B", fill = bquote("Max " * italic(dot(X)) * " (Ma"^-1 * ")")) +
     theme_bw(base_size = 14) +
     theme_2() +
     theme(axis.text.x = element_blank(), axis.title.x = element_blank(), legend.box.margin = margin(0, 0, 2, 0))
@@ -246,9 +257,9 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = displacement)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
+    annotate("text", x = 1.1e-1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
+    annotate("text", x = 1.3e-4, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
+    annotate("text", x = 5.1e-7, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -262,9 +273,9 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = width)) +
     geom_rect() +
     rects_slab_b +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
+    annotate("text", x = 1.1e-1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", fontface = "bold") +
+    annotate("text", x = 1.3e-4, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", fontface = "bold") +
+    annotate("text", x = 5.1e-7, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +
@@ -277,9 +288,9 @@ visualize_410_structure <- function(in_path, out_path) {
     ggplot(aes(xmin = xmin, xmax = xmax, ymin = B_factor - 1.0, ymax = B_factor + 1.0, fill = max_velocity)) +
     geom_rect() +
     rects_slab_w +
-    annotate("text", x = 3.5e6, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", color = "white", fontface = "bold") +
-    annotate("text", x = 4.0e3, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", color = "white", fontface = "bold") +
-    annotate("text", x = 1.6e1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", color = "white", fontface = "bold") +
+    annotate("text", x = 1.1e-1, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(1)", color = "white", fontface = "bold") +
+    annotate("text", x = 1.3e-4, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(2)", color = "white", fontface = "bold") +
+    annotate("text", x = 5.1e-7, y = 4, size = 4, hjust = 0.5, vjust = 0.5, label = "(3)", color = "white", fontface = "bold") +
     scale_x_continuous(trans = "log10", labels = label_log(), breaks = breaks_z, limits = z_range_slab, expand = c(0, 0)) +
     scale_y_continuous(breaks = c(2, 4, 6, 8, 10), expand = c(0, 0)) +
     annotation_logticks(sides = "b", linewidth = 0.2) +

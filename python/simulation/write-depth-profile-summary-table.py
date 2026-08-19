@@ -8,6 +8,10 @@ from typing import cast
 import numpy as np
 import pandas as pd
 
+# ASPECT simulations ran with "Use years instead of seconds = true"
+# Stored (per-year) Z values are converted to per-second by dividing by this factor
+SECONDS_PER_YEAR = 3.15e7
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def parse_arguments() -> Namespace:
@@ -40,6 +44,7 @@ def main():
     print(f" -> {out_path.name}")
 
     df = pd.read_csv(in_path)
+    df["Z_factor"] = df["Z_factor"] / SECONDS_PER_YEAR
     df_100 = cast(pd.DataFrame, df[df["timestep"] == 10])
     df_100 = df_100.drop_duplicates(subset=["model_id", "timestep"], keep="first")
 
