@@ -38,7 +38,6 @@ The consequence of using the uncorrected $Z$ range can be approximated by applyi
 |:------|:-------|:--------|:-------|:------|:-------|
 | 3.0e0 | 7.9e7  | 1.3e-8  | 9.5e-8 | 2.5   | 4.0e-1 |
 | 2.0e2 | 5.3e9  | 1.9e-10 | 6.3e-6 | 1.7e2 | 6.0e-3 |
-| 4.7e2 | 1.2e10 | 8.0e-11 | 1.5e-5 | 4.0e2 | 2.5e-3 |
 | 1.8e5 | 4.8e12 | 2.1e-13 | 5.7e-3 | 1.5e5 | 6.6e-6 |
 | 7.0e7 | 1.9e15 | 5.4e-16 | 2.2e0  | 5.8e7 | 1.7e-8 |
 
@@ -83,10 +82,10 @@ The correction therefore shifts the reported kinetic conditions toward slower ki
 
 | Location | Change |
 |:---------|:-------|
-| Methods (Section 2.2.2) | Corrected $Z$ and reframed the corresponding kinetic conditions |
+| Methods (Section 2.2.3.2) | Corrected $Z$ and reframed the corresponding kinetic conditions |
 | Results (Section 3.2) | Corrected $Z$ |
 | Figure captions | Corrected $Z$ |
-| Uncertainties (Section 4.1) | Contextualized the corrected $Z$ with @hosoya2005 |
+| Discussion (Section 4.1) | Contextualized the corrected $Z$ with @hosoya2005 |
 | SI Table and captions | Corrected $Z$ |
 
 Table: Complete list of changes. {#tbl:changes}
