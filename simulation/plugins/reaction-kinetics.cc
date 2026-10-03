@@ -288,7 +288,6 @@ namespace aspect
             {
               // Gas constant and time scale
               const double R = 8.314; // J/mol/K
-              const double time_scale = this->convert_output_to_years() ? year_in_seconds : 1.0;
 
               // Lambda function for clamping exponential terms
               auto clamp_exp = [](double x)
@@ -319,7 +318,7 @@ namespace aspect
               // Calculate net reaction rate
               const double forward_rate = compute_rate(gibbs_forward, 1.0 - X_clamped, true);
               const double reverse_rate = compute_rate(-gibbs_forward, X_clamped, false);
-              const double reaction_rate = (forward_rate - reverse_rate) / time_scale;
+              const double reaction_rate = (forward_rate - reverse_rate);
               reaction_rate_out->reaction_rates[q][X_idx] = reaction_rate;
 
               // Set other compositional fields to zero reaction rate
