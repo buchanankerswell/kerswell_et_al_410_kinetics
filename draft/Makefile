@@ -41,6 +41,9 @@ $(DRAFT)/response.%: BIB_FLAG                   :=
 $(DRAFT)/erratum.%: CFG_EXTRA                   := --citeproc --csl=$(DRAFT)/agu.csl --pdf-engine=pdflatex
 $(DRAFT)/erratum.%: BIB_FLAG                    := --bibliography=$(BIB)
 
+$(DRAFT)/erratum.docx: CFG_EXTRA                 := --citeproc --csl=$(DRAFT)/agu.csl
+$(DRAFT)/erratum.docx: BIB_FLAG                  := --bibliography=$(BIB)
+
 TPL_FLAG  = $(if $(TPL),--template=$(TPL))
 META_FLAG = $(if $(META),--metadata-file=$(META))
 PANDOC_FLAGS = --standalone --from=markdown --filter=pandoc-crossref $(CFG_EXTRA) $(TPL_FLAG) $(BIB_FLAG) $(META_FLAG)
@@ -50,8 +53,9 @@ DOCS := manuscript supplementary-information
 PDFS := $(addprefix $(DRAFT)/, $(addsuffix .pdf, $(DOCS)))
 
 # Erratum
-ERRATUM     := erratum
-ERRATUM_PDF := $(addprefix $(DRAFT)/, $(addsuffix .pdf, $(ERRATUM)))
+ERRATUM      := erratum
+ERRATUM_PDF  := $(addprefix $(DRAFT)/, $(addsuffix .pdf, $(ERRATUM)))
+ERRATUM_DOCX := $(addprefix $(DRAFT)/, $(addsuffix .docx, $(ERRATUM)))
 
 # Configure pdflatex
 PDFLATEX = pdflatex -interaction=nonstopmode -shell-escape -output-directory $(DRAFT)
@@ -61,7 +65,7 @@ BACKUP_DATE ?= 07-jul-2026
 DIFF_FLAGS = --flatten --math-markup=0 --type=CFONT --graphics-markup=none --exclude-textcmd="ref,eqref,label" --add-to-config PICTUREENV=longtable --config="ARRENV=thebibliography|APACrefauthors"
 
 # Cleanup targets
-EXTS        := aux bbl blg log toc out tex pdf
+EXTS        := aux bbl blg log toc out tex pdf docx
 LETTER_EXTS := $(foreach letter,$(ERRATUM),$(addprefix $(DRAFT)/$(letter).,$(EXTS)))
 CLEAN       := $(foreach doc,$(DOCS) $(addprefix diff-,$(DOCS)),$(addprefix $(DRAFT)/$(doc).,$(EXTS))) $(addprefix $(DRAFT)/response.,$(EXTS)) $(LETTER_EXTS)
 DEEP_CLEAN  := $(PROJECT_ROOT)/figs
@@ -70,15 +74,19 @@ DEEP_CLEAN  := $(PROJECT_ROOT)/figs
 .PRECIOUS: $(DRAFT)/%.tex
 
 # Targets
-.PHONY: all diff clean deep-clean help
+.PHONY: all erratum diff clean deep-clean help
 
 all: $(PDFS)
-erratum: $(ERRATUM_PDF)
+erratum: $(ERRATUM_PDF) $(ERRATUM_DOCX)
 diff: all $(DRAFT)/diff-manuscript.pdf $(DRAFT)/diff-supplementary-information.pdf $(DRAFT)/response.pdf
 
 $(DRAFT)/%.pdf: $(DRAFT)/%.tex
 	@echo " -> $@"
 	@pandoc $(subst .tex,.md,$<) -o $@ $(PANDOC_FLAGS)
+
+$(DRAFT)/erratum.docx: $(DRAFT)/erratum.md $(BIB)
+	@echo " -> $@"
+	@pandoc $< -o $@ $(PANDOC_FLAGS)
 
 $(DRAFT)/bak/%.tex: ;
 
@@ -130,7 +138,7 @@ help:
 	@echo "    Available targets:"
 	@echo "    --------------------------------------------------"
 	@echo "    all                                Render manuscript and SI"
-	@echo "    erratum                            Render the draft erratum"
+	@echo "    erratum                            Render the draft erratum (PDF + docx)"
 	@echo "    diff-manuscript.pdf                Generate manuscript diff"
 	@echo "    diff-supplementary-information.pdf Generate SI diff"
 	@echo "    clean                              Cleanup unnecessary files"

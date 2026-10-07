@@ -1,20 +1,22 @@
-# Erratum: correction to Kerswell et al. (2026)
-
-**Re:** Correction of the kinetic prefactor values
+**Re:** Correction of reported values in 10.1029/2026JB033781
 
 Dear Editor,
 
-In our manuscript (doi: 10.1029/2026JB033781), the kinetic prefactor $Z$ in the interface-controlled olivine $\Leftrightarrow$ wadsleyite rate law (Equation 13 in the main text) is reported with units of K$^{-1}$ s$^{-1}$:
+We are sorry to report that we will need to publish an erratum to our recent manuscript (doi: 10.1029/2026JB033781). In our manuscript text, the kinetic prefactor $Z$ in the interface-controlled olivine $\Leftrightarrow$ wadsleyite rate law (Equation 13 in 10.1029/2026JB033781) is reported with units of K$^{-1}$ s$^{-1}$:
 
 $$
   \dot{X} = Z\, T\, \exp\!\left(-\frac{H^{\ast} + P V^{\ast}}{R T}\right) \left(1 - \exp\!\left[-\frac{\Delta G}{R T}\right]\right) \left(1 - X\right)
-$$ {#eq:reaction-rate}
+$$
 
-Because our ASPECT simulations were set to output time in years, the prefactor range we reported in the manuscript was inadvertently shifted by a factor of 3.15e7 (seconds in a year). Rather than $Z$ = 3.0e0--7.0e7 K$^{-1}$ s$^{-1}$ as originally published, the $Z$ values used by ASPECT were 9.5e-8--2.2e0 K$^{-1}$ s$^{-1}$. This shift was an accidental user error and not a bug in the ASPECT code; we discovered the issue when testing subsequent models.
+However, because our simulations were set to use time in years, the prefactor range we reported in the manuscript was inadvertently scaled in the code by a factor of 3.15e7 (seconds in a year). Rather than $Z$ = 3.0e0--7.0e7 K$^{-1}$ s$^{-1}$ as originally published, the $Z$ values used by our simulations were 9.5e-8--2.2e0 K$^{-1}$ s$^{-1}$. This was an accidental user error and not a bug in the ASPECT code; we discovered the issue when testing subsequent models. Most importantly, the corrected values still fall within experimental constraints, just into a different range than we intended.
 
-We have corrected the $Z$ values wherever they appear in the manuscript and Supplementary Information. To contextualize the correction in terms of experimental constraints, we also revised one passage in Section 2.2.3.2 (Reaction Kinetics) and another passage in Section 4.1 (Uncertainties and Limitations). Per AGU's correction policy, we will also publish a footnote with the corrected article describing the change.
+Since every result in the paper is read directly from the simulation output, all quantitative results, qualitative regime thresholds, figures, and conclusions are correct as published, they only apply to a different part of the parameter space that we investigated. The erratum to 10.1029/2026JB033781 only corrects what $Z$ values were used in our simulations, and what the correction means for interpreting the published results.
 
-Since every result in the paper is read directly from the simulation output, all quantitative results, qualitative regime thresholds, figures, and conclusions are correct as published. This erratum only clarifies what $Z$ values were used in our simulations.
+Could you please clarify:
+
+  1. Are we allowed to edit the text in 10.1029/2026JB033781, or will it remain as-is?
+  2. How should we submit an erratum to 10.1029/2026JB033781?
+  3. Are there formatting guidelines or word count limits for the erratum?
 
 We apologize for the error and thank the editor for the opportunity to correct it.
 
@@ -24,9 +26,42 @@ Buchanan Kerswell (on behalf of all coauthors)
 
 \clearpage
 
-## Correction Summary
+**Re:** Review of 2026JB035526 affected by correction to 10.1029/2026JB033781
 
-Assuming that there is plenty of reactant ($X$ = 0) and $\Delta G$ of the reaction is sufficiently large such that the driving force term $\left(1 - \exp\!\left[-\frac{\Delta G}{R T}\right]\right)$ is equal to one, Erratum Eq. -@eq:reaction-rate simplifies to:
+Dear Editor,
+
+We are sorry to report that we have discovered an issue in our recent manuscript (doi: 10.1029/2026JB033781), which affects our current manuscript under review (2026JB035526). In both manuscript texts, the kinetic prefactor $Z_\mathrm{ol}$ in the interface-controlled olivine $\Leftrightarrow$ wadsleyite rate law (Equation 13 in 10.1029/2026JB033781) is reported with units of K$^{-1}$ s$^{-1}$:
+
+$$
+  \dot{X} = Z_\mathrm{ol}\, T\, \exp\!\left(-\frac{H^{\ast} + P V^{\ast}}{R T}\right) \left(1 - \exp\!\left[-\frac{\Delta G}{R T}\right]\right) \left(1 - X\right)
+$$
+
+However, because our simulations were set to use time in years, the prefactor range we reported in the manuscript was inadvertently scaled in the code by a factor of 3.15e7 (seconds in a year). Rather than $Z_\mathrm{ol}$ = 3.0e0--7.0e7 K$^{-1}$ s$^{-1}$ as originally published, the $Z_\mathrm{ol}$ values used by our simulations were 9.5e-8--2.2e0 K$^{-1}$ s$^{-1}$. The same scaling factor was inadvertently applied to $Z_\mathrm{wd}$ and $Z_\mathrm{ri}$ in our current manuscript 2026JB035526. This was an accidental user error and not a bug in the ASPECT code; we discovered the issue when testing subsequent models. Most importantly, the corrected values still fall within experimental constraints, just into a different range than we intended.
+
+Since the results in both papers are read directly from the simulation output, all quantitative results, qualitative regime thresholds, figures, and conclusions are correct as published, they only apply to a different part of the parameter space that we investigated. The erratum to 10.1029/2026JB033781 will address this. In the meantime, we will need to make major revisions to 2026JB035526, including a small suite of additional simulations.
+
+Could you please clarify:
+
+  1. Would you like us to immediately pull 2026JB035526 from review and resubmit after major revisions?
+  2. Have you already received one or more reviews? If so, would you be willing to share them so we can simultaneously incorporate their feedback?
+
+We apologize for the inconvenience and thank the editor for handling this issue.
+
+Sincerely,
+
+Buchanan Kerswell (on behalf of all coauthors)
+
+\clearpage
+
+# Correction to 10.1029/2026JB033781 {.unnumbered #sec:correction}
+
+In our manuscript *"Beyond Equilibrium: Kinetic Thresholds and Rheological Feedbacks Create a Potentially Complex 410 in Slab Regions"*, ...
+
+\clearpage
+
+# Correction Summary (shared internally; not published) {.unnumbered #sec:correction-summary}
+
+Assuming that there is plenty of reactant ($X$ = 0) and $\Delta G$ of the reaction is sufficiently large such that the driving force term $\left(1 - \exp\!\left[-\frac{\Delta G}{R T}\right]\right)$ is equal to one, Equation 13 in 10.1029/2026JB033781 simplifies to:
 
 $$
   \dot{X} = Z\, T\, \exp\!\left(-\frac{H^{\ast} + P V^{\ast}}{R T}\right)
@@ -100,7 +135,7 @@ Thus, our models are based on $Z$ values that accord, within the experimental un
 
 **Footnote for the corrected version of record**:
 
-> The kinetic prefactor $Z$ in the olivine $\Leftrightarrow$ wadsleyite reaction-rate law (Equation 13) was reported with units of K$^{-1}$ s$^{-1}$, but the published values (3.0e0--7.0e7) were mistakenly passed to ASPECT with time expressed in years (shifting $Z$ values by a factor of 3.15e7). The prefactor range actually used was 9.5e-8--2.2e0 K$^{-1}$ s$^{-1}$. The $Z$ range values, figure captions, and the Supplementary Information table have been corrected accordingly. We have edited two passages in Sections 2.2.3.2 (Methods) and 4.1 (Discussion) to contextualize the correction in terms of the experimental constraints of @hosoya2005. While the conclusions of the paper are unchanged, they are the result of dryer, coarser grained and/or colder slabs than implied in the original version.
+> The kinetic prefactor $Z$ in the olivine $\Leftrightarrow$ wadsleyite reaction-rate law (Equation 13) was reported with units of K$^{-1}$ s$^{-1}$, but the published values (3.0e0--7.0e7) were mistakenly passed to ASPECT with time expressed in years (scaling $Z$ values by a factor of 3.15e7). The prefactor range actually used was 9.5e-8--2.2e0 K$^{-1}$ s$^{-1}$. The $Z$ range values, figure captions, and the Supplementary Information table have been corrected accordingly. We have edited two passages in Sections 2.2.3.2 (Methods) and 4.1 (Discussion) to contextualize the correction in terms of the experimental constraints of @hosoya2005. While the conclusions of the paper are unchanged, they are the result of dryer, coarser grained and/or colder slabs than implied in the original version.
 
 \clearpage
 
