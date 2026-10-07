@@ -392,7 +392,7 @@ namespace aspect
                             "2.8",
                             Patterns::Double(0.0),
                             "The kinetic factor 'Z' used in the reaction rate law: dX/dt = Z * T * exp(-H_a + PV_a/RT) * (1 - exp(dG/RT)) * (1 - X). "
-                            "Units: 1/s K or 1/yr K if 'Use years instead of seconds' is enabled.");
+                            "Units: 1/s K");
           prm.declare_entry("Activation enthalpy",
                             "274e3",
                             Patterns::Double(0.0),
