@@ -3,6 +3,7 @@ PROJECT_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 R            := $(PROJECT_ROOT)/R
 PYTHON       := $(PROJECT_ROOT)/python
 DRAFT        := $(PROJECT_ROOT)/draft
+FIGS         := $(PROJECT_ROOT)/figs
 
 # Templates
 TEMPLATE      := $(DRAFT)/agu.tex
@@ -56,6 +57,7 @@ PDFS := $(addprefix $(DRAFT)/, $(addsuffix .pdf, $(DOCS)))
 ERRATUM      := erratum
 ERRATUM_PDF  := $(addprefix $(DRAFT)/, $(addsuffix .pdf, $(ERRATUM)))
 ERRATUM_DOCX := $(addprefix $(DRAFT)/, $(addsuffix .docx, $(ERRATUM)))
+ERRATUM_FIG  := $(FIGS)/erratum-kinetics.png
 
 # Configure pdflatex
 PDFLATEX = pdflatex -interaction=nonstopmode -shell-escape -output-directory $(DRAFT)
@@ -77,7 +79,7 @@ DEEP_CLEAN  := $(PROJECT_ROOT)/figs
 .PHONY: all erratum diff clean deep-clean help
 
 all: $(PDFS)
-erratum: $(ERRATUM_PDF) $(ERRATUM_DOCX)
+erratum: $(ERRATUM_FIG) $(ERRATUM_PDF) $(ERRATUM_DOCX)
 diff: all $(DRAFT)/diff-manuscript.pdf $(DRAFT)/diff-supplementary-information.pdf $(DRAFT)/response.pdf
 
 $(DRAFT)/%.pdf: $(DRAFT)/%.tex
@@ -87,6 +89,10 @@ $(DRAFT)/%.pdf: $(DRAFT)/%.tex
 $(DRAFT)/erratum.docx: $(DRAFT)/erratum.md $(BIB)
 	@echo " -> $@"
 	@pandoc $< -o $@ $(PANDOC_FLAGS)
+
+$(ERRATUM_FIG):
+	@echo " -> $@"
+	@Rscript $(R)/erratum.R $(R)/utils $(FIGS)
 
 $(DRAFT)/bak/%.tex: ;
 
