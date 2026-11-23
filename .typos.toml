@@ -1,0 +1,5 @@
+# Bibliography entries and publisher templates contain arbitrary tokens;
+# draft .tex is generated from manuscript.md; perplex/ ships thermodynamic
+# datasets with mineral abbreviations
+[files]
+extend-exclude = ["*.bib", "*.cls", "*.sty", "draft/**/*.tex", "perplex/**"]

@@ -27,7 +27,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 NPROC=$SLURM_NTASKS
 DEALII_DIR=$PROJECT_ROOT/dealii
 
-echo "    PROJCT_ROOT:    $PROJECT_ROOT"
+echo "    PROJECT_ROOT:    $PROJECT_ROOT"
 echo "    NPROC:          $NPROC"
 echo "    DEALII_VERSION: $DEALII_VERSION"
 echo "    DEALII_DIR:     $DEALII_DIR"

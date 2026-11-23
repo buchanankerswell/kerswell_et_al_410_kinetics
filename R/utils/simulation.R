@@ -347,7 +347,7 @@ theme_2 <- function() {
     panel.grid.minor = element_blank(),
     panel.background = element_rect(fill = "grey90"),
     plot.margin = margin(2, 5, 2, 5),
-    plot.title = element_text(siz = 14, hjust = 0.5),
+    plot.title = element_text(size = 14, hjust = 0.5),
     plot.tag.location = "panel",
     plot.tag.position = "topleft",
     plot.tag = element_text(size = 18, margin = margin(5, 0, 0, 0), hjust = 0, color = "black", face = "bold"),
