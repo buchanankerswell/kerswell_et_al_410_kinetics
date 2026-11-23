@@ -22,7 +22,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 NPROC=${NPROC:-$(sysctl -n hw.ncpu)}
 DEALII_DIR=$PROJECT_ROOT/dealii
 
-echo "    PROJCT_ROOT: $PROJECT_ROOT"
+echo "    PROJECT_ROOT: $PROJECT_ROOT"
 echo "    NPROC:       $NPROC"
 echo "    DEALII_DIR:  $DEALII_DIR"
 
